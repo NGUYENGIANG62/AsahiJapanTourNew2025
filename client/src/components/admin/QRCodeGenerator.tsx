@@ -6,24 +6,26 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import { Switch } from '@/components/ui/switch'; 
 import QRCode from 'qrcode';
 
 const QRCodeGenerator = () => {
   const [url, setUrl] = useState<string>('');
   const [qrCodeDataURL, setQRCodeDataURL] = useState<string | null>(null);
   const [qrCodeType, setQRCodeType] = useState<'app' | 'custom'>('app');
+  const [showLogo, setShowLogo] = useState<boolean>(true);
+  const [logoUrl, setLogoUrl] = useState<string>('/assets/logo/default-logo.svg');
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Initialize QR code when component mounts
-    if (canvasRef.current) {
-      // Use direct URL for compatibility
-      const appUrl = window.location.origin;
-      
+  // Tạo QR code và thêm logo vào giữa
+  const createQRCodeWithLogo = async (canvas: HTMLCanvasElement, qrText: string) => {
+    // Tạo QR code trước
+    await new Promise<void>((resolve, reject) => {
       QRCode.toCanvas(
-        canvasRef.current,
-        appUrl,
+        canvas,
+        qrText,
         { 
           width: Math.min(250, window.innerWidth - 40), 
           margin: 0,
@@ -33,14 +35,59 @@ const QRCodeGenerator = () => {
         },
         (error) => {
           if (error) {
-            console.error('Error initializing QR code:', error);
+            reject(error);
           } else {
-            setQRCodeDataURL(canvasRef.current?.toDataURL() || null);
+            resolve();
           }
         }
       );
+    });
+
+    // Thêm logo nếu được chọn
+    if (showLogo && logoUrl) {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Tải logo
+      const logoImg = new Image();
+      logoImg.src = logoUrl;
+      
+      await new Promise<void>((resolve) => {
+        logoImg.onload = () => {
+          // Kích thước logo không quá 30% của QR code
+          const logoSize = canvas.width * 0.3;
+          const logoX = (canvas.width - logoSize) / 2;
+          const logoY = (canvas.height - logoSize) / 2;
+          
+          // Vẽ nền trắng để logo hiển thị rõ
+          ctx.fillStyle = 'white';
+          ctx.fillRect(logoX, logoY, logoSize, logoSize);
+          
+          // Vẽ logo
+          ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
+          resolve();
+        };
+        logoImg.onerror = () => {
+          console.error('Không thể tải logo');
+          resolve();
+        };
+      });
     }
-  }, []);
+
+    // Cập nhật data URL
+    setQRCodeDataURL(canvas.toDataURL() || null);
+  };
+
+  useEffect(() => {
+    // Initialize QR code when component mounts
+    if (canvasRef.current) {
+      // Use direct URL for compatibility
+      const appUrl = window.location.origin;
+      createQRCodeWithLogo(canvasRef.current, appUrl).catch(error => {
+        console.error('Error initializing QR code:', error);
+      });
+    }
+  }, [showLogo, logoUrl]); // Tạo lại khi thay đổi cài đặt logo
 
   const generateQRCode = async () => {
     try {
@@ -60,27 +107,11 @@ const QRCodeGenerator = () => {
 
       // Generate QR code as data URL
       if (canvasRef.current) {
-        QRCode.toCanvas(
-          canvasRef.current,
-          qrUrl,
-          { 
-            width: Math.min(250, window.innerWidth - 40), 
-            margin: 0,
-            scale: 6,
-            errorCorrectionLevel: 'H', // Highest error correction for better scanning
-            color: { dark: '#000', light: '#fff' } 
-          },
-          (error) => {
-            if (error) {
-              throw error;
-            }
-            setQRCodeDataURL(canvasRef.current?.toDataURL() || null);
-            toast({
-              title: 'Thành công',
-              description: 'Mã QR đã được tạo.',
-            });
-          }
-        );
+        await createQRCodeWithLogo(canvasRef.current, qrUrl);
+        toast({
+          title: 'Thành công',
+          description: 'Mã QR đã được tạo với logo công ty.',
+        });
       } else {
         throw new Error('Canvas not available');
       }
@@ -300,6 +331,78 @@ const QRCodeGenerator = () => {
             </div>
           </TabsContent>
         </Tabs>
+        
+        {/* Tùy chọn Logo */}
+        <div className="mt-4 mb-4 border-t pt-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-sm font-medium">Thêm Logo vào mã QR</h3>
+              <p className="text-sm text-muted-foreground">Hiển thị logo công ty trong mã QR</p>
+            </div>
+            <Switch 
+              checked={showLogo} 
+              onCheckedChange={setShowLogo}
+              id="logo-toggle"
+            />
+          </div>
+          
+          {showLogo && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center overflow-hidden">
+                  {logoUrl ? (
+                    <img 
+                      src={logoUrl} 
+                      alt="Logo" 
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  ) : (
+                    <div className="text-gray-400 text-xs text-center">Không có logo</div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    ref={logoInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          if (event.target?.result) {
+                            setLogoUrl(event.target.result as string);
+                          }
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => logoInputRef.current?.click()}
+                    className="w-full mb-1"
+                  >
+                    Tải lên Logo
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setLogoUrl('/assets/logo/default-logo.svg')}
+                    className="w-full"
+                  >
+                    Khôi phục mặc định
+                  </Button>
+                </div>
+              </div>
+              <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-xs text-amber-700">
+                <p>Logo sẽ được đặt ở giữa mã QR và tự động điều chỉnh kích thước để đảm bảo khả năng quét.</p>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="flex flex-col items-center mt-4">
           <div className="w-full max-w-[280px] mx-auto relative bg-white p-4 pb-6 rounded-lg shadow-sm">
