@@ -219,9 +219,9 @@ const Step4Accommodation = () => {
                         <SelectValue placeholder="Select room type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="single">{t('calculator.singleRoom')} ({selectedHotel?.singleRoomPrice.toLocaleString()} JPY)</SelectItem>
-                        <SelectItem value="double">{t('calculator.doubleRoom')} ({selectedHotel?.doubleRoomPrice.toLocaleString()} JPY)</SelectItem>
-                        <SelectItem value="triple">{t('calculator.tripleRoom')} ({selectedHotel?.tripleRoomPrice.toLocaleString()} JPY)</SelectItem>
+                        <SelectItem value="single">{t('calculator.singleRoom')}</SelectItem>
+                        <SelectItem value="double">{t('calculator.doubleRoom')}</SelectItem>
+                        <SelectItem value="triple">{t('calculator.tripleRoom')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -237,7 +237,7 @@ const Step4Accommodation = () => {
                       <div className="flex items-center justify-between border rounded-md p-3">
                         <div>
                           <h4 className="font-medium">{t('calculator.singleRoom')}</h4>
-                          <p className="text-sm text-muted-foreground">{selectedHotel?.singleRoomPrice.toLocaleString()} JPY / night</p>
+                          <p className="text-sm text-muted-foreground">1 người</p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Button 
@@ -265,7 +265,7 @@ const Step4Accommodation = () => {
                       <div className="flex items-center justify-between border rounded-md p-3">
                         <div>
                           <h4 className="font-medium">{t('calculator.doubleRoom')}</h4>
-                          <p className="text-sm text-muted-foreground">{selectedHotel?.doubleRoomPrice.toLocaleString()} JPY / night</p>
+                          <p className="text-sm text-muted-foreground">2 người</p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Button 
@@ -293,7 +293,7 @@ const Step4Accommodation = () => {
                       <div className="flex items-center justify-between border rounded-md p-3">
                         <div>
                           <h4 className="font-medium">{t('calculator.tripleRoom')}</h4>
-                          <p className="text-sm text-muted-foreground">{selectedHotel?.tripleRoomPrice.toLocaleString()} JPY / night</p>
+                          <p className="text-sm text-muted-foreground">3 người</p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Button 
@@ -326,7 +326,7 @@ const Step4Accommodation = () => {
                       onCheckedChange={handleBreakfastChange}
                     />
                     <Label htmlFor="breakfast" className="cursor-pointer">
-                      {t('calculator.includeBreakfast')} ({selectedHotel?.breakfastPrice.toLocaleString()} JPY per person)
+                      {t('calculator.includeBreakfast')}
                     </Label>
                   </div>
                 </>
