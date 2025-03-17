@@ -68,6 +68,7 @@ const Step5Summary = () => {
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [showContactInfo, setShowContactInfo] = useState<boolean>(false);
   const [customerEmail, setCustomerEmail] = useState<string>('');
+  const [showContactDirectly, setShowContactDirectly] = useState<boolean>(false);
   const preferredLocationsRef = useRef<HTMLTextAreaElement>(null);
   
   // Fetch data for the summary
@@ -246,7 +247,7 @@ const Step5Summary = () => {
         setShowContactDirectly(true);
         toast({
           title: "Yêu cầu của bạn đã được ghi lại",
-          description: result.message || "Thông tin tour của bạn đã được lưu. Vui lòng liên hệ trực tiếp với AsahiVietLife để được phản hồi nhanh hơn.",
+          description: result.message || "Thông tin tour của bạn đã được lưu. Chúng tôi sẽ liên hệ lại với bạn trong thời gian sớm nhất.",
         });
       } else {
         throw new Error(result.message || 'Lỗi không xác định');
@@ -303,6 +304,48 @@ const Step5Summary = () => {
             >
               {emailStatus === 'sending' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {emailStatus === 'sending' ? 'Đang gửi...' : 'Gửi yêu cầu'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Show Direct Contact Information if there was an error sending email */}
+      <Dialog open={showContactDirectly} onOpenChange={setShowContactDirectly}>
+        <DialogContent className="sm:max-w-[450px]">
+          <DialogHeader>
+            <DialogTitle>Thông tin liên hệ trực tiếp</DialogTitle>
+            <DialogDescription>
+              Vui lòng liên hệ với chúng tôi qua các thông tin dưới đây để được tư vấn nhanh chóng
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="border rounded-md p-4 bg-muted/10 text-left">
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-start">
+                  <Map className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
+                  <span>1-35 Adachi, Adachi-ku, Tokyo, Japan</span>
+                </li>
+                <li className="flex items-start">
+                  <Mail className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
+                  <div>
+                    <div>hoangtucuoirong@gmail.com</div>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <Phone className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
+                  <div>
+                    <div>Hotline: 03-6675-4977</div>
+                    <div>070-2813-6693 (Mrs. Rina - Nhật)</div>
+                    <div>070-2794-4770 (Mr. Truong Giang - Việt Nam) Zalo – Whatapp -Line</div>
+                    <div>Mr. Linh - Hướng dẫn viên du lịch (English): 07091881073</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowContactDirectly(false)}>
+              Đã hiểu
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -566,8 +609,7 @@ const Step5Summary = () => {
                         <li className="flex items-start">
                           <Mail className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
                           <div>
-                            <div>Asahivietlife@outlook.com</div>
-                            <div>info@asahivietlife-support@co.jp</div>
+                            <div>hoangtucuoirong@gmail.com</div>
                           </div>
                         </li>
                         <li className="flex items-start">
