@@ -1,13 +1,7 @@
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalculatorContext } from '@/context/CalculatorContext';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Card,
@@ -18,15 +12,16 @@ import {
 } from '@/components/ui/card';
 import { Users } from 'lucide-react';
 
-const PARTICIPANT_OPTIONS = [...Array(20)].map((_, i) => i + 1);
-
 const Step3Participants = () => {
   const { t } = useTranslation();
   const { formData, updateFormData } = useContext(CalculatorContext);
 
   // Handle participants change
-  const handleParticipantsChange = (value: string) => {
-    updateFormData({ participants: parseInt(value) });
+  const handleParticipantsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value > 0) {
+      updateFormData({ participants: value });
+    }
   };
 
   return (
@@ -42,7 +37,7 @@ const Step3Participants = () => {
             {t('calculator.numberOfParticipants')}
           </CardTitle>
           <CardDescription>
-            Select the number of people participating in the tour
+            Enter the number of people participating in the tour
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -50,21 +45,15 @@ const Step3Participants = () => {
             <Label htmlFor="participants" className="block mb-2">
               Number of participants
             </Label>
-            <Select
-              value={formData.participants.toString()}
-              onValueChange={handleParticipantsChange}
-            >
-              <SelectTrigger id="participants">
-                <SelectValue placeholder="Select number of participants" />
-              </SelectTrigger>
-              <SelectContent>
-                {PARTICIPANT_OPTIONS.map((num) => (
-                  <SelectItem key={num} value={num.toString()}>
-                    {num} {num === 1 ? 'person' : 'people'}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Input
+              id="participants"
+              type="number"
+              min="1"
+              value={formData.participants}
+              onChange={handleParticipantsChange}
+              className="w-full"
+              placeholder="Enter number of participants"
+            />
           </div>
           
           <div className="mt-6 bg-muted/30 p-4 rounded-md">
