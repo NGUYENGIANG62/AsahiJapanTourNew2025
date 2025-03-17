@@ -1,7 +1,10 @@
 import { google, sheets_v4 } from 'googleapis';
 
 // Google Sheets configuration
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+const SCOPES = [
+  'https://www.googleapis.com/auth/spreadsheets',
+  'https://www.googleapis.com/auth/drive'
+];
 const SPREADSHEET_NAME = 'AsahiJapanTours';
 
 // This will store our cached spreadsheet ID

@@ -1,6 +1,17 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import * as dotenv from "dotenv";
+
+// Tải các biến môi trường từ file .env 
+dotenv.config();
+
+// Ghi log các biến môi trường liên quan đến Google Sheets để kiểm tra
+console.log('Environment variables check:');
+console.log('GOOGLE_SPREADSHEET_URL:', process.env.GOOGLE_SPREADSHEET_URL || 'not set');
+console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'set' : 'not set');
+console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'set' : 'not set');
+console.log('GOOGLE_REFRESH_TOKEN:', process.env.GOOGLE_REFRESH_TOKEN ? 'set' : 'not set');
 
 const app = express();
 app.use(express.json());
