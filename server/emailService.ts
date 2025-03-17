@@ -35,7 +35,7 @@ export const sendEmail = async (request: EmailRequest): Promise<{ success: boole
   try {
     const mailOptions = {
       from: process.env.EMAIL_USER || 'hoangtucuoirong@gmail.com',
-      to: 'hoangtucuoirong@gmail.com',
+      to: 'hoangtucuoirong@gmail.com, asahivietlife@outlook.com',
       subject: subject,
       html: `
         <h1>New Tour Request</h1>
