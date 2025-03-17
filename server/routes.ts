@@ -803,11 +803,15 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         });
       }
       
-      // Nếu có Service Account, tiến hành đồng bộ
-      await syncDataToSheets(storage);
+      // Lấy ngôn ngữ được chọn từ request body hoặc mặc định là 'en'
+      const { language = 'en' } = req.body as { language?: 'en' | 'ja' | 'zh' | 'ko' | 'vi' };
+      
+      // Nếu có Service Account, tiến hành đồng bộ với ngôn ngữ chỉ định
+      await syncDataToSheets(storage, language);
       await storage.updateLastSyncTimestamp();
       res.json({ 
         message: "Successfully synchronized data to Google Sheets",
+        language: language,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
