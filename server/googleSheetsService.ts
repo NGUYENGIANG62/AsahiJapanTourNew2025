@@ -58,12 +58,14 @@ async function authorize() {
     const oAuth2Client = new google.auth.OAuth2(
       clientId,
       clientSecret,
-      'https://developers.google.com/oauthplayground' // Redirect URI không quan trọng khi sử dụng refresh token
+      '' // Redirect URI để trống khi chỉ sử dụng refresh token
     );
     
-    // Thiết lập thông tin xác thực sử dụng refresh token
+    // Thiết lập thông tin xác thực đầy đủ
     oAuth2Client.setCredentials({
-      refresh_token: refreshToken
+      refresh_token: refreshToken,
+      client_id: clientId,
+      client_secret: clientSecret
     });
     
     // Mở rộng thời gian hết hạn của token
