@@ -169,6 +169,13 @@ const QRCodeGenerator = () => {
                 Tạo mã QR sử dụng URL hiện tại của ứng dụng: <strong>{window.location.origin}</strong>
               </AlertDescription>
             </Alert>
+            <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-md mb-4">
+              <h4 className="font-semibold text-amber-800 mb-1">Lưu ý:</h4>
+              <p className="text-sm text-amber-700">
+                Nếu phiên bản Replit này hết hạn, hãy triển khai ứng dụng trên máy chủ riêng và sử dụng 
+                tùy chọn "URL Tùy chỉnh" để tạo mã QR mới cho domain của bạn.
+              </p>
+            </div>
           </TabsContent>
           
           <TabsContent value="custom">
@@ -180,6 +187,13 @@ const QRCodeGenerator = () => {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
               />
+            </div>
+            <div className="bg-blue-50 border border-blue-200 p-3 rounded-md mb-4">
+              <h4 className="font-semibold text-blue-800 mb-1">Gợi ý:</h4>
+              <p className="text-sm text-blue-700">
+                Sử dụng tùy chọn này khi bạn đã triển khai ứng dụng trên máy chủ riêng hoặc 
+                domain tùy chỉnh, ví dụ như: <strong>https://tour.asahivietlife.com</strong>
+              </p>
             </div>
           </TabsContent>
         </Tabs>
