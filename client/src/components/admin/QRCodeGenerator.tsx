@@ -18,10 +18,19 @@ const QRCodeGenerator = () => {
   useEffect(() => {
     // Initialize QR code when component mounts
     if (canvasRef.current) {
+      // Use the AsahiVietLifeJapanTours text with URL encoded within
       const appUrl = window.location.origin;
+      const qrData = {
+        text: "AsahiVietLifeJapanTours",
+        url: appUrl
+      };
+      
+      // Convert to JSON string for QR code
+      const qrContent = JSON.stringify(qrData);
+      
       QRCode.toCanvas(
         canvasRef.current,
-        appUrl,
+        qrContent,
         { 
           width: Math.min(250, window.innerWidth - 40), 
           margin: 0,
@@ -43,7 +52,7 @@ const QRCodeGenerator = () => {
   const generateQRCode = async () => {
     try {
       // Determine the URL to encode
-      const qrUrl = qrCodeType === 'app' 
+      const baseUrl = qrCodeType === 'app' 
         ? window.location.origin
         : url;
       
@@ -56,11 +65,20 @@ const QRCodeGenerator = () => {
         return;
       }
 
+      // Create data object with display text and URL
+      const qrData = {
+        text: "AsahiVietLifeJapanTours",
+        url: baseUrl
+      };
+      
+      // Convert to JSON string for QR code
+      const qrContent = JSON.stringify(qrData);
+
       // Generate QR code as data URL
       if (canvasRef.current) {
         QRCode.toCanvas(
           canvasRef.current,
-          qrUrl,
+          qrContent,
           { 
             width: Math.min(250, window.innerWidth - 40), 
             margin: 0,
@@ -222,7 +240,8 @@ const QRCodeGenerator = () => {
           
           {qrCodeDataURL && (
             <div className="mt-4 text-center text-sm text-gray-500">
-              <p>Quét mã QR này để truy cập ứng dụng</p>
+              <p>Quét mã QR này để thấy: <strong>AsahiVietLifeJapanTours</strong></p>
+              <p className="text-xs mt-1">Mã QR đã được cải thiện để hiển thị tên thân thiện thay vì URL</p>
             </div>
           )}
         </div>
