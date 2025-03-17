@@ -271,7 +271,12 @@ const jaTranslations = {
     tourFor: 'ツアー対象',
     pricePerPerson: '一人あたりの料金',
     tourExceedsDuration: '選択された日数（{days}日）が標準ツアー期間（{standardDays}日）を超えています。「希望の訪問地」欄に希望する場所を入力してください。',
-    startMessage: '当社のツアーサービスにご興味をお持ちいただきありがとうございます。旅行の日程を選択することから始めましょう！'
+    startMessage: '当社のツアーサービスにご興味をお持ちいただきありがとうございます。旅行の日程を選択することから始めましょう！',
+    fullName: '氏名',
+    age: '年齢',
+    phone: '電話番号',
+    email: 'メール',
+    tourRequestInfo: 'ツアーリクエスト情報は詳細な相談のために旭ベトライフに送信されます'
   },
   auth: {
     id: 'ID',
@@ -489,7 +494,12 @@ const zhTranslations = {
     tourFor: '旅行团为',
     pricePerPerson: '每人价格',
     tourExceedsDuration: '您选择的天数（{days}天）超过了标准旅行团的持续时间（{standardDays}天）。请在"首选地点"字段中输入您想要访问的地点。',
-    startMessage: '感谢您对我们旅行团服务的兴趣。请先为您的旅行选择日期！'
+    startMessage: '感谢您对我们旅行团服务的兴趣。请先为您的旅行选择日期！',
+    fullName: '姓名',
+    age: '年龄',
+    phone: '电话',
+    email: '电子邮件',
+    tourRequestInfo: '旅行请求信息将发送给旭日越南生活进行详细咨询'
   },
   auth: {
     id: 'ID',
