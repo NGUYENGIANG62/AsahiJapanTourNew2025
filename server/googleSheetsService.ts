@@ -12,14 +12,59 @@ let spreadsheetId: string | null = null;
  */
 async function authorize() {
   try {
-    // If you're using OAuth2, we'll need to manage auth through environment variables or a credentials file
-    // This implementation assumes credentials have been configured in the environment
-    const auth = new google.auth.GoogleAuth({
-      scopes: SCOPES,
-    });
+    // Direct link to the spreadsheet provided by the user
+    const spreadsheetUrl = "https://docs.google.com/spreadsheets/d/1DQ1e6k4I65O5NxmX8loJ_SKUI7aoIj3WCu5BMLUCznw/edit?usp=drive_link";
     
-    const client = await auth.getClient();
-    return google.sheets({ version: 'v4', auth: client as any });
+    // Extract spreadsheet ID from URL
+    const urlMatch = spreadsheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (urlMatch && urlMatch[1]) {
+      spreadsheetId = urlMatch[1];
+    }
+    
+    // If using service account credentials (preferred method for backend)
+    if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+      const auth = new google.auth.GoogleAuth({
+        scopes: SCOPES,
+      });
+      
+      const client = await auth.getClient();
+      return google.sheets({ version: 'v4', auth: client as any });
+    } 
+    // If using API key
+    else if (process.env.GOOGLE_API_KEY) {
+      return google.sheets({ 
+        version: 'v4', 
+        auth: process.env.GOOGLE_API_KEY 
+      });
+    }
+    // Default to credentials JSON from environment variable
+    else if (process.env.GOOGLE_CREDENTIALS) {
+      try {
+        const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+        const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+        
+        // If we have a token, use it
+        if (process.env.GOOGLE_TOKEN) {
+          oAuth2Client.setCredentials(JSON.parse(process.env.GOOGLE_TOKEN));
+        }
+        
+        return google.sheets({ version: 'v4', auth: oAuth2Client });
+      } catch (e) {
+        console.error('Failed to parse credentials:', e);
+        throw new Error('Invalid Google credentials format');
+      }
+    } 
+    // For development: use direct auth with the browser
+    else {
+      console.log('No credentials found, using default authentication');
+      const auth = new google.auth.GoogleAuth({
+        scopes: SCOPES,
+      });
+      
+      const client = await auth.getClient();
+      return google.sheets({ version: 'v4', auth: client as any });
+    }
   } catch (error) {
     console.error('Error authorizing with Google:', error);
     throw error;
@@ -140,8 +185,13 @@ export async function getSpreadsheet(): Promise<{ sheetsApi: sheets_v4.Sheets, s
   try {
     const sheetsApi = await authorize();
     
+    // If spreadsheetId is already set from the direct URL, use it
+    if (spreadsheetId) {
+      return { sheetsApi, spreadsheetId };
+    }
+    
     try {
-      // Try to find existing spreadsheet first
+      // Try to find existing spreadsheet by name
       const id = await findSpreadsheetId(sheetsApi);
       return { sheetsApi, spreadsheetId: id };
     } catch (error) {
