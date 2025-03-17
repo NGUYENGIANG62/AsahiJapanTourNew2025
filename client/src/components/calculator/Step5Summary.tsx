@@ -683,9 +683,9 @@ const Step5Summary = () => {
                     
                     {/* Welcoming Message */}
                     <div className="mt-6 border rounded-md p-4 bg-muted/10 text-left">
-                      <h4 className="font-medium mb-2 text-primary">Chào mừng đến với AsahiJapanTours.com</h4>
+                      <h4 className="font-medium mb-2 text-primary">{t('common.welcomeMessage', 'Chào mừng đến với AsahiJapanTours.com')}</h4>
                       <p className="text-sm text-muted-foreground mb-3">
-                        Cảm ơn bạn đã chọn dịch vụ của chúng tôi. Chúng tôi cam kết mang đến cho bạn trải nghiệm du lịch Nhật Bản tuyệt vời nhất!
+                        {t('common.summaryThankYou', 'Cảm ơn bạn đã chọn dịch vụ của chúng tôi. Chúng tôi cam kết mang đến cho bạn trải nghiệm du lịch Nhật Bản tuyệt vời nhất!')}
                       </p>
                       <div className="flex items-center gap-2 mt-3">
                         <a 
@@ -717,7 +717,7 @@ const Step5Summary = () => {
                   </p>
                   {calculation.calculationDetails.season && (
                     <p className="mt-2 text-muted-foreground">
-                      Season: {calculation.calculationDetails.season.name}
+                      {t('calculator.summary.season')}: {calculation.calculationDetails.season.name}
                     </p>
                   )}
                 </div>
@@ -728,8 +728,8 @@ const Step5Summary = () => {
               <p className="mt-1">
                 {calculation.calculationDetails.season && (
                   <>
-                    Season: {calculation.calculationDetails.season.name} 
-                    (Price multiplier: {calculation.calculationDetails.season.multiplier.toFixed(2)}x)
+                    {t('calculator.summary.season')}: {calculation.calculationDetails.season.name} 
+                    ({t('calculator.summary.priceMultiplier')}: {calculation.calculationDetails.season.multiplier.toFixed(2)}x)
                   </>
                 )}
               </p>
@@ -738,23 +738,23 @@ const Step5Summary = () => {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>Price Summary</CardTitle>
+              <CardTitle>{t('calculator.summary.priceSummary', 'Price Summary')}</CardTitle>
               <CardDescription>
-                Click "Calculate Total" to see the complete price breakdown
+                {t('calculator.summary.clickCalculate', 'Click "Calculate Total" to see the complete price breakdown')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="py-8 text-center">
                 <p className="text-muted-foreground">
-                  The final price will include:
+                  {t('calculator.summary.finalPriceIncludes', 'The final price will include:')}
                 </p>
                 <ul className="mt-4 text-left list-disc list-inside space-y-1">
-                  <li>Tour base cost</li>
-                  <li>Vehicle and driver costs</li>
-                  <li>Accommodation costs (if selected)</li>
-                  <li>Meal costs (if included)</li>
-                  <li>Tour guide costs (if included)</li>
-                  <li>Service fee and taxes</li>
+                  <li>{t('calculator.summary.tourBaseCost', 'Tour base cost')}</li>
+                  <li>{t('calculator.summary.vehicleDriverCosts', 'Vehicle and driver costs')}</li>
+                  <li>{t('calculator.summary.accommodationCosts', 'Accommodation costs (if selected)')}</li>
+                  <li>{t('calculator.summary.mealCosts', 'Meal costs (if included)')}</li>
+                  <li>{t('calculator.summary.guideCosts', 'Tour guide costs (if included)')}</li>
+                  <li>{t('calculator.summary.serviceFeeAndTaxes', 'Service fee and taxes')}</li>
                 </ul>
               </div>
             </CardContent>
