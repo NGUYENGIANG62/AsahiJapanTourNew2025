@@ -78,6 +78,28 @@ const TourManagement = () => {
     queryKey: ['/api/tours'],
   });
   
+  // Update AVF codes mutation
+  const updateAvfCodesMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest('POST', '/api/tours/update-avf-codes', undefined);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: t('common.success'),
+        description: 'Đã cập nhật mã AVF cho tất cả tour thành công',
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/tours'] });
+    },
+    onError: (error) => {
+      toast({
+        title: t('common.error'),
+        description: error.message || 'Không thể cập nhật mã AVF',
+        variant: 'destructive',
+      });
+    },
+  });
+  
   // Filter tours by search term
   const filteredTours = tours.filter(tour => 
     tour.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -252,6 +274,13 @@ const TourManagement = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          <Button 
+            onClick={() => updateAvfCodesMutation.mutate()}
+            disabled={updateAvfCodesMutation.isPending}
+            variant="outline"
+          >
+            {updateAvfCodesMutation.isPending ? 'Đang cập nhật...' : 'Cập nhật mã AVF'}
+          </Button>
         </div>
         
         <div className="overflow-x-auto">
@@ -260,6 +289,7 @@ const TourManagement = () => {
               <TableRow>
                 <TableHead>{t('admin.tourName')}</TableHead>
                 <TableHead>{t('admin.code')}</TableHead>
+                <TableHead>Mã AVF</TableHead>
                 <TableHead>{t('admin.location')}</TableHead>
                 <TableHead>{t('admin.duration')}</TableHead>
                 <TableHead>{t('admin.basePrice')}</TableHead>
@@ -284,6 +314,7 @@ const TourManagement = () => {
                   <TableRow key={tour.id}>
                     <TableCell>{tour.name}</TableCell>
                     <TableCell>{tour.code}</TableCell>
+                    <TableCell>{tour.avfCode || '-'}</TableCell>
                     <TableCell>{tour.location}</TableCell>
                     <TableCell>{tour.durationDays} {tour.durationDays === 1 ? 'day' : 'days'}</TableCell>
                     <TableCell>{tour.basePrice.toLocaleString()}</TableCell>
