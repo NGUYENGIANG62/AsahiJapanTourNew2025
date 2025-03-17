@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
   secure: true, // use SSL
   auth: {
     user: process.env.EMAIL_USER || 'hoangtucuoirong@gmail.com',
-    pass: process.env.EMAIL_PASSWORD
+    pass: 'svxu mvve nldq kojs' // Temporary hardcoded for testing
   },
   debug: true // Show debug output
 });
@@ -23,13 +23,14 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (request: EmailRequest): Promise<{ success: boolean; message: string }> => {
   const { name, email, subject, message } = request;
 
-  if (!process.env.EMAIL_PASSWORD) {
-    console.warn('EMAIL_PASSWORD not set. Email service is not fully configured.');
-    return { 
-      success: false, 
-      message: 'Email service is not configured. Please try again later.'
-    };
-  }
+  // Remove this check since we're using hardcoded password for testing
+  // if (!process.env.EMAIL_PASSWORD) {
+  //   console.warn('EMAIL_PASSWORD not set. Email service is not fully configured.');
+  //   return { 
+  //     success: false, 
+  //     message: 'Email service is not configured. Please try again later.'
+  //   };
+  // }
 
   try {
     const mailOptions = {
