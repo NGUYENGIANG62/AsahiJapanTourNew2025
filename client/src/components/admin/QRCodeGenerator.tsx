@@ -22,7 +22,13 @@ const QRCodeGenerator = () => {
       QRCode.toCanvas(
         canvasRef.current,
         appUrl,
-        { width: 300, margin: 1, color: { dark: '#000', light: '#fff' } },
+        { 
+          width: Math.min(250, window.innerWidth - 40), 
+          margin: 0,
+          scale: 6,
+          errorCorrectionLevel: 'H', // Highest error correction for better scanning
+          color: { dark: '#000', light: '#fff' } 
+        },
         (error) => {
           if (error) {
             console.error('Error initializing QR code:', error);
@@ -55,7 +61,13 @@ const QRCodeGenerator = () => {
         QRCode.toCanvas(
           canvasRef.current,
           qrUrl,
-          { width: 300, margin: 1, color: { dark: '#000', light: '#fff' } },
+          { 
+            width: Math.min(250, window.innerWidth - 40), 
+            margin: 0,
+            scale: 6,
+            errorCorrectionLevel: 'H', // Highest error correction for better scanning
+            color: { dark: '#000', light: '#fff' } 
+          },
           (error) => {
             if (error) {
               throw error;
@@ -199,7 +211,14 @@ const QRCodeGenerator = () => {
         </Tabs>
 
         <div className="flex flex-col items-center mt-4">
-          <canvas ref={canvasRef} className="border border-gray-200 rounded-md"></canvas>
+          <div className="w-full max-w-[280px] mx-auto relative bg-white p-4 rounded-lg shadow-sm">
+            <canvas 
+              ref={canvasRef} 
+              className="border border-gray-200 rounded-md w-full h-auto max-w-full"
+              width="250" 
+              height="250"
+            ></canvas>
+          </div>
           
           {qrCodeDataURL && (
             <div className="mt-4 text-center text-sm text-gray-500">
@@ -208,10 +227,29 @@ const QRCodeGenerator = () => {
           )}
         </div>
       </CardContent>
-      <CardFooter className="flex justify-center gap-2">
-        <Button onClick={generateQRCode}>Tạo mã QR</Button>
-        <Button variant="outline" onClick={downloadQRCode} disabled={!qrCodeDataURL}>Tải xuống</Button>
-        <Button variant="outline" onClick={copyToClipboard} disabled={!qrCodeDataURL}>Sao chép</Button>
+      <CardFooter className="flex justify-center flex-wrap gap-2">
+        <Button 
+          onClick={generateQRCode} 
+          className="w-full sm:w-auto"
+        >
+          Tạo mã QR
+        </Button>
+        <Button 
+          variant="outline" 
+          onClick={downloadQRCode} 
+          disabled={!qrCodeDataURL}
+          className="w-full sm:w-auto"
+        >
+          Tải xuống
+        </Button>
+        <Button 
+          variant="outline" 
+          onClick={copyToClipboard} 
+          disabled={!qrCodeDataURL}
+          className="w-full sm:w-auto"
+        >
+          Sao chép
+        </Button>
       </CardFooter>
     </Card>
   );
