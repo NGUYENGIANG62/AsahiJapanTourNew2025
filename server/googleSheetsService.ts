@@ -11,8 +11,8 @@ const SPREADSHEET_NAME = 'AsahiJapanTours';
 let spreadsheetId: string | null = null;
 
 /**
- * Authorize with Google using Direct Access
- * This is a simplified approach for development and testing purposes
+ * Authorize with Google using OAuth2 
+ * This is the most reliable method for accessing Google Sheets
  */
 async function authorize() {
   try {
@@ -35,23 +35,42 @@ async function authorize() {
       console.warn('Could not extract spreadsheet ID from URL. Will attempt to find by name.');
     }
     
-    // Sử dụng phương pháp truy cập công khai nếu bảng tính chia sẻ "anyone with the link can view"
-    // Lưu ý: Phương pháp này chỉ hoạt động nếu Google Sheet đã được chia sẻ công khai
-    // Đối với ứng dụng production, nên sử dụng Service Account với cấp quyền phù hợp
+    // Kiểm tra các biến môi trường xác thực OAuth2
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
     
-    console.log('Setting up API client for direct public access');
+    if (clientId && clientSecret && refreshToken) {
+      console.log('Using OAuth2 authentication with refresh token');
+      
+      const oauth2Client = new google.auth.OAuth2(
+        clientId,
+        clientSecret,
+        'https://developers.google.com/oauthplayground'
+      );
+      
+      oauth2Client.setCredentials({
+        refresh_token: refreshToken
+      });
+      
+      return google.sheets({
+        version: 'v4',
+        auth: oauth2Client
+      });
+    }
     
-    // Kiểm tra xem có API key không - nếu có, sử dụng nó để tăng giới hạn request
+    // Sử dụng API key nếu không có OAuth2
     const apiKey = process.env.GOOGLE_API_KEY;
     if (apiKey) {
-      console.log('Using Google API key for authenticated public access');
+      console.log('Using Google API key for authenticated public access (read-only)');
       return google.sheets({
         version: 'v4',
         auth: apiKey
       });
     }
     
-    // Nếu không có API key, vẫn có thể truy cập với quota thấp hơn
+    // Phương pháp cuối cùng: không có xác thực (hạn chế quota)
+    console.log('WARNING: No authentication method available. Using unauthenticated access with limited quota.');
     return google.sheets({ 
       version: 'v4'
     });
@@ -109,7 +128,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
       values: [['id', 'name', 'code', 'location', 'description', 'durationDays', 'basePrice', 'imageUrl', 'nameJa', 'nameZh']],
     },
     {
-      range: 'Vehicles!A1:E1',
+      range: 'Vehicles!A1:F1',
       values: [['id', 'name', 'seats', 'luggageCapacity', 'pricePerDay', 'driverCostPerDay']],
     },
     {
@@ -121,7 +140,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
       values: [['id', 'name', 'languages', 'pricePerDay']],
     },
     {
-      range: 'Seasons!A1:E1',
+      range: 'Seasons!A1:H1',
       values: [['id', 'name', 'startMonth', 'endMonth', 'description', 'priceMultiplier', 'nameJa', 'nameZh']],
     },
   ];
