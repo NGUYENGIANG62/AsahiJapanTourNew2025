@@ -22,6 +22,7 @@ export interface IStorage {
   createTour(tour: InsertTour): Promise<Tour>;
   updateTour(id: number, tour: Partial<InsertTour>): Promise<Tour | undefined>;
   deleteTour(id: number): Promise<boolean>;
+  updateAllTourAVFCodes(): Promise<Tour[]>;
   
   // Vehicle Management
   getAllVehicles(): Promise<Vehicle[]>;

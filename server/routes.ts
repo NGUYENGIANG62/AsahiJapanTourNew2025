@@ -819,6 +819,21 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       res.status(500).json({ message: "Failed to sync to Google Sheets", error: String(error) });
     }
   });
+  
+  // API endpoint để cập nhật mã AVF cho tất cả tour
+  apiRouter.post("/tours/update-avf-codes", isAdminMiddleware, async (req, res) => {
+    try {
+      const updatedTours = await storage.updateAllTourAVFCodes();
+      res.json({
+        message: "Đã cập nhật mã AVF cho tất cả tour thành công",
+        tourCount: updatedTours.length,
+        tours: updatedTours
+      });
+    } catch (error) {
+      console.error("Error updating AVF codes:", error);
+      res.status(500).json({ message: "Lỗi khi cập nhật mã AVF", error: String(error) });
+    }
+  });
 
   // Register API routes with proper prefix
   app.use("/api", apiRouter);

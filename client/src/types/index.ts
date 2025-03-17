@@ -8,6 +8,7 @@ export type Tour = {
   id: number;
   name: string;
   code: string;
+  avfCode?: string; // Mã định dạng AVF mới (AVF001, AVF002, ...)
   location: string;
   description: string;
   durationDays: number;
