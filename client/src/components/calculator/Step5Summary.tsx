@@ -182,11 +182,116 @@ const Step5Summary = () => {
     }
   };
 
+  // Email submission dialog
+  useEffect(() => {
+    // Check if tour duration exceeds standard duration
+    if (tour && calculateDuration() > tour.durationDays) {
+      setShowDurationMismatch(true);
+    } else {
+      setShowDurationMismatch(false);
+    }
+  }, [tour, formData.startDate, formData.endDate]);
+
+  // Function to send email
+  const sendTourRequestEmail = async () => {
+    if (!customerEmail) {
+      toast({
+        title: "Vui lòng nhập email của bạn",
+        description: "Chúng tôi cần email của bạn để gửi thông tin chi tiết",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setEmailStatus('sending');
+
+    try {
+      // Prepare the email content
+      const emailSubject = `Yêu cầu tư vấn tour: ${tour?.name || 'Tour mới'} - ${formatDate(formData.startDate)}`;
+      
+      const tourDetails = `
+        Tour: ${tour?.name || 'Chưa chọn'}
+        Địa điểm: ${tour?.location || 'Chưa chọn'}
+        Số ngày: ${calculateDuration()} ngày (${formatDate(formData.startDate)} - ${formatDate(formData.endDate)})
+        Số người: ${formData.participants} người
+        Phương tiện: ${vehicle?.name || 'Chưa chọn'}
+        Khách sạn: ${hotel?.name || 'Không'} ${hotel ? `(${getRoomTypeLabel()})` : ''}
+        Hướng dẫn viên: ${guide?.name || 'Không'}
+        Bữa ăn: ${(formData.includeBreakfast ? 'Bữa sáng, ' : '') + (formData.includeLunch ? 'Bữa trưa, ' : '') + (formData.includeDinner ? 'Bữa tối' : '') || 'Không'}
+        Tổng chi phí: ${formatCurrency(calculation?.totalInRequestedCurrency || 0)}
+        ${formData.participants > 1 ? `Chi phí mỗi người: ${formatCurrency((calculation?.totalInRequestedCurrency || 0) / formData.participants)}` : ''}
+        ${preferredLocations ? `Địa điểm mong muốn: ${preferredLocations}` : ''}
+        Email khách hàng: ${customerEmail}
+      `;
+
+      // In a real implementation, we would use a server API to send the email
+      // For now, we'll simulate success after a short delay
+      setTimeout(() => {
+        console.log("Email would be sent to: asahivietlife@outlook.com");
+        console.log("Subject:", emailSubject);
+        console.log("Content:", tourDetails);
+        
+        setEmailStatus('success');
+        toast({
+          title: "Yêu cầu của bạn đã được gửi",
+          description: "Chúng tôi sẽ liên hệ lại với bạn sớm nhất có thể",
+        });
+      }, 1500);
+    } catch (error) {
+      console.error("Error sending email:", error);
+      setEmailStatus('error');
+      toast({
+        title: "Không thể gửi yêu cầu",
+        description: "Đã xảy ra lỗi khi gửi email. Vui lòng thử lại sau.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div>
       <h2 className="font-heading text-xl font-semibold text-neutral mb-6">
         {t('calculator.summary.yourTour')}
       </h2>
+      
+      {/* Email Dialog */}
+      <Dialog open={showContactInfo} onOpenChange={setShowContactInfo}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Gửi yêu cầu tư vấn tour</DialogTitle>
+            <DialogDescription>
+              Vui lòng cung cấp email để chúng tôi liên hệ với bạn
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="customer-email" className="text-right">
+                Email
+              </label>
+              <input
+                id="customer-email"
+                type="email"
+                className="col-span-3 w-full rounded-md border p-2"
+                value={customerEmail}
+                onChange={(e) => setCustomerEmail(e.target.value)}
+              />
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Thông tin yêu cầu tour sẽ được gửi đến AsahiVietLife để tư vấn chi tiết
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              type="submit" 
+              onClick={sendTourRequestEmail}
+              disabled={emailStatus === 'sending'}
+            >
+              {emailStatus === 'sending' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {emailStatus === 'sending' ? 'Đang gửi...' : 'Gửi yêu cầu'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       <div className="space-y-6">
         <Card>
@@ -410,15 +515,57 @@ const Step5Summary = () => {
                         className="w-full border rounded-md h-20 p-2 text-sm"
                         placeholder="Vui lòng nhập các địa điểm bạn muốn đến thăm trong chuyến tour này..."
                         id="preferred-locations"
+                        ref={preferredLocationsRef}
+                        onChange={(e) => setPreferredLocations(e.target.value)}
+                        value={preferredLocations}
                       ></textarea>
                     </div>
                     
+                    {/* Check if duration exceeds tour's standard days */}
+                    {calculateDuration() > (tour?.durationDays || 0) && (
+                      <Alert className="mb-2">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                          Số ngày bạn chọn ({calculateDuration()} ngày) vượt quá số ngày tiêu chuẩn của tour ({tour?.durationDays} ngày). 
+                          Vui lòng nhập địa điểm bạn muốn đến trong phần "Địa điểm mong muốn".
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    
                     <button
-                      className="mt-2 bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
-                      onClick={() => sendTourRequestEmail()}
+                      className="mt-2 bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center"
+                      onClick={() => setShowContactInfo(true)}
                     >
+                      <Mail className="mr-2 h-4 w-4" />
                       Gửi yêu cầu tư vấn qua email
                     </button>
+                    
+                    {/* Company Contact Information */}
+                    <div className="mt-6 border rounded-md p-4 bg-muted/10 text-left">
+                      <h4 className="font-medium mb-2">Thông tin liên hệ</h4>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start">
+                          <Map className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
+                          <span>1-35 Adachi, Adachi-ku, Tokyo, Japan</span>
+                        </li>
+                        <li className="flex items-start">
+                          <Mail className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
+                          <div>
+                            <div>Asahivietlife@outlook.com</div>
+                            <div>info@asahivietlife-support@co.jp</div>
+                          </div>
+                        </li>
+                        <li className="flex items-start">
+                          <Phone className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
+                          <div>
+                            <div>Hotline: 03-6675-4977</div>
+                            <div>070-2813-6693 (Mrs. Rina - Nhật)</div>
+                            <div>070-2794-4770 (Mr. Truong Giang - Việt Nam) Zalo – Whatapp -Line</div>
+                            <div>Mr. Linh - Hướng dẫn viên du lịch (English): 07091881073</div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                   
                   <p className="mt-4 text-muted-foreground">
