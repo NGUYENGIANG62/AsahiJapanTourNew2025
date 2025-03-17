@@ -264,11 +264,14 @@ export class MemStorage implements IStorage {
       driverCostPerDay: 5000 // 5,000 JPY per day
     });
     
+    // Đặt lại currentTourId để đảm bảo mã AVF bắt đầu từ 0
+    this.currentTourId = 1;
+    
     // Initialize with sample tours
     this.tours.set(this.currentTourId, {
-      id: this.currentTourId++,
+      id: this.currentTourId,
       name: 'Tokyo Highlights',
-      code: 'TYO-HL',
+      code: 'AVF000', // Mã mới theo định dạng AVF
       location: 'Tokyo',
       description: 'Explore the best of Tokyo including Asakusa, Shibuya, and Tokyo Tower.',
       durationDays: 1,
@@ -283,11 +286,12 @@ export class MemStorage implements IStorage {
       descriptionKo: '아사쿠사, 시부야, 도쿄 타워 등 도쿄 최고의 명소를 탐험하세요.',
       descriptionVi: 'Khám phá những điểm tốt nhất của Tokyo bao gồm Asakusa, Shibuya và Tháp Tokyo.'
     });
+    this.currentTourId++; // Tăng ID sau khi đã set
     
     this.tours.set(this.currentTourId, {
-      id: this.currentTourId++,
+      id: this.currentTourId,
       name: 'Kyoto Cultural Tour',
-      code: 'KYO-CT',
+      code: 'AVF001', // Mã mới theo định dạng AVF
       location: 'Kyoto',
       description: 'Immerse yourself in the ancient culture of Kyoto with visits to temples and traditional experiences.',
       durationDays: 2,
