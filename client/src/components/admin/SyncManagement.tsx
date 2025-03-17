@@ -20,6 +20,7 @@ const SyncManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [syncInProgress, setSyncInProgress] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>('en');
 
   // Fetch last sync timestamp
   const { data: syncStatus, isLoading, error, refetch } = useQuery<SyncStatus>({
@@ -60,14 +61,17 @@ const SyncManagement = () => {
 
   // Mutation to sync data from local storage to Google Sheets
   const syncToSheetsMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest('POST', '/api/sync/to-sheets');
+    mutationFn: async (language: Language = 'en') => {
+      const res = await apiRequest('POST', '/api/sync/to-sheets', { language });
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: t('common.success'),
-        description: t('sync.toSheetsSuccess'),
+        description: t('sync.toSheetsSuccess') + 
+          (data.language && data.language !== 'en' 
+            ? ` (${t(`languages.${data.language}`)})` 
+            : ''),
         variant: 'default',
       });
       refetch();
@@ -91,7 +95,7 @@ const SyncManagement = () => {
 
   const handleSyncToSheets = () => {
     setSyncInProgress(true);
-    syncToSheetsMutation.mutate();
+    syncToSheetsMutation.mutate(selectedLanguage);
   };
 
   const formatDate = (dateString: string | null) => {
@@ -178,6 +182,29 @@ const SyncManagement = () => {
                     )}
                   </div>
                 </div>
+                <div>
+                  <p className="text-sm font-medium">{t('sync.exportLanguage')}</p>
+                  <div className="mt-2">
+                    <Select value={selectedLanguage} onValueChange={(value: Language) => setSelectedLanguage(value)}>
+                      <SelectTrigger className="w-full md:w-[240px]">
+                        <SelectValue placeholder={t('common.selectLanguage')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>{t('common.languages')}</SelectLabel>
+                          <SelectItem value="en">English</SelectItem>
+                          <SelectItem value="ja">日本語</SelectItem>
+                          <SelectItem value="zh">中文</SelectItem>
+                          <SelectItem value="ko">한국어</SelectItem>
+                          <SelectItem value="vi">Tiếng Việt</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {t('sync.exportLanguageHelp')}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </CardContent>
@@ -200,11 +227,12 @@ const SyncManagement = () => {
               className="w-full sm:w-auto"
               onClick={handleSyncToSheets}
               disabled={isLoading || syncInProgress || syncToSheetsMutation.isPending}
+              title={t('sync.exportWithLanguage', { language: t(`languages.${selectedLanguage}`) })}
             >
               {syncToSheetsMutation.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <Cloud className="mr-2 h-4 w-4" />
+                <Languages className="mr-2 h-4 w-4" />
               )}
               {t('sync.toSheets')}
             </Button>

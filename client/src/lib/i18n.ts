@@ -222,7 +222,10 @@ const enTranslations = {
     noteDescription: 'Always ensure you have a stable internet connection when synchronizing data. Incomplete synchronization may result in data inconsistencies.',
     fromSheetsSuccess: 'Data successfully imported from Google Sheets',
     toSheetsSuccess: 'Data successfully exported to Google Sheets',
-    errorFetchingStatus: 'Error fetching synchronization status'
+    errorFetchingStatus: 'Error fetching synchronization status',
+    exportLanguage: 'Export Language',
+    exportLanguageHelp: 'Choose which language to use for content when exporting to Google Sheets.',
+    exportWithLanguage: 'Export with {{language}} content'
   }
 };
 
@@ -447,7 +450,10 @@ const jaTranslations = {
     noteDescription: 'データを同期する際には、安定したインターネット接続を確保してください。不完全な同期はデータの不整合を引き起こす可能性があります。',
     fromSheetsSuccess: 'Google シートからデータが正常にインポートされました',
     toSheetsSuccess: 'データが Google シートに正常にエクスポートされました',
-    errorFetchingStatus: '同期状態の取得中にエラーが発生しました'
+    errorFetchingStatus: '同期状態の取得中にエラーが発生しました',
+    exportLanguage: 'エクスポート言語',
+    exportLanguageHelp: 'Google シートにエクスポートする際に使用するコンテンツの言語を選択してください。',
+    exportWithLanguage: '{{language}}のコンテンツでエクスポート'
   }
 };
 
