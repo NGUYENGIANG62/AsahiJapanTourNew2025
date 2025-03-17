@@ -474,7 +474,7 @@ const Step5Summary = () => {
                         <span>
                           {vehicle 
                             ? `${formData.vehicleCount || 1}x ${vehicle.name}` 
-                            : 'No vehicle selected'}
+                            : t('calculator.summary.noVehicleSelected', 'No vehicle selected')}
                         </span>
                       </li>
                       
@@ -483,7 +483,7 @@ const Step5Summary = () => {
                         <span>
                           {hotel 
                             ? `${hotel.name} (${getRoomTypeLabel()})` 
-                            : 'No hotel selected'}
+                            : t('calculator.summary.noHotelSelected', 'No hotel selected')}
                         </span>
                       </li>
                       
@@ -492,7 +492,7 @@ const Step5Summary = () => {
                         <span>
                           {guide 
                             ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}` 
-                            : 'No guide selected'}
+                            : t('calculator.summary.noGuideSelected', 'No guide selected')}
                         </span>
                       </li>
                     </ul>
@@ -519,7 +519,7 @@ const Step5Summary = () => {
                         {formData.includeDinner 
                           ? <CheckCircle2 className="mr-2 h-4 w-4 text-success" /> 
                           : <XCircle className="mr-2 h-4 w-4 text-muted-foreground" />}
-                        <span>Dinner</span>
+                        <span>{t('calculator.meals.dinner', 'Dinner')}</span>
                       </li>
                     </ul>
                   </div>
@@ -542,9 +542,9 @@ const Step5Summary = () => {
         {calculation ? (
           <Card>
             <CardHeader>
-              <CardTitle>Price Summary</CardTitle>
+              <CardTitle>{t('calculator.summary.priceSummary', 'Price Summary')}</CardTitle>
               <CardDescription>
-                Total cost for your customized tour
+                {t('calculator.summary.totalCostCustomized', 'Total cost for your customized tour')}
               </CardDescription>
             </CardHeader>
             <CardContent>
