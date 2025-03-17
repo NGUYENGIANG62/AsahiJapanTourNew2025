@@ -21,14 +21,37 @@ async function authorize() {
       spreadsheetId = urlMatch[1];
     }
     
-    // If using service account credentials (preferred method for backend)
+    // Use OAuth2 with provided credentials
+    const client_id = process.env.GOOGLE_CLIENT_ID || '407408718192.apps.googleusercontent.com';
+    const client_secret = process.env.GOOGLE_CLIENT_SECRET || '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';
+    const refresh_token = process.env.GOOGLE_REFRESH_TOKEN || '1//04r6Ht9qUilVPCgYIARAAGAQSNwF-L9IrwLvEGxqYA7wHpRPN80wwP4vOkBQQI0KvgSNFuRFy6e67UuMYeeLeMnqtb-ph5u4EHSQ';
+    
+    console.log('Using OAuth2 authentication with client ID:', client_id);
+    
+    const oAuth2Client = new google.auth.OAuth2(client_id, client_secret);
+    
+    // Set credentials using refresh token
+    oAuth2Client.setCredentials({
+      refresh_token: refresh_token
+    });
+    
+    return google.sheets({ version: 'v4', auth: oAuth2Client });
+  } catch (error) {
+    console.error('Error with OAuth2 authorization, trying alternative methods:', error);
+    
+    // Fallback methods if OAuth2 fails
     if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      const auth = new google.auth.GoogleAuth({
-        scopes: SCOPES,
-      });
-      
-      const client = await auth.getClient();
-      return google.sheets({ version: 'v4', auth: client as any });
+      try {
+        const auth = new google.auth.GoogleAuth({
+          scopes: SCOPES,
+        });
+        
+        const client = await auth.getClient();
+        return google.sheets({ version: 'v4', auth: client as any });
+      } catch (e) {
+        console.error('Error with service account auth:', e);
+        throw e;
+      }
     } 
     // If using API key
     else if (process.env.GOOGLE_API_KEY) {
@@ -58,16 +81,18 @@ async function authorize() {
     // For development: use direct auth with the browser
     else {
       console.log('No credentials found, using default authentication');
-      const auth = new google.auth.GoogleAuth({
-        scopes: SCOPES,
-      });
-      
-      const client = await auth.getClient();
-      return google.sheets({ version: 'v4', auth: client as any });
+      try {
+        const auth = new google.auth.GoogleAuth({
+          scopes: SCOPES,
+        });
+        
+        const client = await auth.getClient();
+        return google.sheets({ version: 'v4', auth: client as any });
+      } catch (e) {
+        console.error('Error with default auth:', e);
+        throw e;
+      }
     }
-  } catch (error) {
-    console.error('Error authorizing with Google:', error);
-    throw error;
   }
 }
 
