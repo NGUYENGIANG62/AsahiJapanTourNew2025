@@ -84,7 +84,10 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
           valid = true; // Hotel is optional
         }
         break;
-      case 5: // Summary
+      case 5: // Special Services
+        valid = true; // Always valid, optional services
+        break;
+      case 6: // Summary
         valid = true; // Always valid, just for display
         break;
       default:
@@ -100,7 +103,7 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
   }, [currency]);
 
   const nextStep = () => {
-    if (currentStep < 5) {
+    if (currentStep < 6) {
       setCurrentStep(currentStep + 1);
     }
   };

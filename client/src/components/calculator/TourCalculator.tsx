@@ -6,6 +6,7 @@ import Step2ServiceSelection from './Step2ServiceSelection';
 import Step3Participants from './Step3Participants';
 import Step4Accommodation from './Step4Accommodation';
 import Step5Summary from './Step5Summary';
+import SpecialServicesStep from './SpecialServicesStep';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -36,12 +37,13 @@ const TourCalculator = () => {
     { id: 2, name: t('calculator.steps.services'), icon: <MapPin className="w-4 h-4" /> },
     { id: 3, name: t('calculator.steps.participants'), icon: <Users className="w-4 h-4" /> },
     { id: 4, name: t('calculator.steps.accommodation'), icon: <Hotel className="w-4 h-4" /> },
-    { id: 5, name: t('calculator.steps.summary'), icon: <FileText className="w-4 h-4" /> },
+    { id: 5, name: 'Dịch vụ đặc biệt', icon: <MapPin className="w-4 h-4" /> },
+    { id: 6, name: t('calculator.steps.summary'), icon: <FileText className="w-4 h-4" /> },
   ];
 
   // Handle next button click
   const handleNext = () => {
-    if (currentStep === 5) {
+    if (currentStep === 6) {
       calculatePrice();
     } else {
       nextStep();
@@ -97,7 +99,8 @@ const TourCalculator = () => {
           {currentStep === 2 && <Step2ServiceSelection />}
           {currentStep === 3 && <Step3Participants />}
           {currentStep === 4 && <Step4Accommodation />}
-          {currentStep === 5 && <Step5Summary />}
+          {currentStep === 5 && <SpecialServicesStep />}
+          {currentStep === 6 && <Step5Summary />}
           
           {/* Navigation Buttons */}
           <div className="mt-8 flex justify-between">
@@ -115,11 +118,11 @@ const TourCalculator = () => {
             <Button
               onClick={handleNext}
               disabled={!isValid || isCalculating}
-              className={currentStep === 5 ? 'bg-primary' : ''}
+              className={currentStep === 6 ? 'bg-primary' : ''}
             >
               {isCalculating ? (
                 t('common.loading')
-              ) : currentStep === 5 ? (
+              ) : currentStep === 6 ? (
                 <>
                   {t('common.calculate')} <Calculator className="ml-2 h-4 w-4" />
                 </>
