@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { download } from 'qrcode';
+import QRCode from 'qrcode';
 
 const QRCodeGenerator = () => {
   const [url, setUrl] = useState<string>('');
@@ -14,6 +14,25 @@ const QRCodeGenerator = () => {
   const [qrCodeType, setQRCodeType] = useState<'app' | 'custom'>('app');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Initialize QR code when component mounts
+    if (canvasRef.current) {
+      const appUrl = window.location.origin;
+      QRCode.toCanvas(
+        canvasRef.current,
+        appUrl,
+        { width: 300, margin: 1, color: { dark: '#000', light: '#fff' } },
+        (error) => {
+          if (error) {
+            console.error('Error initializing QR code:', error);
+          } else {
+            setQRCodeDataURL(canvasRef.current?.toDataURL() || null);
+          }
+        }
+      );
+    }
+  }, []);
 
   const generateQRCode = async () => {
     try {
@@ -32,28 +51,25 @@ const QRCodeGenerator = () => {
       }
 
       // Generate QR code as data URL
-      const dataURL = await new Promise<string>((resolve, reject) => {
-        if (canvasRef.current) {
-          const QRCode = require('qrcode');
-          QRCode.toCanvas(
-            canvasRef.current,
-            qrUrl,
-            { width: 300, margin: 1, color: { dark: '#000', light: '#fff' } },
-            (error: Error | null) => {
-              if (error) reject(error);
-              resolve(canvasRef.current?.toDataURL() || '');
+      if (canvasRef.current) {
+        QRCode.toCanvas(
+          canvasRef.current,
+          qrUrl,
+          { width: 300, margin: 1, color: { dark: '#000', light: '#fff' } },
+          (error) => {
+            if (error) {
+              throw error;
             }
-          );
-        } else {
-          reject(new Error('Canvas not available'));
-        }
-      });
-
-      setQRCodeDataURL(dataURL);
-      toast({
-        title: 'Thành công',
-        description: 'Mã QR đã được tạo.',
-      });
+            setQRCodeDataURL(canvasRef.current?.toDataURL() || null);
+            toast({
+              title: 'Thành công',
+              description: 'Mã QR đã được tạo.',
+            });
+          }
+        );
+      } else {
+        throw new Error('Canvas not available');
+      }
     } catch (error) {
       console.error('Error generating QR code:', error);
       toast({
