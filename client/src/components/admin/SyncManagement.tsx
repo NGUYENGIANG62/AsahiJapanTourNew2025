@@ -4,9 +4,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, CloudCog, CloudOff, CheckCircle, AlertCircle, RefreshCw, Cloud } from 'lucide-react';
+import { Loader2, CloudCog, CloudOff, CheckCircle, AlertCircle, RefreshCw, Cloud, Languages } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, getQueryFn } from '@/lib/queryClient';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Language } from '@/types';
 
 type SyncStatus = {
   lastSync: string | null;

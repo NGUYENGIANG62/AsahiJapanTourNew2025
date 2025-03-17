@@ -397,14 +397,50 @@ export async function syncDataFromSheets(storage: any) {
 }
 
 /**
- * Sync data from local storage to Google Sheets
+ * Hàm trợ giúp thay thế nội dung theo ngôn ngữ
  */
-export async function syncDataToSheets(storage: any) {
+function replaceWithLanguageContent(data: any, language: string) {
+  // Nếu là ngôn ngữ tiếng Anh, giữ nguyên dữ liệu
+  if (language === 'en') {
+    return { ...data };
+  }
+  
+  // Clone data để không ảnh hưởng đến dữ liệu gốc
+  const clonedData = { ...data };
+  
+  // Xử lý các trường đa ngôn ngữ cho Tour
+  if ('name' in clonedData && `name${language.charAt(0).toUpperCase() + language.slice(1)}` in clonedData) {
+    const langField = `name${language.charAt(0).toUpperCase() + language.slice(1)}`;
+    if (clonedData[langField]) {
+      clonedData.name = clonedData[langField];
+    }
+  }
+  
+  if ('description' in clonedData && `description${language.charAt(0).toUpperCase() + language.slice(1)}` in clonedData) {
+    const langField = `description${language.charAt(0).toUpperCase() + language.slice(1)}`;
+    if (clonedData[langField]) {
+      clonedData.description = clonedData[langField];
+    }
+  }
+  
+  return clonedData;
+}
+
+/**
+ * Sync data from local storage to Google Sheets
+ * @param storage Storage instance
+ * @param language Language code ('en', 'ja', 'zh', 'ko', 'vi')
+ */
+export async function syncDataToSheets(storage: any, language: string = 'en') {
   try {
+    console.log(`Syncing data to Google Sheets using language: ${language}`);
+    
     // Sync Tours
     const tours = await storage.getAllTours();
     for (const tour of tours) {
-      await updateSheetItem('Tours', tour);
+      // Thay thế nội dung dựa vào ngôn ngữ được chọn
+      const localizedTour = replaceWithLanguageContent(tour, language);
+      await updateSheetItem('Tours', localizedTour);
     }
     
     // Sync Vehicles
@@ -428,10 +464,12 @@ export async function syncDataToSheets(storage: any) {
     // Sync Seasons
     const seasons = await storage.getAllSeasons();
     for (const season of seasons) {
-      await updateSheetItem('Seasons', season);
+      // Thay thế nội dung dựa vào ngôn ngữ được chọn
+      const localizedSeason = replaceWithLanguageContent(season, language);
+      await updateSheetItem('Seasons', localizedSeason);
     }
     
-    console.log('Data sync to Google Sheets completed successfully');
+    console.log(`Data sync to Google Sheets completed successfully using language: ${language}`);
     return true;
   } catch (error) {
     console.error('Error syncing data to sheets:', error);
