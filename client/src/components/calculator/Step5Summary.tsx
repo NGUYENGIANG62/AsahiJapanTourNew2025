@@ -229,7 +229,7 @@ const Step5Summary = () => {
                         <User className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>
                           {guide 
-                            ? `${guide.name} (${guide.languages.join(', ')})` 
+                            ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}` 
                             : 'No guide selected'}
                         </span>
                       </li>
