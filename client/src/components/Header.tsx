@@ -20,16 +20,16 @@ const Header = () => {
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <Link href="/">
-            <a className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 cursor-pointer">
               <img 
                 src={asahiLogo} 
                 alt="Asahi VietLife Logo" 
                 className="h-10 w-auto"
               />
               <span className="font-heading text-xl font-bold text-primary hidden sm:inline">
-                {t('common.appName')}
+                Asahi VietLife
               </span>
-            </a>
+            </div>
           </Link>
         </div>
         
