@@ -46,6 +46,7 @@ export const vehicles = pgTable("vehicles", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   seats: integer("seats").notNull(),
+  luggageCapacity: integer("luggage_capacity").notNull().default(0), // Number of suitcases
   pricePerDay: real("price_per_day").notNull(), // in JPY
   driverCostPerDay: real("driver_cost_per_day").notNull(), // in JPY
 });
@@ -147,6 +148,9 @@ export const calculationSchema = z.object({
   vehicleId: z.number(),
   participants: z.number().min(1),
   hotelId: z.number().optional(),
+  singleRoomCount: z.number().optional().default(0),
+  doubleRoomCount: z.number().optional().default(0),
+  tripleRoomCount: z.number().optional().default(0),
   roomType: z.enum(["single", "double", "triple"]).optional(),
   includeBreakfast: z.boolean().optional(),
   includeLunch: z.boolean().optional(),

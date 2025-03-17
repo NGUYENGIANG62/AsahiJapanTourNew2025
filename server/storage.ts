@@ -181,6 +181,7 @@ export class MemStorage implements IStorage {
       id: this.currentVehicleId++,
       name: 'Small Van (5 seats)',
       seats: 5,
+      luggageCapacity: 4, // 4 suitcases
       pricePerDay: 15000, // 15,000 JPY per day
       driverCostPerDay: 5000 // 5,000 JPY per day
     });
@@ -189,6 +190,7 @@ export class MemStorage implements IStorage {
       id: this.currentVehicleId++,
       name: 'Medium Van (10 seats)',
       seats: 10,
+      luggageCapacity: 8, // 8 suitcases
       pricePerDay: 25000, // 25,000 JPY per day
       driverCostPerDay: 5000 // 5,000 JPY per day
     });
@@ -197,6 +199,7 @@ export class MemStorage implements IStorage {
       id: this.currentVehicleId++,
       name: 'Large Bus (25 seats)',
       seats: 25,
+      luggageCapacity: 20, // 20 suitcases
       pricePerDay: 45000, // 45,000 JPY per day
       driverCostPerDay: 5000 // 5,000 JPY per day
     });
