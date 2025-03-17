@@ -532,6 +532,11 @@ export class MemStorage implements IStorage {
     const season: Season = { 
       ...insertSeason, 
       id,
+      name: insertSeason.name,
+      description: insertSeason.description,
+      startMonth: insertSeason.startMonth,
+      endMonth: insertSeason.endMonth,
+      priceMultiplier: insertSeason.priceMultiplier || 1.0,
       nameJa: insertSeason.nameJa || null,
       nameZh: insertSeason.nameZh || null,
       nameKo: insertSeason.nameKo || null,
