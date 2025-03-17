@@ -1,5 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { registerLocale } from 'react-datepicker';
+import { enUS, ja, zhCN, ko, vi } from 'date-fns/locale';
 
 // English translations
 const enTranslations = {
@@ -1125,6 +1127,13 @@ const viTranslations = {
 };
 
 // Initialize i18n
+// Register locales for react-datepicker
+registerLocale('en', enUS);
+registerLocale('ja', ja);
+registerLocale('zh', zhCN);
+registerLocale('ko', ko);
+registerLocale('vi', vi);
+
 i18n.use(initReactI18next).init({
   resources: {
     en: {
