@@ -29,8 +29,8 @@ const Step1DateSelection = () => {
   const currentMonth = startDate ? startDate.getMonth() + 1 : null; // +1 because getMonth() returns 0-11
   
   // Fetch season information if start date is selected
-  const { data: seasonData, isLoading: isLoadingSeason } = useQuery<Season>({
-    queryKey: ['/api/seasons/month', currentMonth],
+  const { data: seasonData, isLoading: isLoadingSeason, refetch: refetchSeason } = useQuery<Season>({
+    queryKey: ['/api/seasons/month', currentMonth, i18n.language],
     enabled: !!currentMonth,
     queryFn: async () => {
       if (!currentMonth) return null;
@@ -51,10 +51,17 @@ const Step1DateSelection = () => {
     },
   });
   
-  // Update season when data changes
+  // Update season when data changes or language changes
   useEffect(() => {
     setSeason(seasonData || null);
   }, [seasonData]);
+  
+  // Refetch season data when language changes
+  useEffect(() => {
+    if (currentMonth) {
+      refetchSeason();
+    }
+  }, [i18n.language, refetchSeason, currentMonth]);
   
   // Handle date change
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
