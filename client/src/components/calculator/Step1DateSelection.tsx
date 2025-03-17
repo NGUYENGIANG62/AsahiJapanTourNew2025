@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Facebook, Mail, Phone } from 'lucide-react';
+import i18n from '@/lib/i18n';
 
 const Step1DateSelection = () => {
   const { t } = useTranslation();
@@ -89,6 +90,7 @@ const Step1DateSelection = () => {
                 min={today}
                 value={formData.startDate}
                 onChange={handleStartDateChange}
+                lang={i18n.language}
               />
             </div>
             
@@ -103,6 +105,7 @@ const Step1DateSelection = () => {
                 value={formData.endDate}
                 onChange={handleEndDateChange}
                 disabled={!formData.startDate}
+                lang={i18n.language}
               />
             </div>
           </div>
@@ -116,9 +119,19 @@ const Step1DateSelection = () => {
           ) : season ? (
             <Alert className="bg-accent border-secondary">
               <InfoCircledIcon className="h-5 w-5 text-secondary" />
-              <AlertTitle>{season.name}</AlertTitle>
+              <AlertTitle>
+                {i18n.language === 'ja' && season.nameJa ? season.nameJa : 
+                 i18n.language === 'zh' && season.nameZh ? season.nameZh :
+                 i18n.language === 'ko' && season.nameKo ? season.nameKo :
+                 i18n.language === 'vi' && season.nameVi ? season.nameVi : 
+                 season.name}
+              </AlertTitle>
               <AlertDescription className="mt-1 text-sm text-muted-foreground whitespace-pre-line">
-                {season.description}
+                {i18n.language === 'ja' && season.descriptionJa ? season.descriptionJa : 
+                 i18n.language === 'zh' && season.descriptionZh ? season.descriptionZh :
+                 i18n.language === 'ko' && season.descriptionKo ? season.descriptionKo :
+                 i18n.language === 'vi' && season.descriptionVi ? season.descriptionVi : 
+                 season.description}
               </AlertDescription>
             </Alert>
           ) : startDate ? (
