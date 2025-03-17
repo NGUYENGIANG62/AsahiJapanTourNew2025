@@ -17,6 +17,7 @@ import {
 } from "@shared/schema";
 import { convertCurrency } from "./currencyConverter";
 import { sendEmail } from "./emailService";
+import { syncDataFromSheets, syncDataToSheets } from "./googleSheetsService";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
