@@ -284,68 +284,87 @@ const Step5Summary = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Item</TableHead>
-                    <TableHead className="text-right">Cost</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>{t('calculator.summary.tourCost')}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(calculation.costs.baseCost)}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>{t('calculator.summary.vehicleCost')}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(calculation.costs.vehicleCost)}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>{t('calculator.summary.driverCost')}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(calculation.costs.driverCost)}</TableCell>
-                  </TableRow>
-                  {calculation.costs.hotelCost > 0 && (
+              {/* For admin users, show detailed breakdown */}
+              {isAdmin(user) ? (
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell>{t('calculator.summary.accommodationCost')}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(calculation.costs.hotelCost)}</TableCell>
+                      <TableHead>Item</TableHead>
+                      <TableHead className="text-right">Cost</TableHead>
                     </TableRow>
-                  )}
-                  {calculation.costs.mealsCost > 0 && (
+                  </TableHeader>
+                  <TableBody>
                     <TableRow>
-                      <TableCell>{t('calculator.summary.mealsCost')}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(calculation.costs.mealsCost)}</TableCell>
+                      <TableCell>{t('calculator.summary.tourCost')}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(calculation.costs.baseCost)}</TableCell>
                     </TableRow>
-                  )}
-                  {calculation.costs.guideCost > 0 && (
                     <TableRow>
-                      <TableCell>{t('calculator.summary.guideCost')}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(calculation.costs.guideCost)}</TableCell>
+                      <TableCell>{t('calculator.summary.vehicleCost')}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(calculation.costs.vehicleCost)}</TableCell>
                     </TableRow>
+                    <TableRow>
+                      <TableCell>{t('calculator.summary.driverCost')}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(calculation.costs.driverCost)}</TableCell>
+                    </TableRow>
+                    {calculation.costs.hotelCost > 0 && (
+                      <TableRow>
+                        <TableCell>{t('calculator.summary.accommodationCost')}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(calculation.costs.hotelCost)}</TableCell>
+                      </TableRow>
+                    )}
+                    {calculation.costs.mealsCost > 0 && (
+                      <TableRow>
+                        <TableCell>{t('calculator.summary.mealsCost')}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(calculation.costs.mealsCost)}</TableCell>
+                      </TableRow>
+                    )}
+                    {calculation.costs.guideCost > 0 && (
+                      <TableRow>
+                        <TableCell>{t('calculator.summary.guideCost')}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(calculation.costs.guideCost)}</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TableCell>{t('calculator.summary.subtotal')}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(calculation.costs.subtotal)}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        {t('calculator.summary.serviceFee', { rate: profitMargin })}
+                      </TableCell>
+                      <TableCell className="text-right">{formatCurrency(calculation.costs.profitAmount)}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        {t('calculator.summary.tax', { rate: taxRate })}
+                      </TableCell>
+                      <TableCell className="text-right">{formatCurrency(calculation.costs.taxAmount)}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-bold">{t('calculator.summary.totalPrice')}</TableCell>
+                      <TableCell className="text-right font-bold">{formatCurrency(calculation.totalInRequestedCurrency)}</TableCell>
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              ) : (
+                /* For regular users, only show the final price */
+                <div className="p-8 text-center">
+                  <h3 className="text-2xl font-bold mb-4">{t('calculator.summary.totalPrice')}</h3>
+                  <div className="text-3xl font-bold text-primary">
+                    {formatCurrency(calculation.totalInRequestedCurrency)}
+                  </div>
+                  <p className="mt-4 text-muted-foreground">
+                    {t('calculator.summary.includesTax')}
+                  </p>
+                  {calculation.calculationDetails.season && (
+                    <p className="mt-2 text-muted-foreground">
+                      Season: {calculation.calculationDetails.season.name}
+                    </p>
                   )}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TableCell>{t('calculator.summary.subtotal')}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(calculation.costs.subtotal)}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>
-                      {t('calculator.summary.serviceFee', { rate: profitMargin })}
-                    </TableCell>
-                    <TableCell className="text-right">{formatCurrency(calculation.costs.profitAmount)}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>
-                      {t('calculator.summary.tax', { rate: taxRate })}
-                    </TableCell>
-                    <TableCell className="text-right">{formatCurrency(calculation.costs.taxAmount)}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-bold">{t('calculator.summary.totalPrice')}</TableCell>
-                    <TableCell className="text-right font-bold">{formatCurrency(calculation.totalInRequestedCurrency)}</TableCell>
-                  </TableRow>
-                </TableFooter>
-              </Table>
+                </div>
+              )}
             </CardContent>
             <CardFooter className="bg-muted/30 flex flex-col items-start text-sm text-muted-foreground">
               <p>{t('calculator.summary.includesTax')}</p>
