@@ -4,7 +4,8 @@ import { useAuth } from '@/hooks/useAuth';
 import LanguageSelector from './LanguageSelector';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { LogOut } from 'lucide-react';
+import { LogOut, Facebook, Clock } from 'lucide-react';
+import asahiLogo from '../assets/asahi-vietlife-logo.jpg';
 
 const Header = () => {
   const { t } = useTranslation();
@@ -17,10 +18,17 @@ const Header = () => {
   return (
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <div className="flex items-center">
+        <div className="flex items-center space-x-3">
           <Link href="/">
-            <a className="font-heading text-xl font-bold text-primary">
-              {t('common.appName')}
+            <a className="flex items-center space-x-2">
+              <img 
+                src={asahiLogo} 
+                alt="Asahi VietLife Logo" 
+                className="h-10 w-auto"
+              />
+              <span className="font-heading text-xl font-bold text-primary hidden sm:inline">
+                {t('common.appName')}
+              </span>
             </a>
           </Link>
         </div>
