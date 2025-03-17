@@ -1020,6 +1020,10 @@ const viTranslations = {
       tax: 'Thuế ({{rate}}%)',
       serviceFee: 'Phí dịch vụ ({{rate}}%)',
       totalPrice: 'Tổng giá',
+      priceSummary: 'Tóm tắt giá',
+      totalCostCustomized: 'Tổng chi phí cho tour tùy chỉnh của bạn',
+      item: 'Mục',
+      cost: 'Chi phí',
       days: 'ngày',
       people: 'người',
       includesTax: '(đã bao gồm thuế)',
@@ -1034,7 +1038,13 @@ const viTranslations = {
       sendRequest: 'Gửi yêu cầu',
       directContactInfo: 'Thông tin liên hệ trực tiếp',
       contactUsPrompt: 'Vui lòng liên hệ trực tiếp với chúng tôi để được tư vấn nhanh chóng',
-      understood: 'Đã hiểu'
+      understood: 'Đã hiểu',
+      preferredLocations: 'Địa điểm mong muốn',
+      pleaseEnterLocations: 'Vui lòng nhập các địa điểm bạn muốn đến trong tour',
+      pricePerPerson: 'Giá mỗi người:',
+      tourForPeople: 'Tour cho',
+      daysExceeded: 'Số ngày bạn đã chọn',
+      exceedsTourDays: 'vượt quá thời gian tour tiêu chuẩn'
     }
   },
   languages: {
