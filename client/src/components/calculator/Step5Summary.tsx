@@ -236,6 +236,25 @@ const Step5Summary = () => {
         Email: ${customerEmail}
       `;
       
+      // Format special services for email
+      let specialServicesText = '';
+      if (formData.specialServices) {
+        const services = [];
+        if (formData.specialServices.geishaShow) services.push('Show Geisha');
+        if (formData.specialServices.kimonoExperience) services.push('Trải nghiệm mặc Kimono');
+        if (formData.specialServices.teaCeremony) services.push('Trà đạo truyền thống');
+        if (formData.specialServices.wagyuDinner) services.push('Ăn tối với bò Wagyu');
+        if (formData.specialServices.sumoShow) services.push('Xem đấu Sumo');
+        
+        specialServicesText = services.length > 0 
+          ? `Dịch vụ đặc biệt: ${services.join(', ')}`
+          : 'Dịch vụ đặc biệt: Không';
+          
+        if (formData.specialServices.notes) {
+          specialServicesText += `\nGhi chú dịch vụ đặc biệt: ${formData.specialServices.notes}`;
+        }
+      }
+
       const tourDetails = `
         Tour: ${tour?.name || 'Chưa chọn'}
         Địa điểm: ${tour?.location || 'Chưa chọn'}
@@ -245,6 +264,7 @@ const Step5Summary = () => {
         Khách sạn: ${hotel?.name || 'Không'} ${hotel ? `(${getRoomTypeLabel()})` : ''}
         Hướng dẫn viên: ${guide?.name || 'Không'}
         Bữa ăn: ${(formData.includeBreakfast ? 'Bữa sáng, ' : '') + (formData.includeLunch ? 'Bữa trưa, ' : '') + (formData.includeDinner ? 'Bữa tối' : '') || 'Không'}
+        ${specialServicesText}
         Tổng chi phí: ${formatCurrency(calculation?.totalInRequestedCurrency || 0)}
         ${formData.participants > 1 ? `Chi phí mỗi người: ${formatCurrency((calculation?.totalInRequestedCurrency || 0) / formData.participants)}` : ''}
         ${preferredLocations ? `Địa điểm mong muốn: ${preferredLocations}` : ''}
@@ -521,6 +541,59 @@ const Step5Summary = () => {
                           : <XCircle className="mr-2 h-4 w-4 text-muted-foreground" />}
                         <span>{t('calculator.meals.dinner', 'Dinner')}</span>
                       </li>
+
+                      {/* Special Services section */}
+                      {formData.specialServices && (
+                        <li className="mt-4">
+                          <h4 className="font-medium mb-2">Dịch vụ đặc biệt</h4>
+                          <ul className="space-y-1 pl-4">
+                            {formData.specialServices.geishaShow && (
+                              <li className="flex items-center">
+                                <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
+                                <span className="text-sm">Show Geisha</span>
+                              </li>
+                            )}
+                            {formData.specialServices.kimonoExperience && (
+                              <li className="flex items-center">
+                                <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
+                                <span className="text-sm">Trải nghiệm mặc Kimono</span>
+                              </li>
+                            )}
+                            {formData.specialServices.teaCeremony && (
+                              <li className="flex items-center">
+                                <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
+                                <span className="text-sm">Trà đạo truyền thống</span>
+                              </li>
+                            )}
+                            {formData.specialServices.wagyuDinner && (
+                              <li className="flex items-center">
+                                <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
+                                <span className="text-sm">Ăn tối với bò Wagyu</span>
+                              </li>
+                            )}
+                            {formData.specialServices.sumoShow && (
+                              <li className="flex items-center">
+                                <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
+                                <span className="text-sm">Xem đấu Sumo</span>
+                              </li>
+                            )}
+                            {formData.specialServices.notes && (
+                              <li className="text-sm text-muted-foreground mt-1">
+                                <strong>Ghi chú:</strong> {formData.specialServices.notes}
+                              </li>
+                            )}
+                            {!(formData.specialServices.geishaShow || 
+                               formData.specialServices.kimonoExperience || 
+                               formData.specialServices.teaCeremony || 
+                               formData.specialServices.wagyuDinner || 
+                               formData.specialServices.sumoShow) && (
+                              <li className="text-sm text-muted-foreground">
+                                Không có dịch vụ đặc biệt
+                              </li>
+                            )}
+                          </ul>
+                        </li>
+                      )}
                     </ul>
                   </div>
                 </div>
