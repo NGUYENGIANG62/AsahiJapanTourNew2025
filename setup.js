@@ -29,22 +29,70 @@ const askQuestions = async () => {
     rl.question('\nEmail Password (dùng cho việc gửi email): ', (emailPassword) => {
       config.EMAIL_PASSWORD = emailPassword || '';
       
-      rl.question('\nGoogle Client ID (cho Google Sheets API, nhấn Enter để bỏ qua): ', (googleClientId) => {
-        config.GOOGLE_CLIENT_ID = googleClientId || '';
+      console.log('\n--- Thiết lập Google Sheets ---');
+      console.log('Bạn có thể chọn một trong ba phương pháp xác thực sau:');
+      console.log('1. API Key (chỉ đọc dữ liệu)');
+      console.log('2. Service Account (đọc và ghi dữ liệu)');
+      console.log('3. OAuth2 (không khuyến nghị)');
+      console.log('4. Bỏ qua thiết lập Google Sheets');
+      
+      rl.question('\nChọn phương pháp (1-4): ', (authMethod) => {
+        const method = parseInt(authMethod, 10);
         
-        rl.question('Google Client Secret (nhấn Enter để bỏ qua): ', (googleClientSecret) => {
-          config.GOOGLE_CLIENT_SECRET = googleClientSecret || '';
-          
-          rl.question('Google Refresh Token (nhấn Enter để bỏ qua): ', (googleRefreshToken) => {
-            config.GOOGLE_REFRESH_TOKEN = googleRefreshToken || '';
+        if (method === 1) {
+          // API Key
+          rl.question('\nGoogle API Key: ', (apiKey) => {
+            config.GOOGLE_API_KEY = apiKey || '';
             
-            rl.question('Google Spreadsheet URL (nhấn Enter để bỏ qua): ', (googleSpreadsheetUrl) => {
+            rl.question('Google Spreadsheet URL: ', (googleSpreadsheetUrl) => {
               config.GOOGLE_SPREADSHEET_URL = googleSpreadsheetUrl || '';
               rl.close();
               resolve(config);
             });
           });
-        });
+        } else if (method === 2) {
+          // Service Account
+          rl.question('\nGoogle Service Account Email: ', (serviceAccountEmail) => {
+            config.GOOGLE_SERVICE_ACCOUNT_EMAIL = serviceAccountEmail || '';
+            
+            console.log('\nLưu ý: Private key cần được đặt trong dấu nháy kép và giữ nguyên dấu xuống dòng.');
+            console.log('Ví dụ: "-----BEGIN PRIVATE KEY-----\\nABC...XYZ\\n-----END PRIVATE KEY-----\\n"');
+            
+            rl.question('Google Service Account Private Key: ', (privateKey) => {
+              config.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY = privateKey || '';
+              
+              rl.question('Google Spreadsheet URL: ', (googleSpreadsheetUrl) => {
+                config.GOOGLE_SPREADSHEET_URL = googleSpreadsheetUrl || '';
+                rl.close();
+                resolve(config);
+              });
+            });
+          });
+        } else if (method === 3) {
+          // OAuth2
+          rl.question('\nGoogle Client ID: ', (googleClientId) => {
+            config.GOOGLE_CLIENT_ID = googleClientId || '';
+            
+            rl.question('Google Client Secret: ', (googleClientSecret) => {
+              config.GOOGLE_CLIENT_SECRET = googleClientSecret || '';
+              
+              rl.question('Google Refresh Token: ', (googleRefreshToken) => {
+                config.GOOGLE_REFRESH_TOKEN = googleRefreshToken || '';
+                
+                rl.question('Google Spreadsheet URL: ', (googleSpreadsheetUrl) => {
+                  config.GOOGLE_SPREADSHEET_URL = googleSpreadsheetUrl || '';
+                  rl.close();
+                  resolve(config);
+                });
+              });
+            });
+          });
+        } else {
+          // Bỏ qua
+          console.log('\nĐã bỏ qua thiết lập Google Sheets.');
+          rl.close();
+          resolve(config);
+        }
       });
     });
   });
