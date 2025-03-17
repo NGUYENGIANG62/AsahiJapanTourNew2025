@@ -16,6 +16,7 @@ import {
   calculationSchema 
 } from "@shared/schema";
 import { convertCurrency } from "./currencyConverter";
+import { sendEmail } from "./emailService";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
@@ -728,6 +729,33 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         return res.status(400).json({ message: fromZodError(error).message });
       }
       res.status(500).json({ message: "Failed to calculate tour price" });
+    }
+  });
+
+  // Email service route
+  apiRouter.post("/send-tour-inquiry", async (req, res) => {
+    try {
+      const { name, email, subject, message } = req.body;
+      
+      if (!email || !message) {
+        return res.status(400).json({ message: "Email and message are required" });
+      }
+      
+      const result = await sendEmail({
+        name,
+        email,
+        subject: subject || "Tour Inquiry",
+        message
+      });
+      
+      if (result.success) {
+        return res.status(200).json({ message: "Email sent successfully" });
+      } else {
+        return res.status(500).json({ message: result.message });
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      res.status(500).json({ message: "Failed to send email" });
     }
   });
 
