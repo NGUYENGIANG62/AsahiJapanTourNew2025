@@ -148,6 +148,10 @@ const enTranslations = {
       tax: 'Tax ({{rate}}%)',
       serviceFee: 'Service Fee ({{rate}}%)',
       totalPrice: 'Total Price',
+      priceSummary: 'Price Summary',
+      totalCostCustomized: 'Total cost for your customized tour',
+      item: 'Item',
+      cost: 'Cost',
       days: 'days',
       people: 'people',
       includesTax: '(includes tax)',
@@ -162,7 +166,13 @@ const enTranslations = {
       sendRequest: 'Send Request',
       directContactInfo: 'Direct Contact Information',
       contactUsPrompt: 'Please contact us directly for quick consultation',
-      understood: 'Understood'
+      understood: 'Understood',
+      preferredLocations: 'Preferred Locations',
+      pleaseEnterLocations: 'Please enter locations you would like to visit during your tour',
+      pricePerPerson: 'Price per person:',
+      tourForPeople: 'Tour for',
+      daysExceeded: 'Your selected days',
+      exceedsTourDays: 'exceeds the standard tour duration'
     }
   },
   languages: {
@@ -356,6 +366,10 @@ const jaTranslations = {
       tax: '税金 ({{rate}}%)',
       serviceFee: 'サービス料 ({{rate}}%)',
       totalPrice: '合計金額',
+      priceSummary: '料金概要',
+      totalCostCustomized: 'カスタマイズされたツアーの総費用',
+      item: '項目',
+      cost: '費用',
       days: '日',
       people: '人',
       includesTax: '(税込)',
@@ -370,7 +384,13 @@ const jaTranslations = {
       sendRequest: 'リクエスト送信',
       directContactInfo: '直接連絡先情報',
       contactUsPrompt: '迅速な相談のために直接お問い合わせください',
-      understood: '理解しました'
+      understood: '理解しました',
+      preferredLocations: '希望訪問先',
+      pleaseEnterLocations: 'ツアー中に訪問したい場所を入力してください',
+      pricePerPerson: '一人当たりの料金：',
+      tourForPeople: '対象人数',
+      daysExceeded: '選択された日数は',
+      exceedsTourDays: '標準ツアー期間を超えています'
     }
   },
   languages: {
@@ -564,6 +584,10 @@ const zhTranslations = {
       tax: '税 ({{rate}}%)',
       serviceFee: '服务费 ({{rate}}%)',
       totalPrice: '总价',
+      priceSummary: '价格摘要',
+      totalCostCustomized: '您定制行程的总费用',
+      item: '项目',
+      cost: '费用',
       days: '天',
       people: '人',
       includesTax: '(含税)',
@@ -578,7 +602,13 @@ const zhTranslations = {
       sendRequest: '发送请求',
       directContactInfo: '直接联系信息',
       contactUsPrompt: '请直接联系我们获取快速咨询',
-      understood: '已了解'
+      understood: '已了解',
+      preferredLocations: '首选地点',
+      pleaseEnterLocations: '请输入您想在旅行期间参观的地点',
+      pricePerPerson: '每人价格：',
+      tourForPeople: '适合人数',
+      daysExceeded: '您选择的天数',
+      exceedsTourDays: '超过了标准行程天数'
     }
   },
   languages: {
@@ -772,6 +802,10 @@ const koTranslations = {
       tax: '세금 ({{rate}}%)',
       serviceFee: '서비스 요금 ({{rate}}%)',
       totalPrice: '총 가격',
+      priceSummary: '가격 요약',
+      totalCostCustomized: '맞춤형 투어의 총 비용',
+      item: '항목',
+      cost: '비용',
       days: '일',
       people: '명',
       includesTax: '(세금 포함)',
@@ -786,7 +820,13 @@ const koTranslations = {
       sendRequest: '요청 보내기',
       directContactInfo: '직접 연락처 정보',
       contactUsPrompt: '빠른 상담을 위해 직접 연락해 주세요',
-      understood: '이해했습니다'
+      understood: '이해했습니다',
+      preferredLocations: '희망 방문지',
+      pleaseEnterLocations: '투어 중 방문하고 싶은 장소를 입력해 주세요',
+      pricePerPerson: '1인당 가격:',
+      tourForPeople: '인원 수',
+      daysExceeded: '선택하신 날짜는',
+      exceedsTourDays: '기본 투어 기간을 초과합니다'
     }
   },
   languages: {
