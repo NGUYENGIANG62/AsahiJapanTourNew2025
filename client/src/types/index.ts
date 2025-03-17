@@ -85,6 +85,7 @@ export type CalculatorFormData = {
   startDate: string;
   endDate: string;
   vehicleId: number;
+  vehicleCount?: number;
   participants: number;
   hotelId?: number;
   roomType?: RoomType;
