@@ -96,7 +96,7 @@ const Step2ServiceSelection = () => {
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Clock className="h-4 w-4 mr-1" />
                   <span>
-                    {selectedTour.durationDays} {selectedTour.durationDays === 1 ? 'day' : 'days'}
+                    {selectedTour.durationDays} {selectedTour.durationDays === 1 ? t('calculator.day', 'day') : t('calculator.days', 'days')}
                   </span>
                 </div>
               </CardContent>
@@ -104,9 +104,9 @@ const Step2ServiceSelection = () => {
                 <div className="text-sm font-medium flex items-center">
                   <Banknote className="h-4 w-4 mr-1 text-green-600" />
                   {isAdmin ? (
-                    <>Base price: {selectedTour.basePrice.toLocaleString()} JPY per person</>
+                    <>{t('calculator.basePrice', 'Base price')}: {selectedTour.basePrice.toLocaleString()} {t('calculator.jpyPerPerson', 'JPY per person')}</>
                   ) : (
-                    <>Tour duration: {selectedTour.durationDays} {selectedTour.durationDays === 1 ? 'day' : 'days'}</>
+                    <>{t('calculator.tourDuration', 'Tour duration')}: {selectedTour.durationDays} {selectedTour.durationDays === 1 ? t('calculator.day', 'day') : t('calculator.days', 'days')}</>
                   )}
                 </div>
               </CardFooter>
@@ -173,12 +173,12 @@ const Step2ServiceSelection = () => {
                 {isAdmin ? (
                   <div className="grid grid-cols-2 gap-2">
                     <div className="text-sm">
-                      <span className="text-muted-foreground">Vehicle Price:</span>
-                      <div className="font-medium">{selectedVehicle.pricePerDay.toLocaleString()} JPY per day</div>
+                      <span className="text-muted-foreground">{t('calculator.vehiclePrice', 'Vehicle Price')}:</span>
+                      <div className="font-medium">{selectedVehicle.pricePerDay.toLocaleString()} {t('calculator.jpyPerDay', 'JPY per day')}</div>
                     </div>
                     <div className="text-sm">
-                      <span className="text-muted-foreground">Driver Cost:</span>
-                      <div className="font-medium">{selectedVehicle.driverCostPerDay.toLocaleString()} JPY per day</div>
+                      <span className="text-muted-foreground">{t('calculator.driverCost', 'Driver Cost')}:</span>
+                      <div className="font-medium">{selectedVehicle.driverCostPerDay.toLocaleString()} {t('calculator.jpyPerDay', 'JPY per day')}</div>
                     </div>
                   </div>
                 ) : (
@@ -188,8 +188,8 @@ const Step2ServiceSelection = () => {
                       <div className="font-medium">{selectedVehicle.seats} {t('calculator.people', 'people')}</div>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Luggage Capacity:</span>
-                      <div className="font-medium">{selectedVehicle.luggageCapacity} suitcases</div>
+                      <span className="text-muted-foreground">{t('calculator.luggageCapacity', 'Luggage Capacity')}:</span>
+                      <div className="font-medium">{selectedVehicle.luggageCapacity} {t('calculator.suitcases', 'suitcases')}</div>
                     </div>
                   </div>
                 )}

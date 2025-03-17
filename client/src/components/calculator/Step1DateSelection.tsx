@@ -124,9 +124,9 @@ const Step1DateSelection = () => {
           ) : startDate ? (
             <Alert className="bg-accent">
               <InfoCircledIcon className="h-5 w-5" />
-              <AlertTitle>Regular Season</AlertTitle>
+              <AlertTitle>{t('calculator.regularSeason', 'Regular Season')}</AlertTitle>
               <AlertDescription className="mt-1 text-sm text-muted-foreground">
-                You've selected dates during a regular travel season. Standard rates apply.
+                {t('calculator.regularSeasonDescription', 'You\'ve selected dates during a regular travel season. Standard rates apply.')}
               </AlertDescription>
             </Alert>
           ) : null}
