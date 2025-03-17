@@ -21,6 +21,7 @@ export const tours = pgTable("tours", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   code: text("code").notNull().unique(),
+  avfCode: text("avf_code"), // Mã AVF mới (AVF001, AVF002, ...)
   location: text("location").notNull(),
   description: text("description").notNull(),
   durationDays: integer("duration_days").notNull(),
