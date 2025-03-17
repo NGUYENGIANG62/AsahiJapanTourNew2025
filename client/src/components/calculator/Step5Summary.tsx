@@ -284,8 +284,8 @@ const Step5Summary = () => {
       setEmailStatus('error');
       setShowContactDirectly(true);
       toast({
-        title: "Không thể gửi yêu cầu",
-        description: "Vui lòng liên hệ trực tiếp với Asahi VietLife qua thông tin liên hệ bên dưới.",
+        title: t('calculator.summary.cannotSendRequest', 'Không thể gửi yêu cầu'),
+        description: t('calculator.summary.contactDirectly', 'Vui lòng liên hệ trực tiếp với Asahi VietLife qua thông tin liên hệ bên dưới.'),
         variant: "destructive"
       });
     }
