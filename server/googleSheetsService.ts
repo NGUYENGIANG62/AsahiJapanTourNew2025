@@ -22,9 +22,9 @@ async function authorize() {
     }
     
     // Use OAuth2 with provided credentials
-    const client_id = process.env.GOOGLE_CLIENT_ID || '407408718192.apps.googleusercontent.com';
-    const client_secret = process.env.GOOGLE_CLIENT_SECRET || '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';
-    const refresh_token = process.env.GOOGLE_REFRESH_TOKEN || '1//04r6Ht9qUilVPCgYIARAAGAQSNwF-L9IrwLvEGxqYA7wHpRPN80wwP4vOkBQQI0KvgSNFuRFy6e67UuMYeeLeMnqtb-ph5u4EHSQ';
+    const client_id = '407408718192.apps.googleusercontent.com';
+    const client_secret = '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';
+    const refresh_token = '1//04r6Ht9qUilVPCgYIARAAGAQSNwF-L9IrwLvEGxqYA7wHpRPN80wwP4vOkBQQI0KvgSNFuRFy6e67UuMYeeLeMnqtb-ph5u4EHSQ';
     
     console.log('Using OAuth2 authentication with client ID:', client_id);
     
