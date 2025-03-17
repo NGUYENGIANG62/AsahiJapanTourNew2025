@@ -747,7 +747,18 @@ const koTranslations = {
       days: '일',
       people: '명',
       includesTax: '(세금 포함)',
-      priceBeforeTax: '(세전 가격)'
+      priceBeforeTax: '(세전 가격)',
+      selectedOptions: '선택된 옵션',
+      inclusions: '포함 사항',
+      noGuideSelected: '가이드 선택 안됨',
+      noHotelSelected: '호텔 선택 안됨',
+      sendTourRequest: '투어 요청 보내기',
+      provideContactInfo: '연락처 정보를 제공해 주세요',
+      sending: '전송 중...',
+      sendRequest: '요청 보내기',
+      directContactInfo: '직접 연락처 정보',
+      contactUsPrompt: '빠른 상담을 위해 직접 연락해 주세요',
+      understood: '이해했습니다'
     }
   },
   languages: {
@@ -937,7 +948,18 @@ const viTranslations = {
       days: 'ngày',
       people: 'người',
       includesTax: '(đã bao gồm thuế)',
-      priceBeforeTax: '(giá trước thuế)'
+      priceBeforeTax: '(giá trước thuế)',
+      selectedOptions: 'Tùy chọn đã chọn',
+      inclusions: 'Dịch vụ đã bao gồm',
+      noGuideSelected: 'Không chọn hướng dẫn viên',
+      noHotelSelected: 'Không chọn khách sạn',
+      sendTourRequest: 'Gửi yêu cầu tư vấn tour',
+      provideContactInfo: 'Vui lòng cung cấp thông tin liên hệ của bạn',
+      sending: 'Đang gửi...',
+      sendRequest: 'Gửi yêu cầu',
+      directContactInfo: 'Thông tin liên hệ trực tiếp',
+      contactUsPrompt: 'Vui lòng liên hệ trực tiếp với chúng tôi để được tư vấn nhanh chóng',
+      understood: 'Đã hiểu'
     }
   },
   languages: {
