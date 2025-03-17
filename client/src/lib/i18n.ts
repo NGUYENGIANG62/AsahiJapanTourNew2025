@@ -144,7 +144,18 @@ const enTranslations = {
       days: 'days',
       people: 'people',
       includesTax: '(includes tax)',
-      priceBeforeTax: '(price before tax)'
+      priceBeforeTax: '(price before tax)',
+      selectedOptions: 'Selected Options',
+      inclusions: 'Inclusions',
+      noGuideSelected: 'No guide selected',
+      noHotelSelected: 'No hotel selected',
+      sendTourRequest: 'Send Tour Request',
+      provideContactInfo: 'Please provide your contact information',
+      sending: 'Sending...',
+      sendRequest: 'Send Request',
+      directContactInfo: 'Direct Contact Information',
+      contactUsPrompt: 'Please contact us directly for quick consultation',
+      understood: 'Understood'
     }
   },
   languages: {
@@ -334,7 +345,18 @@ const jaTranslations = {
       days: '日',
       people: '人',
       includesTax: '(税込)',
-      priceBeforeTax: '(税抜き価格)'
+      priceBeforeTax: '(税抜き価格)',
+      selectedOptions: '選択オプション',
+      inclusions: '含まれるもの',
+      noGuideSelected: 'ガイド選択なし',
+      noHotelSelected: 'ホテル選択なし',
+      sendTourRequest: 'ツアーリクエストを送信',
+      provideContactInfo: 'お問い合わせ情報をご提供ください',
+      sending: '送信中...',
+      sendRequest: 'リクエスト送信',
+      directContactInfo: '直接連絡先情報',
+      contactUsPrompt: '迅速な相談のために直接お問い合わせください',
+      understood: '理解しました'
     }
   },
   languages: {
@@ -524,7 +546,18 @@ const zhTranslations = {
       days: '天',
       people: '人',
       includesTax: '(含税)',
-      priceBeforeTax: '(税前价格)'
+      priceBeforeTax: '(税前价格)',
+      selectedOptions: '已选选项',
+      inclusions: '包含内容',
+      noGuideSelected: '未选择导游',
+      noHotelSelected: '未选择酒店',
+      sendTourRequest: '发送行程请求',
+      provideContactInfo: '请提供您的联系信息',
+      sending: '发送中...',
+      sendRequest: '发送请求',
+      directContactInfo: '直接联系信息',
+      contactUsPrompt: '请直接联系我们获取快速咨询',
+      understood: '已了解'
     }
   },
   languages: {
