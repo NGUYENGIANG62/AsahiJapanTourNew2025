@@ -791,6 +791,19 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
 
   apiRouter.post("/sync/to-sheets", isAdminMiddleware, async (req, res) => {
     try {
+      // Kiểm tra xem có Service Account không
+      const hasServiceAccount = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && 
+                              process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+      
+      if (!hasServiceAccount) {
+        // Nếu không có Service Account, thông báo cho người dùng
+        return res.status(400).json({ 
+          message: "Export to Google Sheets is currently not available. Google Sheets is in read-only mode.",
+          details: "To enable writing to Google Sheets, you need to configure Service Account in Google Cloud Console."
+        });
+      }
+      
+      // Nếu có Service Account, tiến hành đồng bộ
       await syncDataToSheets(storage);
       await storage.updateLastSyncTimestamp();
       res.json({ 
