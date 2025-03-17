@@ -21,7 +21,7 @@ const Footer = () => {
                   className="h-10 w-auto mr-2"
                 />
                 <span className="font-heading text-xl font-bold text-primary">
-                  Asahi VietLife
+                  AsahiJapanTours.com
                 </span>
               </div>
             </Link>
@@ -110,7 +110,7 @@ const Footer = () => {
         
         <div className="border-t border-neutral-200 mt-8 pt-8 text-center">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Asahi VietLife Japan Tour. {t('common.allRightsReserved')}
+            © {currentYear} AsahiJapanTours.com. {t('common.allRightsReserved')}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
             <span>{t('common.address')}: </span>

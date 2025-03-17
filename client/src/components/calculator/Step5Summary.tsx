@@ -683,7 +683,7 @@ const Step5Summary = () => {
                     
                     {/* Welcoming Message */}
                     <div className="mt-6 border rounded-md p-4 bg-muted/10 text-left">
-                      <h4 className="font-medium mb-2 text-primary">Chào mừng đến với AsahiJapanTour</h4>
+                      <h4 className="font-medium mb-2 text-primary">Chào mừng đến với AsahiJapanTours.com</h4>
                       <p className="text-sm text-muted-foreground mb-3">
                         Cảm ơn bạn đã chọn dịch vụ của chúng tôi. Chúng tôi cam kết mang đến cho bạn trải nghiệm du lịch Nhật Bản tuyệt vời nhất!
                       </p>
