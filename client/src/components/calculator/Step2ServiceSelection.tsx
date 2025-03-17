@@ -132,7 +132,7 @@ const Step2ServiceSelection = () => {
               <SelectContent>
                 {vehicles.map((vehicle) => (
                   <SelectItem key={vehicle.id} value={vehicle.id.toString()}>
-                    {vehicle.name} - {vehicle.seats} seats
+                    {vehicle.name} - {vehicle.seats} seats, {vehicle.luggageCapacity} suitcases
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -145,7 +145,7 @@ const Step2ServiceSelection = () => {
               <CardHeader className="pb-2">
                 <CardTitle>{selectedVehicle.name}</CardTitle>
                 <CardDescription className="flex items-center">
-                  <User className="h-4 w-4 mr-1" /> {selectedVehicle.seats} seats
+                  <User className="h-4 w-4 mr-1" /> {selectedVehicle.seats} seats | {selectedVehicle.luggageCapacity} suitcases
                 </CardDescription>
               </CardHeader>
               <CardContent className="pb-2">
@@ -161,9 +161,15 @@ const Step2ServiceSelection = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Capacity:</span>
-                    <div className="font-medium">{selectedVehicle.seats} passengers</div>
+                  <div className="text-sm space-y-2">
+                    <div>
+                      <span className="text-muted-foreground">Passenger Capacity:</span>
+                      <div className="font-medium">{selectedVehicle.seats} people</div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Luggage Capacity:</span>
+                      <div className="font-medium">{selectedVehicle.luggageCapacity} suitcases</div>
+                    </div>
                   </div>
                 )}
               </CardContent>
