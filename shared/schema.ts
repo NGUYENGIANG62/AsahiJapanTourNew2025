@@ -146,6 +146,7 @@ export const calculationSchema = z.object({
   startDate: z.string(),
   endDate: z.string(),
   vehicleId: z.number(),
+  vehicleCount: z.number().optional().default(1),
   participants: z.number().min(1),
   hotelId: z.number().optional(),
   singleRoomCount: z.number().optional().default(0),

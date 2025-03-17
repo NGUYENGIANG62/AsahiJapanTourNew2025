@@ -24,6 +24,7 @@ const initialFormData: CalculatorFormData = {
   startDate: '',
   endDate: '',
   vehicleId: 0,
+  vehicleCount: 1,
   participants: 1,
   currency: 'JPY',
 };
