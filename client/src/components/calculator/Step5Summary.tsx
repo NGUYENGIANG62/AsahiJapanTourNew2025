@@ -1,8 +1,9 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { CalculatorContext } from '@/context/CalculatorContext';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 import { Tour, Vehicle, Hotel, Guide, Season } from '@/types';
 import { 
   Card, 
@@ -24,6 +25,19 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
+  Alert, 
+  AlertDescription 
+} from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle 
+} from '@/components/ui/dialog';
+import { 
   CalendarDays,
   Map,
   Users,
@@ -32,9 +46,13 @@ import {
   Utensils,
   User,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Mail,
+  AlertCircle,
+  Loader2,
+  Phone
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 
 const Step5Summary = () => {
   const { t } = useTranslation();
@@ -44,6 +62,13 @@ const Step5Summary = () => {
     calculation,
     currency 
   } = useContext(CalculatorContext);
+  const { toast } = useToast();
+  const [preferredLocations, setPreferredLocations] = useState<string>('');
+  const [showDurationMismatch, setShowDurationMismatch] = useState<boolean>(false);
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [showContactInfo, setShowContactInfo] = useState<boolean>(false);
+  const [customerEmail, setCustomerEmail] = useState<string>('');
+  const preferredLocationsRef = useRef<HTMLTextAreaElement>(null);
   
   // Fetch data for the summary
   const { data: tour } = useQuery<Tour>({
@@ -365,7 +390,7 @@ const Step5Summary = () => {
                     </div>
                   )}
                   
-                  <div className="mt-4 flex flex-col gap-1">
+                  <div className="mt-4 flex flex-col gap-3">
                     <div className="p-3 border rounded-md bg-muted/20">
                       <div className="flex justify-between items-center">
                         <span className="font-medium">Tour cho {calculation.calculationDetails.participants} người</span>
@@ -374,7 +399,26 @@ const Step5Summary = () => {
                       <div className="text-xs text-muted-foreground text-left mt-1">
                         {calculation.tourDetails.durationDays} ngày, {calculation.tourDetails.name}, {calculation.tourDetails.location}
                       </div>
+                      <div className="text-xs text-muted-foreground text-left mt-1">
+                        Từ {formatDate(formData.startDate)} đến {formatDate(formData.endDate)}
+                      </div>
                     </div>
+                    
+                    <div className="border rounded-md p-3">
+                      <h4 className="font-medium text-left mb-2">Địa điểm mong muốn</h4>
+                      <textarea 
+                        className="w-full border rounded-md h-20 p-2 text-sm"
+                        placeholder="Vui lòng nhập các địa điểm bạn muốn đến thăm trong chuyến tour này..."
+                        id="preferred-locations"
+                      ></textarea>
+                    </div>
+                    
+                    <button
+                      className="mt-2 bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
+                      onClick={() => sendTourRequestEmail()}
+                    >
+                      Gửi yêu cầu tư vấn qua email
+                    </button>
                   </div>
                   
                   <p className="mt-4 text-muted-foreground">
