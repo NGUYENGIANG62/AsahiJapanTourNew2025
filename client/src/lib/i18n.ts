@@ -41,7 +41,14 @@ const enTranslations = {
     profit: 'Service Fee',
     login_error: 'Invalid ID or password. Please try again.',
     login_success: 'Login successful',
-    not_authenticated: 'You need to login to access this page'
+    not_authenticated: 'You need to login to access this page',
+    welcomeMessage: 'Welcome to AsahiJapanTours.com',
+    welcomeDescription: 'Thank you for choosing our service. We are committed to bringing you the best Japan travel experience!',
+    preferredLocations: 'Preferred Locations',
+    tourFor: 'Tour for',
+    pricePerPerson: 'Price per person',
+    tourExceedsDuration: 'Your selected days ({days} days) exceeds the standard tour duration ({standardDays} days). Please enter your preferred locations in the "Preferred Locations" field.',
+    startMessage: 'Thank you for your interest in our tour service. Start by selecting dates for your trip!'
   },
   auth: {
     id: 'ID',
@@ -242,7 +249,14 @@ const jaTranslations = {
     login_error: 'IDまたはパスワードが無効です。もう一度お試しください。',
     login_success: 'ログイン成功',
     not_authenticated: 'このページにアクセスするにはログインが必要です',
-    refresh: '更新'
+    refresh: '更新',
+    welcomeMessage: 'あさひジャパンツアーズへようこそ',
+    welcomeDescription: '当社のサービスをご利用いただきありがとうございます。最高の日本旅行体験をお届けすることをお約束します！',
+    preferredLocations: '希望の訪問地',
+    tourFor: 'ツアー対象',
+    pricePerPerson: '一人あたりの料金',
+    tourExceedsDuration: '選択された日数（{days}日）が標準ツアー期間（{standardDays}日）を超えています。「希望の訪問地」欄に希望する場所を入力してください。',
+    startMessage: '当社のツアーサービスにご興味をお持ちいただきありがとうございます。旅行の日程を選択することから始めましょう！'
   },
   auth: {
     id: 'ID',
@@ -443,7 +457,14 @@ const zhTranslations = {
     login_error: 'ID或密码无效。请重试。',
     login_success: '登录成功',
     not_authenticated: '您需要登录才能访问此页面',
-    refresh: '刷新'
+    refresh: '刷新',
+    welcomeMessage: '欢迎来到旭日本旅行网站',
+    welcomeDescription: '感谢您选择我们的服务。我们致力于为您提供最佳的日本旅行体验！',
+    preferredLocations: '首选地点',
+    tourFor: '旅行团为',
+    pricePerPerson: '每人价格',
+    tourExceedsDuration: '您选择的天数（{days}天）超过了标准旅行团的持续时间（{standardDays}天）。请在"首选地点"字段中输入您想要访问的地点。',
+    startMessage: '感谢您对我们旅行团服务的兴趣。请先为您的旅行选择日期！'
   },
   auth: {
     id: 'ID',
@@ -644,7 +665,14 @@ const koTranslations = {
     login_error: '잘못된 ID 또는 비밀번호입니다. 다시 시도하세요.',
     login_success: '로그인 성공',
     not_authenticated: '이 페이지에 접근하려면 로그인이 필요합니다',
-    refresh: '새로고침'
+    refresh: '새로고침',
+    welcomeMessage: '아사히재팬투어에 오신 것을 환영합니다',
+    welcomeDescription: '저희 서비스를 선택해 주셔서 감사합니다. 최고의 일본 여행 경험을 제공해 드리겠습니다!',
+    preferredLocations: '희망 방문지',
+    tourFor: '투어 대상',
+    pricePerPerson: '1인당 가격',
+    tourExceedsDuration: '선택하신 일수({days}일)가 기본 투어 기간({standardDays}일)을 초과합니다. "희망 방문지" 필드에 방문하고 싶은 장소를 입력해 주세요.',
+    startMessage: '저희 투어 서비스에 관심을 가져주셔서 감사합니다. 여행 날짜를 선택하여 시작해 보세요!'
   },
   auth: {
     id: 'ID',
@@ -845,7 +873,14 @@ const viTranslations = {
     login_error: 'ID hoặc mật khẩu không hợp lệ. Vui lòng thử lại.',
     login_success: 'Đăng nhập thành công',
     not_authenticated: 'Bạn cần đăng nhập để truy cập trang này',
-    refresh: 'Làm mới'
+    refresh: 'Làm mới',
+    welcomeMessage: 'Chào mừng đến với AsahiJapanTours.com',
+    welcomeDescription: 'Cảm ơn bạn đã chọn dịch vụ của chúng tôi. Chúng tôi cam kết mang đến cho bạn trải nghiệm du lịch Nhật Bản tuyệt vời nhất!',
+    preferredLocations: 'Địa điểm mong muốn',
+    tourFor: 'Tour cho',
+    pricePerPerson: 'Giá cho mỗi người',
+    tourExceedsDuration: 'Số ngày bạn chọn ({days} ngày) vượt quá số ngày tiêu chuẩn của tour ({standardDays} ngày). Vui lòng nhập địa điểm bạn muốn đến trong phần "Địa điểm mong muốn".',
+    startMessage: 'Cảm ơn bạn đã quan tâm đến dịch vụ tour của chúng tôi. Hãy bắt đầu bằng việc chọn ngày cho chuyến đi của bạn!'
   },
   auth: {
     id: 'ID',
