@@ -27,6 +27,7 @@ export type Vehicle = {
   id: number;
   name: string;
   seats: number;
+  luggageCapacity: number;
   pricePerDay: number;
   driverCostPerDay: number;
 };
@@ -87,6 +88,9 @@ export type CalculatorFormData = {
   participants: number;
   hotelId?: number;
   roomType?: RoomType;
+  singleRoomCount?: number;
+  doubleRoomCount?: number;
+  tripleRoomCount?: number;
   includeBreakfast?: boolean;
   includeLunch?: boolean;
   includeDinner?: boolean;
