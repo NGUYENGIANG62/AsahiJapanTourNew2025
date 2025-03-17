@@ -86,6 +86,58 @@ Nếu bạn muốn thiết lập môi trường thủ công thay vì sử dụng
    GOOGLE_REFRESH_TOKEN=your_google_refresh_token
    ```
 
+## Thiết lập Google Sheets
+
+Ứng dụng AsahiJapanTours hỗ trợ đồng bộ dữ liệu với Google Sheets. Có hai phương pháp xác thực:
+
+### Phương pháp 1: API Key (Chỉ đọc)
+
+1. **Tạo API Key trong Google Cloud Console**:
+   - Truy cập [Google Cloud Console](https://console.cloud.google.com/)
+   - Tạo dự án mới hoặc chọn dự án hiện có
+   - Đi đến "API & Services" > "Credentials"
+   - Nhấp vào "Create Credentials" > "API key"
+   - Lưu API key và thêm vào file `.env` dưới dạng `GOOGLE_API_KEY`
+
+2. **Kích hoạt Google Sheets API**:
+   - Trong Google Cloud Console, đi đến "API & Services" > "Library"
+   - Tìm và kích hoạt "Google Sheets API"
+
+3. **Chia sẻ Google Sheets**:
+   - Đảm bảo Google Sheets được chia sẻ với quyền "Bất kỳ ai có liên kết" có thể xem
+
+### Phương pháp 2: Service Account (Đọc và ghi)
+
+1. **Tạo Service Account**:
+   - Truy cập [Google Cloud Console](https://console.cloud.google.com/)
+   - Đi đến "IAM & Admin" > "Service accounts"
+   - Nhấp vào "Create Service Account"
+   - Đặt tên và mô tả (ví dụ: "AsahiJapanToursApp")
+   - Nhấp "Create and Continue" và hoàn tất các bước
+
+2. **Tạo key cho Service Account**:
+   - Sau khi tạo Service Account, nhấp vào tên của nó
+   - Đi đến tab "Keys"
+   - Nhấp vào "Add Key" > "Create new key"
+   - Chọn định dạng JSON và nhấp "Create"
+   - File JSON sẽ được tải xuống, chứa thông tin Service Account
+
+3. **Kích hoạt API cần thiết**:
+   - Đi đến "API & Services" > "Library"
+   - Tìm và kích hoạt "Google Sheets API"
+   - Tìm và kích hoạt "Google Drive API"
+
+4. **Chia sẻ Google Sheets với Service Account**:
+   - Mở Google Sheets của bạn
+   - Nhấp vào nút "Share" ở góc trên bên phải
+   - Thêm địa chỉ email của Service Account (dạng: service-account-name@project-id.iam.gserviceaccount.com)
+   - Cấp quyền "Editor" và nhấp "Send"
+
+5. **Thêm thông tin Service Account vào file `.env`**:
+   - Thêm `GOOGLE_SERVICE_ACCOUNT_EMAIL` với giá trị là email của Service Account
+   - Thêm `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` với giá trị là private key từ file JSON
+   - Đảm bảo private key được đặt trong dấu nháy kép và giữ nguyên dấu xuống dòng (\n)
+
 ## Tài khoản mặc định
 
 - **Admin**: 
@@ -118,8 +170,20 @@ Nếu bạn muốn thiết lập môi trường thủ công thay vì sử dụng
 - Đảm bảo đã cấu hình "Less secure app access" trong tài khoản Gmail
 
 ### Không thể đồng bộ với Google Sheets
-- Kiểm tra các thông tin GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN
-- Đảm bảo Google Sheets API đã được kích hoạt trong Google Cloud Console
+- **Nếu sử dụng API Key (chỉ đọc)**:
+  - Kiểm tra GOOGLE_API_KEY trong file .env
+  - Đảm bảo Google Sheets API đã được kích hoạt
+  - Kiểm tra quyền truy cập Google Sheets của bạn (phải được chia sẻ công khai)
+
+- **Nếu sử dụng Service Account (đọc và ghi)**:
+  - Kiểm tra GOOGLE_SERVICE_ACCOUNT_EMAIL và GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
+  - Đảm bảo đã chia sẻ Google Sheets với email của Service Account
+  - Kiểm tra quyền của Service Account (phải là Editor hoặc cao hơn)
+  - Đảm bảo Google Sheets API và Google Drive API đã được kích hoạt
+
+- **Nếu sử dụng OAuth2 (không khuyến nghị)**:
+  - Kiểm tra các thông tin GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN
+  - Đảm bảo refresh token còn hiệu lực
 
 ### Lỗi không thể truy cập /admin
 - Kiểm tra SESSION_SECRET trong file .env
