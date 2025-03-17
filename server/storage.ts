@@ -387,9 +387,14 @@ export class MemStorage implements IStorage {
   
   async createTour(insertTour: InsertTour): Promise<Tour> {
     const id = this.currentTourId++;
+    
+    // Tạo mã AVF theo số thứ tự
+    const avfCode = `AVF${(id - 1).toString().padStart(3, '0')}`;
+    
     const tour: Tour = { 
       ...insertTour, 
       id,
+      code: avfCode, // Ghi đè mã đã cung cấp với mã AVF mới
       nameJa: insertTour.nameJa || null,
       nameZh: insertTour.nameZh || null,
       nameKo: insertTour.nameKo || null,

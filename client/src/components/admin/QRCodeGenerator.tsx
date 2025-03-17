@@ -21,61 +21,89 @@ const QRCodeGenerator = () => {
 
   // Tạo QR code và thêm logo vào giữa
   const createQRCodeWithLogo = async (canvas: HTMLCanvasElement, qrText: string) => {
-    // Tạo QR code trước
-    await new Promise<void>((resolve, reject) => {
-      QRCode.toCanvas(
-        canvas,
-        qrText,
-        { 
-          width: Math.min(250, window.innerWidth - 40), 
-          margin: 0,
-          scale: 6,
-          errorCorrectionLevel: 'H', // Highest error correction for better scanning
-          color: { dark: '#000', light: '#fff' } 
-        },
-        (error) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve();
+    try {
+      // Tạo QR code trước
+      await new Promise<void>((resolve, reject) => {
+        QRCode.toCanvas(
+          canvas,
+          qrText,
+          { 
+            width: Math.min(250, window.innerWidth - 40), 
+            margin: 1,
+            scale: 6,
+            errorCorrectionLevel: 'H', // Highest error correction for better scanning
+            color: { dark: '#000', light: '#fff' } 
+          },
+          (error) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve();
+            }
           }
-        }
-      );
-    });
-
-    // Thêm logo nếu được chọn
-    if (showLogo && logoUrl) {
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      // Tải logo
-      const logoImg = new Image();
-      logoImg.src = logoUrl;
-      
-      await new Promise<void>((resolve) => {
-        logoImg.onload = () => {
-          // Kích thước logo không quá 30% của QR code
-          const logoSize = canvas.width * 0.3;
-          const logoX = (canvas.width - logoSize) / 2;
-          const logoY = (canvas.height - logoSize) / 2;
-          
-          // Vẽ nền trắng để logo hiển thị rõ
-          ctx.fillStyle = 'white';
-          ctx.fillRect(logoX, logoY, logoSize, logoSize);
-          
-          // Vẽ logo
-          ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
-          resolve();
-        };
-        logoImg.onerror = () => {
-          console.error('Không thể tải logo');
-          resolve();
-        };
+        );
       });
-    }
 
-    // Cập nhật data URL
-    setQRCodeDataURL(canvas.toDataURL() || null);
+      // Thêm logo nếu được chọn
+      if (showLogo) {
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        try {
+          // Tải logo
+          const logoImg = new Image();
+          logoImg.crossOrigin = 'anonymous'; // Cho phép tải từ các nguồn khác nhau
+          
+          await new Promise<void>((resolve, reject) => {
+            // Thiết lập xử lý sự kiện trước khi gán src
+            logoImg.onload = () => {
+              try {
+                // Kích thước logo không quá 25% của QR code để đảm bảo khả năng đọc
+                const logoSize = canvas.width * 0.25;
+                const logoX = (canvas.width - logoSize) / 2;
+                const logoY = (canvas.height - logoSize) / 2;
+                
+                // Vẽ nền trắng hình tròn để logo hiển thị rõ hơn
+                ctx.beginPath();
+                ctx.arc(logoX + logoSize/2, logoY + logoSize/2, logoSize/2 + 2, 0, Math.PI * 2);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                
+                // Vẽ logo
+                ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
+                resolve();
+              } catch (error) {
+                console.error('Lỗi khi vẽ logo:', error);
+                reject(error);
+              }
+            };
+            
+            logoImg.onerror = (error) => {
+              console.error('Không thể tải logo:', error);
+              reject(new Error('Không thể tải logo'));
+            };
+
+            // Gán src sau khi đã thiết lập xử lý sự kiện
+            if (logoUrl.includes('data:') || logoUrl.startsWith('/')) {
+              // Nếu là data URL hoặc đường dẫn nội bộ
+              logoImg.src = logoUrl;
+            } else {
+              // Nếu là URL bên ngoài, thêm timestamp để tránh cache
+              logoImg.src = `${logoUrl}?t=${Date.now()}`;
+            }
+          });
+        } catch (error) {
+          console.error('Lỗi khi xử lý logo:', error);
+          // Vẫn tiếp tục và trả về QR không có logo
+        }
+      }
+
+      // Cập nhật data URL
+      setQRCodeDataURL(canvas.toDataURL('image/png') || null);
+    } catch (error) {
+      console.error('Lỗi tạo QR code:', error);
+      throw error;
+    }
   };
 
   useEffect(() => {
