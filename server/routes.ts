@@ -761,6 +761,48 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
     }
   });
 
+  // Google Sheets Sync Routes (Admin only)
+  apiRouter.get("/sync/status", isAdminMiddleware, async (req, res) => {
+    try {
+      const lastSyncTime = await storage.getLastSyncTimestamp();
+      res.json({
+        lastSync: lastSyncTime ? new Date(lastSyncTime).toISOString() : null,
+        status: "ok"
+      });
+    } catch (error) {
+      console.error("Error getting sync status:", error);
+      res.status(500).json({ message: "Failed to get sync status", error: String(error) });
+    }
+  });
+
+  apiRouter.post("/sync/from-sheets", isAdminMiddleware, async (req, res) => {
+    try {
+      await syncDataFromSheets(storage);
+      await storage.updateLastSyncTimestamp();
+      res.json({ 
+        message: "Successfully synchronized data from Google Sheets",
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error syncing from sheets:", error);
+      res.status(500).json({ message: "Failed to sync from Google Sheets", error: String(error) });
+    }
+  });
+
+  apiRouter.post("/sync/to-sheets", isAdminMiddleware, async (req, res) => {
+    try {
+      await syncDataToSheets(storage);
+      await storage.updateLastSyncTimestamp();
+      res.json({ 
+        message: "Successfully synchronized data to Google Sheets",
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error syncing to sheets:", error);
+      res.status(500).json({ message: "Failed to sync to Google Sheets", error: String(error) });
+    }
+  });
+
   // Register API routes with proper prefix
   app.use("/api", apiRouter);
   

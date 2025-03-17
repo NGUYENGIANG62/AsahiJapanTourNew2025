@@ -6,6 +6,7 @@ import HotelManagement from './HotelManagement';
 import GuideManagement from './GuideManagement';
 import UserManagement from './UserManagement';
 import CompanySettings from './CompanySettings';
+import SyncManagement from './SyncManagement';
 import { Button } from '@/components/ui/button';
 import { 
   Map, 
@@ -14,6 +15,7 @@ import {
   Users, 
   UserCog, 
   Settings,
+  CloudCog,
 } from 'lucide-react';
 
 type Tab = 'tours' | 'vehicles' | 'hotels' | 'guides' | 'users' | 'settings';
