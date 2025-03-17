@@ -18,7 +18,7 @@ import {
   CloudCog,
 } from 'lucide-react';
 
-type Tab = 'tours' | 'vehicles' | 'hotels' | 'guides' | 'users' | 'settings';
+type Tab = 'tours' | 'vehicles' | 'hotels' | 'guides' | 'users' | 'settings' | 'sync';
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
@@ -30,7 +30,8 @@ const AdminDashboard = () => {
     { id: 'hotels', label: t('admin.hotelManagement'), icon: <Building className="mr-2 h-5 w-5" /> },
     { id: 'guides', label: t('admin.guideManagement'), icon: <Users className="mr-2 h-5 w-5" /> },
     { id: 'users', label: t('admin.userManagement'), icon: <UserCog className="mr-2 h-5 w-5" /> },
-    { id: 'settings', label: t('admin.companySettings'), icon: <Settings className="mr-2 h-5 w-5" /> }
+    { id: 'settings', label: t('admin.companySettings'), icon: <Settings className="mr-2 h-5 w-5" /> },
+    { id: 'sync', label: t('admin.googleSheetsSync'), icon: <CloudCog className="mr-2 h-5 w-5" /> }
   ];
 
   const renderContent = () => {
@@ -47,6 +48,8 @@ const AdminDashboard = () => {
         return <UserManagement />;
       case 'settings':
         return <CompanySettings />;
+      case 'sync':
+        return <SyncManagement />;
       default:
         return <TourManagement />;
     }
