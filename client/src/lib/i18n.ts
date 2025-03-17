@@ -167,6 +167,27 @@ const enTranslations = {
     10: 'October',
     11: 'November',
     12: 'December'
+  },
+  sync: {
+    title: 'Google Sheets Synchronization',
+    status: 'Sync Status',
+    lastSyncTime: 'Last Synchronized',
+    connectionStatus: 'Connection Status',
+    connected: 'Connected',
+    notConnected: 'Not Connected',
+    fromSheets: 'Import from Google Sheets',
+    toSheets: 'Export to Google Sheets',
+    never: 'Never synchronized',
+    help: 'Synchronization Help',
+    fromSheetsTitle: 'Import from Google Sheets',
+    fromSheetsDescription: 'Import data from Google Sheets to update tours, vehicles, hotels, guides, and seasons in the application.',
+    toSheetsTitle: 'Export to Google Sheets',
+    toSheetsDescription: 'Export all data from the application to Google Sheets for external editing or backup.',
+    note: 'Important Note',
+    noteDescription: 'Always ensure you have a stable internet connection when synchronizing data. Incomplete synchronization may result in data inconsistencies.',
+    fromSheetsSuccess: 'Data successfully imported from Google Sheets',
+    toSheetsSuccess: 'Data successfully exported to Google Sheets',
+    errorFetchingStatus: 'Error fetching synchronization status'
   }
 };
 
@@ -209,7 +230,8 @@ const jaTranslations = {
     profit: 'サービス料',
     login_error: 'IDまたはパスワードが無効です。もう一度お試しください。',
     login_success: 'ログイン成功',
-    not_authenticated: 'このページにアクセスするにはログインが必要です'
+    not_authenticated: 'このページにアクセスするにはログインが必要です',
+    refresh: '更新'
   },
   auth: {
     id: 'ID',
@@ -335,6 +357,27 @@ const jaTranslations = {
     10: '10月',
     11: '11月',
     12: '12月'
+  },
+  sync: {
+    title: 'Google シート同期',
+    status: '同期状態',
+    lastSyncTime: '最終同期',
+    connectionStatus: '接続状態',
+    connected: '接続中',
+    notConnected: '未接続',
+    fromSheets: 'Google シートからインポート',
+    toSheets: 'Google シートへエクスポート',
+    never: '同期履歴なし',
+    help: '同期ヘルプ',
+    fromSheetsTitle: 'Google シートからインポート',
+    fromSheetsDescription: 'Google シートからデータをインポートして、アプリケーション内のツアー、車両、ホテル、ガイド、シーズンを更新します。',
+    toSheetsTitle: 'Google シートへエクスポート',
+    toSheetsDescription: 'アプリケーションからすべてのデータを Google シートにエクスポートして、外部編集やバックアップを行います。',
+    note: '重要なお知らせ',
+    noteDescription: 'データを同期する際には、安定したインターネット接続を確保してください。不完全な同期はデータの不整合を引き起こす可能性があります。',
+    fromSheetsSuccess: 'Google シートからデータが正常にインポートされました',
+    toSheetsSuccess: 'データが Google シートに正常にエクスポートされました',
+    errorFetchingStatus: '同期状態の取得中にエラーが発生しました'
   }
 };
 
@@ -377,7 +420,8 @@ const zhTranslations = {
     profit: '服务费',
     login_error: 'ID或密码无效。请重试。',
     login_success: '登录成功',
-    not_authenticated: '您需要登录才能访问此页面'
+    not_authenticated: '您需要登录才能访问此页面',
+    refresh: '刷新'
   },
   auth: {
     id: 'ID',
@@ -503,6 +547,27 @@ const zhTranslations = {
     10: '十月',
     11: '十一月',
     12: '十二月'
+  },
+  sync: {
+    title: 'Google表格同步',
+    status: '同步状态',
+    lastSyncTime: '上次同步',
+    connectionStatus: '连接状态',
+    connected: '已连接',
+    notConnected: '未连接',
+    fromSheets: '从Google表格导入',
+    toSheets: '导出到Google表格',
+    never: '从未同步',
+    help: '同步帮助',
+    fromSheetsTitle: '从Google表格导入',
+    fromSheetsDescription: '从Google表格导入数据以更新应用程序中的行程、车辆、酒店、导游和季节信息。',
+    toSheetsTitle: '导出到Google表格',
+    toSheetsDescription: '将应用程序中的所有数据导出到Google表格以进行外部编辑或备份。',
+    note: '重要提示',
+    noteDescription: '同步数据时，请确保有稳定的互联网连接。不完整的同步可能导致数据不一致。',
+    fromSheetsSuccess: '已成功从Google表格导入数据',
+    toSheetsSuccess: '已成功将数据导出到Google表格',
+    errorFetchingStatus: '获取同步状态时出错'
   }
 };
 
@@ -545,7 +610,8 @@ const koTranslations = {
     profit: '서비스 요금',
     login_error: '잘못된 ID 또는 비밀번호입니다. 다시 시도하세요.',
     login_success: '로그인 성공',
-    not_authenticated: '이 페이지에 접근하려면 로그인이 필요합니다'
+    not_authenticated: '이 페이지에 접근하려면 로그인이 필요합니다',
+    refresh: '새로고침'
   },
   auth: {
     id: 'ID',
@@ -671,6 +737,27 @@ const koTranslations = {
     10: '10월',
     11: '11월',
     12: '12월'
+  },
+  sync: {
+    title: 'Google 스프레드시트 동기화',
+    status: '동기화 상태',
+    lastSyncTime: '마지막 동기화',
+    connectionStatus: '연결 상태',
+    connected: '연결됨',
+    notConnected: '연결되지 않음',
+    fromSheets: 'Google 스프레드시트에서 가져오기',
+    toSheets: 'Google 스프레드시트로 내보내기',
+    never: '동기화 내역 없음',
+    help: '동기화 도움말',
+    fromSheetsTitle: 'Google 스프레드시트에서 가져오기',
+    fromSheetsDescription: 'Google 스프레드시트에서 데이터를 가져와 애플리케이션의 투어, 차량, 호텔, 가이드 및 시즌 정보를 업데이트합니다.',
+    toSheetsTitle: 'Google 스프레드시트로 내보내기',
+    toSheetsDescription: '애플리케이션의 모든 데이터를 Google 스프레드시트로 내보내 외부 편집이나 백업을 할 수 있습니다.',
+    note: '중요 알림',
+    noteDescription: '데이터 동기화 시 안정적인 인터넷 연결이 필요합니다. 불완전한 동기화는 데이터 불일치를 초래할 수 있습니다.',
+    fromSheetsSuccess: 'Google 스프레드시트에서 데이터를 성공적으로 가져왔습니다',
+    toSheetsSuccess: '데이터를 Google 스프레드시트로 성공적으로 내보냈습니다',
+    errorFetchingStatus: '동기화 상태를 가져오는 중 오류가 발생했습니다'
   }
 };
 
@@ -713,7 +800,8 @@ const viTranslations = {
     profit: 'Phí dịch vụ',
     login_error: 'ID hoặc mật khẩu không hợp lệ. Vui lòng thử lại.',
     login_success: 'Đăng nhập thành công',
-    not_authenticated: 'Bạn cần đăng nhập để truy cập trang này'
+    not_authenticated: 'Bạn cần đăng nhập để truy cập trang này',
+    refresh: 'Làm mới'
   },
   auth: {
     id: 'ID',
@@ -839,6 +927,27 @@ const viTranslations = {
     10: 'Tháng 10',
     11: 'Tháng 11',
     12: 'Tháng 12'
+  },
+  sync: {
+    title: 'Đồng bộ Google Sheets',
+    status: 'Trạng thái Đồng bộ',
+    lastSyncTime: 'Lần đồng bộ cuối',
+    connectionStatus: 'Trạng thái kết nối',
+    connected: 'Đã kết nối',
+    notConnected: 'Chưa kết nối',
+    fromSheets: 'Nhập từ Google Sheets',
+    toSheets: 'Xuất đến Google Sheets',
+    never: 'Chưa từng đồng bộ',
+    help: 'Trợ giúp Đồng bộ',
+    fromSheetsTitle: 'Nhập từ Google Sheets',
+    fromSheetsDescription: 'Nhập dữ liệu từ Google Sheets để cập nhật thông tin tour, phương tiện, khách sạn, hướng dẫn viên và mùa trong ứng dụng.',
+    toSheetsTitle: 'Xuất đến Google Sheets',
+    toSheetsDescription: 'Xuất tất cả dữ liệu từ ứng dụng đến Google Sheets để chỉnh sửa bên ngoài hoặc sao lưu.',
+    note: 'Lưu ý Quan trọng',
+    noteDescription: 'Luôn đảm bảo bạn có kết nối internet ổn định khi đồng bộ dữ liệu. Đồng bộ không hoàn chỉnh có thể dẫn đến sự không nhất quán dữ liệu.',
+    fromSheetsSuccess: 'Dữ liệu đã được nhập thành công từ Google Sheets',
+    toSheetsSuccess: 'Dữ liệu đã được xuất thành công đến Google Sheets',
+    errorFetchingStatus: 'Lỗi khi lấy trạng thái đồng bộ'
   }
 };
 
