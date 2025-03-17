@@ -147,7 +147,9 @@ Nếu bạn muốn thiết lập môi trường thủ công thay vì sử dụng
   - Username: customer 
   - Password: AsahiTour2024
 
-## Triển khai lên môi trường production
+## Triển khai độc lập lên môi trường production
+
+### Triển khai thủ công
 
 1. **Build ứng dụng**:
    ```bash
@@ -157,6 +159,77 @@ Nếu bạn muốn thiết lập môi trường thủ công thay vì sử dụng
 2. **Chạy ở chế độ production**:
    ```bash
    npm start
+   ```
+
+### Triển khai lên hosting/VPS
+
+1. **Chuẩn bị môi trường Node.js trên VPS**:
+   ```bash
+   # Cài đặt Node.js và PM2 (process manager)
+   curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+   sudo apt-get install -y nodejs
+   sudo npm install -g pm2
+   ```
+
+2. **Tải mã nguồn lên VPS**:
+   ```bash
+   git clone https://github.com/your-username/asahijapantours.git
+   cd asahijapantours
+   npm install
+   ```
+
+3. **Thiết lập biến môi trường**:
+   ```bash
+   cp .env.example .env
+   nano .env   # Chỉnh sửa file .env với thông tin cần thiết
+   ```
+
+4. **Build và chạy ứng dụng với PM2**:
+   ```bash
+   npm run build
+   pm2 start dist/index.js --name "asahijapantours"
+   pm2 save
+   pm2 startup  # Thiết lập tự động khởi động khi server khởi động lại
+   ```
+
+5. **Cấu hình Nginx (tùy chọn, nếu muốn sử dụng domain)**:
+   ```bash
+   sudo apt-get install -y nginx
+   ```
+
+   Tạo file cấu hình Nginx:
+   ```bash
+   sudo nano /etc/nginx/sites-available/asahijapantours
+   ```
+
+   Nội dung file cấu hình:
+   ```
+   server {
+       listen 80;
+       server_name yourdomain.com www.yourdomain.com;
+
+       location / {
+           proxy_pass http://localhost:5000;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection 'upgrade';
+           proxy_set_header Host $host;
+           proxy_cache_bypass $http_upgrade;
+       }
+   }
+   ```
+
+   Kích hoạt cấu hình:
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/asahijapantours /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl restart nginx
+   ```
+
+6. **Cài đặt SSL với Let's Encrypt (tùy chọn)**:
+   ```bash
+   sudo apt-get install -y certbot python3-certbot-nginx
+   sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
    ```
 
 ## Xử lý sự cố
