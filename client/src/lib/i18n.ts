@@ -678,7 +678,10 @@ const zhTranslations = {
     noteDescription: '同步数据时，请确保有稳定的互联网连接。不完整的同步可能导致数据不一致。',
     fromSheetsSuccess: '已成功从Google表格导入数据',
     toSheetsSuccess: '已成功将数据导出到Google表格',
-    errorFetchingStatus: '获取同步状态时出错'
+    errorFetchingStatus: '获取同步状态时出错',
+    exportLanguage: '导出语言',
+    exportLanguageHelp: '选择导出到Google表格时使用的内容语言。',
+    exportWithLanguage: '以{{language}}内容导出'
   }
 };
 
@@ -903,7 +906,10 @@ const koTranslations = {
     noteDescription: '데이터 동기화 시 안정적인 인터넷 연결이 필요합니다. 불완전한 동기화는 데이터 불일치를 초래할 수 있습니다.',
     fromSheetsSuccess: 'Google 스프레드시트에서 데이터를 성공적으로 가져왔습니다',
     toSheetsSuccess: '데이터를 Google 스프레드시트로 성공적으로 내보냈습니다',
-    errorFetchingStatus: '동기화 상태를 가져오는 중 오류가 발생했습니다'
+    errorFetchingStatus: '동기화 상태를 가져오는 중 오류가 발생했습니다',
+    exportLanguage: '내보내기 언어',
+    exportLanguageHelp: 'Google 스프레드시트로 내보낼 때 사용할 콘텐츠 언어를 선택하세요.',
+    exportWithLanguage: '{{language}} 콘텐츠로 내보내기'
   }
 };
 
@@ -1128,7 +1134,10 @@ const viTranslations = {
     noteDescription: 'Luôn đảm bảo bạn có kết nối internet ổn định khi đồng bộ dữ liệu. Đồng bộ không hoàn chỉnh có thể dẫn đến sự không nhất quán dữ liệu.',
     fromSheetsSuccess: 'Dữ liệu đã được nhập thành công từ Google Sheets',
     toSheetsSuccess: 'Dữ liệu đã được xuất thành công đến Google Sheets',
-    errorFetchingStatus: 'Lỗi khi lấy trạng thái đồng bộ'
+    errorFetchingStatus: 'Lỗi khi lấy trạng thái đồng bộ',
+    exportLanguage: 'Ngôn ngữ xuất',
+    exportLanguageHelp: 'Chọn ngôn ngữ nội dung khi xuất đến Google Sheets.',
+    exportWithLanguage: 'Xuất với nội dung {{language}}'
   }
 };
 
