@@ -301,9 +301,9 @@ const Step5Summary = () => {
       <Dialog open={showContactInfo} onOpenChange={setShowContactInfo}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Gửi yêu cầu tư vấn tour</DialogTitle>
+            <DialogTitle>{t('calculator.summary.sendTourRequest', 'Gửi yêu cầu tư vấn tour')}</DialogTitle>
             <DialogDescription>
-              Vui lòng cung cấp thông tin để chúng tôi liên hệ với bạn
+              {t('calculator.summary.provideContactInfo', 'Vui lòng cung cấp thông tin để chúng tôi liên hệ với bạn')}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -373,7 +373,7 @@ const Step5Summary = () => {
               disabled={emailStatus === 'sending'}
             >
               {emailStatus === 'sending' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {emailStatus === 'sending' ? 'Đang gửi...' : 'Gửi yêu cầu'}
+              {emailStatus === 'sending' ? t('calculator.summary.sending', 'Đang gửi...') : t('calculator.summary.sendRequest', 'Gửi yêu cầu')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -678,7 +678,7 @@ const Step5Summary = () => {
                       onClick={() => setShowContactInfo(true)}
                     >
                       <Mail className="mr-2 h-4 w-4" />
-                      Gửi yêu cầu tư vấn qua email
+                      {t('calculator.summary.sendEmailRequest', 'Gửi yêu cầu tư vấn qua email')}
                     </button>
                     
                     {/* Welcoming Message */}
