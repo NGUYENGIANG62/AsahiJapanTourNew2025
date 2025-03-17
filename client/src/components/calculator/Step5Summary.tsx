@@ -309,7 +309,7 @@ const Step5Summary = () => {
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="customer-name" className="text-right">
-                Họ tên
+                {t('calculator.summary.fullName', 'Full Name')}
               </label>
               <input
                 id="customer-name"
@@ -323,7 +323,7 @@ const Step5Summary = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="customer-age" className="text-right">
-                Tuổi
+                {t('calculator.summary.age', 'Age')}
               </label>
               <input
                 id="customer-age"
@@ -337,7 +337,7 @@ const Step5Summary = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="customer-phone" className="text-right">
-                Điện thoại
+                {t('calculator.summary.phone', 'Phone')}
               </label>
               <input
                 id="customer-phone"
@@ -351,7 +351,7 @@ const Step5Summary = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="customer-email" className="text-right">
-                Email
+                {t('calculator.summary.email', 'Email')}
               </label>
               <input
                 id="customer-email"
@@ -363,7 +363,7 @@ const Step5Summary = () => {
               />
             </div>
             <div className="text-sm text-muted-foreground">
-              Thông tin yêu cầu tour sẽ được gửi đến Asahi VietLife để tư vấn chi tiết
+              {t('calculator.summary.tourRequestInfo', 'Tour request information will be sent to Asahi VietLife for detailed consultation')}
             </div>
           </div>
           <DialogFooter>
