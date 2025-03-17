@@ -27,6 +27,14 @@ const initialFormData: CalculatorFormData = {
   vehicleCount: 1,
   participants: 1,
   currency: 'JPY',
+  specialServices: {
+    geishaShow: false,
+    kimonoExperience: false,
+    teaCeremony: false,
+    wagyuDinner: false,
+    sumoShow: false,
+    notes: '',
+  },
 };
 
 export const CalculatorContext = createContext<CalculatorContextType>({

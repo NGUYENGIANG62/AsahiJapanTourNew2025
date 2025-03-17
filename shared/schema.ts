@@ -142,6 +142,16 @@ export type Setting = typeof settings.$inferSelect;
 export type InsertSetting = z.infer<typeof insertSettingSchema>;
 
 // Calculation Schema
+// Các loại dịch vụ đặc biệt
+export const specialServiceSchema = z.object({
+  geishaShow: z.boolean().optional(),
+  kimonoExperience: z.boolean().optional(),
+  teaCeremony: z.boolean().optional(),
+  wagyuDinner: z.boolean().optional(),
+  sumoShow: z.boolean().optional(),
+  notes: z.string().optional(),
+});
+
 export const calculationSchema = z.object({
   tourId: z.number(),
   startDate: z.string(),
@@ -160,6 +170,9 @@ export const calculationSchema = z.object({
   includeGuide: z.boolean().optional(),
   guideId: z.number().optional(),
   currency: z.enum(["JPY", "USD", "VND"]).default("JPY"),
+  // Dịch vụ đặc biệt
+  specialServices: specialServiceSchema.optional(),
 });
 
+export type SpecialService = z.infer<typeof specialServiceSchema>;
 export type Calculation = z.infer<typeof calculationSchema>;
