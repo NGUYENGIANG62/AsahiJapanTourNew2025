@@ -258,7 +258,7 @@ const Step5Summary = () => {
       setShowContactDirectly(true);
       toast({
         title: "Không thể gửi yêu cầu",
-        description: "Vui lòng liên hệ trực tiếp với AsahiVietLife qua thông tin liên hệ bên dưới.",
+        description: "Vui lòng liên hệ trực tiếp với Asahi VietLife qua thông tin liên hệ bên dưới.",
         variant: "destructive"
       });
     }
@@ -293,7 +293,7 @@ const Step5Summary = () => {
               />
             </div>
             <div className="text-sm text-muted-foreground">
-              Thông tin yêu cầu tour sẽ được gửi đến AsahiVietLife để tư vấn chi tiết
+              Thông tin yêu cầu tour sẽ được gửi đến Asahi VietLife để tư vấn chi tiết
             </div>
           </div>
           <DialogFooter>
