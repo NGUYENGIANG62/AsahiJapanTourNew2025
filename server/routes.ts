@@ -812,11 +812,11 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
 
 // Middleware to check if user is admin
 function isAdminMiddleware(req: Request, res: Response, next: express.NextFunction) {
-  if (!isAuthenticated(req)) {
+  if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "Not authenticated" });
   }
   
-  if (!isAdminUser(req)) {
+  if (req.user && (req.user as any).role !== 'admin') {
     return res.status(403).json({ message: "Not authorized" });
   }
   
