@@ -55,6 +55,15 @@ export interface IStorage {
   // Settings Management
   getSetting(key: string): Promise<string | undefined>;
   updateSetting(key: string, value: string): Promise<Setting>;
+  
+  // Google Sheets Sync Methods
+  createOrUpdateTour(tour: any): Promise<Tour>;
+  createOrUpdateVehicle(vehicle: any): Promise<Vehicle>;
+  createOrUpdateHotel(hotel: any): Promise<Hotel>;
+  createOrUpdateGuide(guide: any): Promise<Guide>;
+  createOrUpdateSeason(season: any): Promise<Season>;
+  getLastSyncTimestamp(): Promise<number>;
+  updateLastSyncTimestamp(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -65,6 +74,9 @@ export class MemStorage implements IStorage {
   private guides: Map<number, Guide>;
   private seasons: Map<number, Season>;
   private settings: Map<string, Setting>;
+  
+  // Last sync timestamp
+  private lastSyncTimestamp: number = 0;
   
   private currentUserId: number;
   private currentTourId: number;
@@ -306,7 +318,11 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id,
+      role: insertUser.role || 'user' // Default to user role if not specified
+    };
     this.users.set(id, user);
     return user;
   }
@@ -332,7 +348,19 @@ export class MemStorage implements IStorage {
   
   async createTour(insertTour: InsertTour): Promise<Tour> {
     const id = this.currentTourId++;
-    const tour: Tour = { ...insertTour, id };
+    const tour: Tour = { 
+      ...insertTour, 
+      id,
+      nameJa: insertTour.nameJa || null,
+      nameZh: insertTour.nameZh || null,
+      nameKo: insertTour.nameKo || null,
+      nameVi: insertTour.nameVi || null,
+      descriptionJa: insertTour.descriptionJa || null,
+      descriptionZh: insertTour.descriptionZh || null,
+      descriptionKo: insertTour.descriptionKo || null,
+      descriptionVi: insertTour.descriptionVi || null,
+      imageUrl: insertTour.imageUrl || null
+    };
     this.tours.set(id, tour);
     return tour;
   }
@@ -361,7 +389,11 @@ export class MemStorage implements IStorage {
   
   async createVehicle(insertVehicle: InsertVehicle): Promise<Vehicle> {
     const id = this.currentVehicleId++;
-    const vehicle: Vehicle = { ...insertVehicle, id };
+    const vehicle: Vehicle = { 
+      ...insertVehicle, 
+      id,
+      luggageCapacity: insertVehicle.luggageCapacity || 0 // Default luggage capacity
+    };
     this.vehicles.set(id, vehicle);
     return vehicle;
   }
@@ -390,7 +422,11 @@ export class MemStorage implements IStorage {
   
   async createHotel(insertHotel: InsertHotel): Promise<Hotel> {
     const id = this.currentHotelId++;
-    const hotel: Hotel = { ...insertHotel, id };
+    const hotel: Hotel = { 
+      ...insertHotel, 
+      id,
+      imageUrl: insertHotel.imageUrl || null
+    };
     this.hotels.set(id, hotel);
     return hotel;
   }
@@ -454,7 +490,18 @@ export class MemStorage implements IStorage {
   
   async createSeason(insertSeason: InsertSeason): Promise<Season> {
     const id = this.currentSeasonId++;
-    const season: Season = { ...insertSeason, id };
+    const season: Season = { 
+      ...insertSeason, 
+      id,
+      nameJa: insertSeason.nameJa || null,
+      nameZh: insertSeason.nameZh || null,
+      nameKo: insertSeason.nameKo || null,
+      nameVi: insertSeason.nameVi || null,
+      descriptionJa: insertSeason.descriptionJa || null,
+      descriptionZh: insertSeason.descriptionZh || null,
+      descriptionKo: insertSeason.descriptionKo || null,
+      descriptionVi: insertSeason.descriptionVi || null
+    };
     this.seasons.set(id, season);
     return season;
   }
@@ -491,6 +538,167 @@ export class MemStorage implements IStorage {
       this.settings.set(key, newSetting);
       return newSetting;
     }
+  }
+
+  // Google Sheets Sync Methods
+  async createOrUpdateTour(tour: any): Promise<Tour> {
+    if (tour.id && this.tours.has(Number(tour.id))) {
+      const id = Number(tour.id);
+      return this.updateTour(id, {
+        name: tour.name,
+        code: tour.code,
+        location: tour.location,
+        description: tour.description,
+        durationDays: Number(tour.durationDays),
+        basePrice: Number(tour.basePrice),
+        imageUrl: tour.imageUrl,
+        nameJa: tour.nameJa,
+        nameZh: tour.nameZh,
+        nameKo: tour.nameKo,
+        nameVi: tour.nameVi,
+        descriptionJa: tour.descriptionJa,
+        descriptionZh: tour.descriptionZh,
+        descriptionKo: tour.descriptionKo,
+        descriptionVi: tour.descriptionVi
+      }) as Promise<Tour>;
+    } else {
+      // If no ID or ID not found, create new
+      return this.createTour({
+        name: tour.name,
+        code: tour.code,
+        location: tour.location,
+        description: tour.description,
+        durationDays: Number(tour.durationDays) || 1,
+        basePrice: Number(tour.basePrice) || 0,
+        imageUrl: tour.imageUrl,
+        nameJa: tour.nameJa,
+        nameZh: tour.nameZh,
+        nameKo: tour.nameKo,
+        nameVi: tour.nameVi,
+        descriptionJa: tour.descriptionJa,
+        descriptionZh: tour.descriptionZh,
+        descriptionKo: tour.descriptionKo,
+        descriptionVi: tour.descriptionVi
+      });
+    }
+  }
+
+  async createOrUpdateVehicle(vehicle: any): Promise<Vehicle> {
+    if (vehicle.id && this.vehicles.has(Number(vehicle.id))) {
+      const id = Number(vehicle.id);
+      return this.updateVehicle(id, {
+        name: vehicle.name,
+        seats: Number(vehicle.seats) || 0,
+        luggageCapacity: Number(vehicle.luggageCapacity) || 0,
+        pricePerDay: Number(vehicle.pricePerDay) || 0,
+        driverCostPerDay: Number(vehicle.driverCostPerDay) || 0
+      }) as Promise<Vehicle>;
+    } else {
+      // If no ID or ID not found, create new
+      return this.createVehicle({
+        name: vehicle.name,
+        seats: Number(vehicle.seats) || 0,
+        luggageCapacity: Number(vehicle.luggageCapacity) || 0,
+        pricePerDay: Number(vehicle.pricePerDay) || 0,
+        driverCostPerDay: Number(vehicle.driverCostPerDay) || 0
+      });
+    }
+  }
+
+  async createOrUpdateHotel(hotel: any): Promise<Hotel> {
+    if (hotel.id && this.hotels.has(Number(hotel.id))) {
+      const id = Number(hotel.id);
+      return this.updateHotel(id, {
+        name: hotel.name,
+        location: hotel.location,
+        stars: Number(hotel.stars) || 0,
+        singleRoomPrice: Number(hotel.singleRoomPrice) || 0,
+        doubleRoomPrice: Number(hotel.doubleRoomPrice) || 0,
+        tripleRoomPrice: Number(hotel.tripleRoomPrice) || 0,
+        breakfastPrice: Number(hotel.breakfastPrice) || 0,
+        imageUrl: hotel.imageUrl
+      }) as Promise<Hotel>;
+    } else {
+      // If no ID or ID not found, create new
+      return this.createHotel({
+        name: hotel.name,
+        location: hotel.location,
+        stars: Number(hotel.stars) || 0,
+        singleRoomPrice: Number(hotel.singleRoomPrice) || 0,
+        doubleRoomPrice: Number(hotel.doubleRoomPrice) || 0,
+        tripleRoomPrice: Number(hotel.tripleRoomPrice) || 0,
+        breakfastPrice: Number(hotel.breakfastPrice) || 0,
+        imageUrl: hotel.imageUrl
+      });
+    }
+  }
+
+  async createOrUpdateGuide(guide: any): Promise<Guide> {
+    const languages = typeof guide.languages === 'string' 
+      ? guide.languages.split(',').map((lang: string) => lang.trim()) 
+      : guide.languages || [];
+    
+    if (guide.id && this.guides.has(Number(guide.id))) {
+      const id = Number(guide.id);
+      return this.updateGuide(id, {
+        name: guide.name,
+        languages,
+        pricePerDay: Number(guide.pricePerDay) || 0
+      }) as Promise<Guide>;
+    } else {
+      // If no ID or ID not found, create new
+      return this.createGuide({
+        name: guide.name,
+        languages,
+        pricePerDay: Number(guide.pricePerDay) || 0
+      });
+    }
+  }
+
+  async createOrUpdateSeason(season: any): Promise<Season> {
+    if (season.id && this.seasons.has(Number(season.id))) {
+      const id = Number(season.id);
+      return this.updateSeason(id, {
+        name: season.name,
+        startMonth: Number(season.startMonth) || 1,
+        endMonth: Number(season.endMonth) || 12,
+        description: season.description,
+        priceMultiplier: Number(season.priceMultiplier) || 1,
+        nameJa: season.nameJa,
+        nameZh: season.nameZh,
+        nameKo: season.nameKo,
+        nameVi: season.nameVi,
+        descriptionJa: season.descriptionJa,
+        descriptionZh: season.descriptionZh,
+        descriptionKo: season.descriptionKo,
+        descriptionVi: season.descriptionVi
+      }) as Promise<Season>;
+    } else {
+      // If no ID or ID not found, create new
+      return this.createSeason({
+        name: season.name,
+        startMonth: Number(season.startMonth) || 1,
+        endMonth: Number(season.endMonth) || 12,
+        description: season.description,
+        priceMultiplier: Number(season.priceMultiplier) || 1,
+        nameJa: season.nameJa,
+        nameZh: season.nameZh,
+        nameKo: season.nameKo,
+        nameVi: season.nameVi,
+        descriptionJa: season.descriptionJa,
+        descriptionZh: season.descriptionZh,
+        descriptionKo: season.descriptionKo,
+        descriptionVi: season.descriptionVi
+      });
+    }
+  }
+
+  async getLastSyncTimestamp(): Promise<number> {
+    return this.lastSyncTimestamp;
+  }
+
+  async updateLastSyncTimestamp(): Promise<void> {
+    this.lastSyncTimestamp = Date.now();
   }
 }
 
