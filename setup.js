@@ -37,8 +37,12 @@ const askQuestions = async () => {
           
           rl.question('Google Refresh Token (nhấn Enter để bỏ qua): ', (googleRefreshToken) => {
             config.GOOGLE_REFRESH_TOKEN = googleRefreshToken || '';
-            rl.close();
-            resolve(config);
+            
+            rl.question('Google Spreadsheet URL (nhấn Enter để bỏ qua): ', (googleSpreadsheetUrl) => {
+              config.GOOGLE_SPREADSHEET_URL = googleSpreadsheetUrl || '';
+              rl.close();
+              resolve(config);
+            });
           });
         });
       });
