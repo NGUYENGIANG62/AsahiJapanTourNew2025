@@ -243,9 +243,10 @@ const Step5Summary = () => {
       if (response.ok) {
         setEmailStatus('success');
         setShowContactInfo(false);
+        setShowContactDirectly(true);
         toast({
-          title: "Yêu cầu của bạn đã được gửi",
-          description: "Thông tin tour đã được gửi đến AsahiVietLife. Chúng tôi sẽ liên hệ lại với bạn sớm nhất có thể.",
+          title: "Yêu cầu của bạn đã được ghi lại",
+          description: result.message || "Thông tin tour của bạn đã được lưu. Vui lòng liên hệ trực tiếp với AsahiVietLife để được phản hồi nhanh hơn.",
         });
       } else {
         throw new Error(result.message || 'Lỗi không xác định');
@@ -253,9 +254,10 @@ const Step5Summary = () => {
     } catch (error) {
       console.error("Error sending email:", error);
       setEmailStatus('error');
+      setShowContactDirectly(true);
       toast({
         title: "Không thể gửi yêu cầu",
-        description: error instanceof Error ? error.message : "Đã xảy ra lỗi khi gửi email. Vui lòng thử lại sau.",
+        description: "Vui lòng liên hệ trực tiếp với AsahiVietLife qua thông tin liên hệ bên dưới.",
         variant: "destructive"
       });
     }
