@@ -678,14 +678,14 @@ const Step5Summary = () => {
                       onClick={() => setShowContactInfo(true)}
                     >
                       <Mail className="mr-2 h-4 w-4" />
-                      {t('calculator.summary.sendEmailRequest', 'Gửi yêu cầu tư vấn qua email')}
+                      {t('calculator.summary.sendEmailRequest')}
                     </button>
                     
                     {/* Welcoming Message */}
                     <div className="mt-6 border rounded-md p-4 bg-muted/10 text-left">
-                      <h4 className="font-medium mb-2 text-primary">{t('common.welcomeMessage', 'Chào mừng đến với AsahiJapanTours.com')}</h4>
+                      <h4 className="font-medium mb-2 text-primary">{t('common.welcomeMessage')}</h4>
                       <p className="text-sm text-muted-foreground mb-3">
-                        {t('common.summaryThankYou', 'Cảm ơn bạn đã chọn dịch vụ của chúng tôi. Chúng tôi cam kết mang đến cho bạn trải nghiệm du lịch Nhật Bản tuyệt vời nhất!')}
+                        {t('common.summaryThankYou')}
                       </p>
                       <div className="flex items-center gap-2 mt-3">
                         <a 
