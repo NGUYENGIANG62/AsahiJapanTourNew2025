@@ -12,87 +12,72 @@ let spreadsheetId: string | null = null;
  */
 async function authorize() {
   try {
-    // Direct link to the spreadsheet provided by the user
-    const spreadsheetUrl = "https://docs.google.com/spreadsheets/d/1DQ1e6k4I65O5NxmX8loJ_SKUI7aoIj3WCu5BMLUCznw/edit?usp=drive_link";
+    // Kiểm tra và ghi log tất cả các biến môi trường liên quan đến Google Sheets
+    console.log('ENV variables check:');
+    console.log('GOOGLE_SPREADSHEET_URL:', process.env.GOOGLE_SPREADSHEET_URL);
+    console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
+    console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? '✓ exists' : 'missing');
+    console.log('GOOGLE_REFRESH_TOKEN:', process.env.GOOGLE_REFRESH_TOKEN ? '✓ exists' : 'missing');
     
-    // Extract spreadsheet ID from URL
+    // Lấy đường dẫn trực tiếp tới Google Sheets từ biến môi trường hoặc sử dụng mặc định
+    const defaultSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/1DQ1e6k4I65O5NxmX8loJ_SKUI7aoIj3WCu5BMLUCznw/edit?usp=drive_link";
+    const spreadsheetUrl = process.env.GOOGLE_SPREADSHEET_URL || defaultSpreadsheetUrl;
+    
+    console.log('Using spreadsheet URL:', spreadsheetUrl);
+    
+    // Trích xuất ID từ URL
     const urlMatch = spreadsheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
     if (urlMatch && urlMatch[1]) {
       spreadsheetId = urlMatch[1];
+      console.log('Using spreadsheet ID:', spreadsheetId);
+    } else {
+      console.warn('Could not extract spreadsheet ID from URL. Will attempt to find by name.');
     }
     
-    // Use OAuth2 with provided credentials
-    const client_id = '407408718192.apps.googleusercontent.com';
-    const client_secret = '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';
-    const refresh_token = '1//04r6Ht9qUilVPCgYIARAAGAQSNwF-L9IrwLvEGxqYA7wHpRPN80wwP4vOkBQQI0KvgSNFuRFy6e67UuMYeeLeMnqtb-ph5u4EHSQ';
+    // Get credentials from environment variables
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
     
-    console.log('Using OAuth2 authentication with client ID:', client_id);
+    // Kiểm tra xem có đầy đủ thông tin đăng nhập không
+    if (!clientId || !clientSecret || !refreshToken) {
+      console.error('Missing required OAuth2.0 credentials:');
+      if (!clientId) console.error('- GOOGLE_CLIENT_ID is missing');
+      if (!clientSecret) console.error('- GOOGLE_CLIENT_SECRET is missing');
+      if (!refreshToken) console.error('- GOOGLE_REFRESH_TOKEN is missing');
+      
+      throw new Error('Missing required Google OAuth credentials');
+    }
     
-    const oAuth2Client = new google.auth.OAuth2(client_id, client_secret);
+    console.log('Setting up OAuth2 client with provided credentials');
     
-    // Set credentials using refresh token
+    // Khởi tạo OAuth2 client
+    const oAuth2Client = new google.auth.OAuth2(
+      clientId,
+      clientSecret,
+      'https://developers.google.com/oauthplayground' // Redirect URI không quan trọng khi sử dụng refresh token
+    );
+    
+    // Thiết lập thông tin xác thực sử dụng refresh token
     oAuth2Client.setCredentials({
-      refresh_token: refresh_token
+      refresh_token: refreshToken
     });
     
-    return google.sheets({ version: 'v4', auth: oAuth2Client });
-  } catch (error) {
-    console.error('Error with OAuth2 authorization, trying alternative methods:', error);
+    // Mở rộng thời gian hết hạn của token
+    oAuth2Client.on('tokens', (tokens) => {
+      if (tokens.refresh_token) {
+        console.log('New refresh token received, consider updating your .env file');
+      }
+    });
     
-    // Fallback methods if OAuth2 fails
-    if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      try {
-        const auth = new google.auth.GoogleAuth({
-          scopes: SCOPES,
-        });
-        
-        const client = await auth.getClient();
-        return google.sheets({ version: 'v4', auth: client as any });
-      } catch (e) {
-        console.error('Error with service account auth:', e);
-        throw e;
-      }
-    } 
-    // If using API key
-    else if (process.env.GOOGLE_API_KEY) {
-      return google.sheets({ 
-        version: 'v4', 
-        auth: process.env.GOOGLE_API_KEY 
-      });
-    }
-    // Default to credentials JSON from environment variable
-    else if (process.env.GOOGLE_CREDENTIALS) {
-      try {
-        const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
-        const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
-        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-        
-        // If we have a token, use it
-        if (process.env.GOOGLE_TOKEN) {
-          oAuth2Client.setCredentials(JSON.parse(process.env.GOOGLE_TOKEN));
-        }
-        
-        return google.sheets({ version: 'v4', auth: oAuth2Client });
-      } catch (e) {
-        console.error('Failed to parse credentials:', e);
-        throw new Error('Invalid Google credentials format');
-      }
-    } 
-    // For development: use direct auth with the browser
-    else {
-      console.log('No credentials found, using default authentication');
-      try {
-        const auth = new google.auth.GoogleAuth({
-          scopes: SCOPES,
-        });
-        
-        const client = await auth.getClient();
-        return google.sheets({ version: 'v4', auth: client as any });
-      } catch (e) {
-        console.error('Error with default auth:', e);
-        throw e;
-      }
-    }
+    // Tạo đối tượng API sheets sử dụng thông tin xác thực đã được thiết lập
+    return google.sheets({ 
+      version: 'v4', 
+      auth: oAuth2Client 
+    });
+  } catch (error) {
+    console.error('Authorization error:', error);
+    throw error;
   }
 }
 

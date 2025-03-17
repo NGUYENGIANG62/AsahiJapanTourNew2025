@@ -1,78 +1,112 @@
-# AsahiJapanTours Tour Price Calculator
+# AsahiJapanTours - Ứng Dụng Tính Giá Tour Nhật Bản
 
-Ứng dụng tính giá tour du lịch Nhật Bản đa ngôn ngữ cho AsahiVietLife.
+<p align="center">
+  <img src="./generated-icon.png" alt="AsahiJapanTours Logo" width="200"/>
+</p>
 
-## Tính năng
+Ứng dụng đa ngôn ngữ dành cho AsahiVietLife Travel & Tour, giúp tính toán giá tour du lịch Nhật Bản chính xác và chi tiết cho từng khách hàng.
 
-- Hỗ trợ đa ngôn ngữ (Tiếng Anh, Nhật, Trung, Hàn, Việt)
-- Tính toán giá tour chính xác dựa trên nhiều yếu tố
-- Chọn tour, phương tiện, lịch trình
-- Tùy chọn khách sạn, hướng dẫn viên
-- Quản lý thông tin tour từ giao diện admin
-- Chuyển đổi tiền tệ tự động
-- Gửi yêu cầu tư vấn qua email
+## Tính năng chính
 
-## Cài đặt
+✅ **Đa ngôn ngữ**: Hỗ trợ 5 ngôn ngữ (Tiếng Anh, Nhật, Trung, Hàn, Việt)  
+✅ **Tính toán giá tour chi tiết**: Tính toán dựa trên nhiều yếu tố (tour, phương tiện, số người, mùa, khách sạn, ăn uống, hướng dẫn viên)  
+✅ **Chuyển đổi tiền tệ**: Hỗ trợ 3 loại tiền tệ (JPY, USD, VND) với tỷ giá cập nhật tự động  
+✅ **Giao diện quản trị**: Quản lý thông tin tour, phương tiện, khách sạn, hướng dẫn viên, mùa  
+✅ **Tích hợp Google Sheets**: Đồng bộ dữ liệu với Google Sheets để dễ dàng quản lý  
+✅ **Gửi email tự động**: Gửi thông tin yêu cầu tư vấn qua email  
+✅ **Xác thực người dùng**: Phân quyền admin và khách hàng
 
-### Yêu cầu tiên quyết
+## Demo & Screenshots
 
-- Node.js 18.x trở lên
-- npm hoặc yarn
-- Tài khoản Gmail (cho chức năng gửi email)
+<p align="center">
+  <img src="./attached_assets/image_1742202377636.png" alt="Calculator Demo" width="80%"/>
+</p>
 
-### Cài đặt và khởi chạy
+| Giao diện tính giá tour | Trang quản trị |
+|-------------------------|----------------|
+| <img src="./attached_assets/image_1742201642536.png" alt="Calculator Screen" width="100%"/> | <img src="./attached_assets/image_1742206392753.png" alt="Admin Screen" width="100%"/> |
 
-1. Clone repo từ GitHub:
+## Cài đặt nhanh
+
+### Windows
+
+1. Clone repository
+2. Chạy file `start.bat` để tự động thiết lập và khởi động ứng dụng
+
+### Linux/macOS
+
 ```bash
 git clone https://github.com/yourusername/asahijapantours.git
 cd asahijapantours
-```
-
-2. Cài đặt các thư viện phụ thuộc:
-```bash
 npm install
-```
-
-3. Cài đặt biến môi trường:
-Tạo file `.env` trong thư mục gốc và thêm các biến sau:
-```
-SESSION_SECRET=your_session_secret
-EMAIL_PASSWORD=your_email_app_password
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_REFRESH_TOKEN=your_google_refresh_token
-```
-
-4. Khởi chạy ứng dụng:
-```bash
+node setup.js
 npm run dev
 ```
 
-5. Truy cập ứng dụng tại: http://localhost:5000
+## Cài đặt chi tiết
+
+Xem hướng dẫn cài đặt đầy đủ trong [INSTALL.md](./INSTALL.md).
+
+## Yêu cầu hệ thống
+
+- **Node.js**: 18.x trở lên
+- **npm**: 9.x trở lên
+- **Kết nối internet**: Cho chức năng chuyển đổi tiền tệ và đồng bộ Google Sheets
+- **Tài khoản Gmail**: Cho chức năng gửi email (sử dụng App Password)
+
+## Cấu trúc dự án
+
+```
+asahijapantours/
+├── client/             # Mã nguồn phía client (React + TypeScript)
+├── server/             # Mã nguồn phía server (Express)
+├── shared/             # Mã nguồn dùng chung giữa client và server
+├── .env.example        # Mẫu cấu hình biến môi trường
+├── setup.js            # Script thiết lập tự động
+└── start.bat           # Script khởi động cho Windows
+```
 
 ## Tài khoản mặc định
 
-- Admin: ID: AsahiVietLifeJapanTour, Password: Kiminonaha01
-- Khách hàng: ID: customer, Password: AsahiTour2024
+- **Admin**: 
+  - Username: AsahiVietLifeJapanTour
+  - Password: Kiminonaha01
+- **Khách hàng**: 
+  - Username: customer 
+  - Password: AsahiTour2024
 
-## Triển khai
+## Tính năng chi tiết
 
-Để triển khai lên môi trường production:
+### Tính toán giá tour
+- Chọn tour, ngày đi, ngày về
+- Chọn loại phương tiện và số lượng
+- Nhập số lượng khách
+- Chọn khách sạn và loại phòng
+- Tùy chọn ăn sáng, trưa, tối
+- Tùy chọn hướng dẫn viên
+- Tính toán giá theo mùa
+- Hiển thị báo giá chi tiết
 
-1. Build ứng dụng:
-```bash
-npm run build
-```
+### Quản trị viên
+- Quản lý thông tin tour, phương tiện, khách sạn, hướng dẫn viên
+- Thêm, sửa, xóa thông tin
+- Đồng bộ dữ liệu với Google Sheets
+- Cài đặt tỷ lệ lợi nhuận và thuế
 
-2. Khởi chạy ứng dụng trong môi trường production:
-```bash
-npm start
-```
+### Đa ngôn ngữ
+- Chuyển đổi giao diện giữa 5 ngôn ngữ
+- Hiển thị nội dung tour trong các ngôn ngữ khác nhau
 
-## Người đóng góp
+## Đóng góp
 
-- AsahiVietLife Japan Tour Team
+Vui lòng xem [CONTRIBUTING.md](./CONTRIBUTING.md) để biết chi tiết về quy trình đóng góp cho dự án.
+
+## Liên hệ & Hỗ trợ
+
+- **Email**: hoangtucuoirong@gmail.com
+- **Website**: [AsahiJapanTours.com](https://asahijapantours.com)
+- **Facebook**: [AsahiVietLife](https://www.facebook.com/profile.php?id=61566880418544)
 
 ## Giấy phép
 
-Dự án này được phân phối dưới Giấy phép MIT.
+Dự án này được phân phối dưới [Giấy phép MIT](./LICENSE).
