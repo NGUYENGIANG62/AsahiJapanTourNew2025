@@ -553,8 +553,8 @@ const Step5Summary = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Item</TableHead>
-                      <TableHead className="text-right">Cost</TableHead>
+                      <TableHead>{t('calculator.summary.item', 'Item')}</TableHead>
+                      <TableHead className="text-right">{t('calculator.summary.cost', 'Cost')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -626,7 +626,7 @@ const Step5Summary = () => {
                   
                   {calculation.calculationDetails.participants > 1 && (
                     <div className="mt-3 text-lg font-semibold">
-                      <span className="mr-2">Giá cho mỗi người:</span>
+                      <span className="mr-2">{t('calculator.summary.pricePerPerson', 'Giá cho mỗi người:')}</span>
                       {formatCurrency(calculation.totalInRequestedCurrency / calculation.calculationDetails.participants)}
                     </div>
                   )}
@@ -634,27 +634,27 @@ const Step5Summary = () => {
                   <div className="mt-4 flex flex-col gap-3">
                     <div className="p-3 border rounded-md bg-muted/20">
                       <div className="flex justify-between items-center">
-                        <span className="font-medium">Tour cho {calculation.calculationDetails.participants} người</span>
+                        <span className="font-medium">{t('calculator.summary.tourForPeople', 'Tour cho')} {calculation.calculationDetails.participants} {t('calculator.summary.people', 'người')}</span>
                         <span className="font-semibold">{formatCurrency(calculation.totalInRequestedCurrency)}</span>
                       </div>
                       <div className="text-xs text-muted-foreground text-left mt-1">
-                        {calculation.tourDetails.durationDays} ngày, {calculation.tourDetails.name}, {calculation.tourDetails.location}
+                        {calculation.tourDetails.durationDays} {t('calculator.summary.days', 'ngày')}, {calculation.tourDetails.name}, {calculation.tourDetails.location}
                       </div>
                       <div className="text-xs text-muted-foreground text-left mt-1">
-                        Từ {formatDate(formData.startDate)} đến {formatDate(formData.endDate)}
+                        {t('calculator.summary.from', 'Từ')} {formatDate(formData.startDate)} {t('calculator.summary.to', 'đến')} {formatDate(formData.endDate)}
                       </div>
                       {vehicle && (
                         <div className="text-xs text-muted-foreground text-left mt-1">
-                          Phương tiện: {formData.vehicleCount || 1}x {vehicle.name}
+                          {t('calculator.summary.transport', 'Phương tiện')}: {formData.vehicleCount || 1}x {vehicle.name}
                         </div>
                       )}
                     </div>
                     
                     <div className="border rounded-md p-3">
-                      <h4 className="font-medium text-left mb-2">Địa điểm mong muốn</h4>
+                      <h4 className="font-medium text-left mb-2">{t('calculator.summary.preferredLocations', 'Địa điểm mong muốn')}</h4>
                       <textarea 
                         className="w-full border rounded-md h-20 p-2 text-sm"
-                        placeholder="Vui lòng nhập các địa điểm bạn muốn đến thăm trong chuyến tour này..."
+                        placeholder={t('calculator.summary.preferredLocationsPlaceholder', 'Vui lòng nhập các địa điểm bạn muốn đến thăm trong chuyến tour này...')}
                         id="preferred-locations"
                         ref={preferredLocationsRef}
                         onChange={(e) => setPreferredLocations(e.target.value)}
@@ -667,8 +667,8 @@ const Step5Summary = () => {
                       <Alert className="mb-2">
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription>
-                          Số ngày bạn chọn ({calculateDuration()} ngày) vượt quá số ngày tiêu chuẩn của tour ({tour?.durationDays} ngày). 
-                          Vui lòng nhập địa điểm bạn muốn đến trong phần "Địa điểm mong muốn".
+                          {t('calculator.summary.daysExceeded', 'Số ngày bạn chọn')} ({calculateDuration()} {t('calculator.summary.days', 'ngày')}) {t('calculator.summary.exceedsTourDays', 'vượt quá số ngày tiêu chuẩn của tour')} ({tour?.durationDays} {t('calculator.summary.days', 'ngày')}). 
+                          {t('calculator.summary.pleaseEnterLocations', 'Vui lòng nhập địa điểm bạn muốn đến trong phần "Địa điểm mong muốn".')}
                         </AlertDescription>
                       </Alert>
                     )}
