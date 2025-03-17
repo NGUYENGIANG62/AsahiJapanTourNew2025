@@ -753,6 +753,23 @@ export class MemStorage implements IStorage {
   async updateLastSyncTimestamp(): Promise<void> {
     this.lastSyncTimestamp = Date.now();
   }
+
+  // Cập nhật mã AVF cho tất cả tours
+  async updateAllTourAVFCodes(): Promise<Tour[]> {
+    const tours = Array.from(this.tours.values());
+    
+    // Cập nhật mã cho từng tour
+    for (let i = 0; i < tours.length; i++) {
+      const tour = tours[i];
+      const avfCode = `AVF${i.toString().padStart(3, '0')}`; // AVF000, AVF001, ...
+      
+      // Giữ nguyên mã tour hiện tại, chỉ thêm avfCode
+      await this.updateTour(tour.id, { avfCode });
+    }
+    
+    // Trả về danh sách tours đã cập nhật
+    return Array.from(this.tours.values());
+  }
 }
 
 export const storage = new MemStorage();
