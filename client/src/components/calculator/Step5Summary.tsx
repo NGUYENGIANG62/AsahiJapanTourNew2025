@@ -68,6 +68,9 @@ const Step5Summary = () => {
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [showContactInfo, setShowContactInfo] = useState<boolean>(false);
   const [customerEmail, setCustomerEmail] = useState<string>('');
+  const [customerName, setCustomerName] = useState<string>('');
+  const [customerAge, setCustomerAge] = useState<string>('');
+  const [customerPhone, setCustomerPhone] = useState<string>('');
   const [showContactDirectly, setShowContactDirectly] = useState<boolean>(false);
   const preferredLocationsRef = useRef<HTMLTextAreaElement>(null);
   
@@ -276,10 +279,52 @@ const Step5Summary = () => {
           <DialogHeader>
             <DialogTitle>Gửi yêu cầu tư vấn tour</DialogTitle>
             <DialogDescription>
-              Vui lòng cung cấp email để chúng tôi liên hệ với bạn
+              Vui lòng cung cấp thông tin để chúng tôi liên hệ với bạn
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="customer-name" className="text-right">
+                Họ tên
+              </label>
+              <input
+                id="customer-name"
+                type="text"
+                className="col-span-3 w-full rounded-md border p-2"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="Nguyễn Văn A"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="customer-age" className="text-right">
+                Tuổi
+              </label>
+              <input
+                id="customer-age"
+                type="number"
+                className="col-span-3 w-full rounded-md border p-2"
+                value={customerAge}
+                onChange={(e) => setCustomerAge(e.target.value)}
+                placeholder="35"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="customer-phone" className="text-right">
+                Điện thoại
+              </label>
+              <input
+                id="customer-phone"
+                type="tel"
+                className="col-span-3 w-full rounded-md border p-2"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                placeholder="0901234567"
+              />
+            </div>
+            
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="customer-email" className="text-right">
                 Email
@@ -290,6 +335,7 @@ const Step5Summary = () => {
                 className="col-span-3 w-full rounded-md border p-2"
                 value={customerEmail}
                 onChange={(e) => setCustomerEmail(e.target.value)}
+                placeholder="email@example.com"
               />
             </div>
             <div className="text-sm text-muted-foreground">
