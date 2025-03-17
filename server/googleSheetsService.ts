@@ -1,4 +1,5 @@
 import { google, sheets_v4 } from 'googleapis';
+import { JWT } from 'google-auth-library';
 
 // Google Sheets configuration
 const SCOPES = [
@@ -11,17 +12,18 @@ const SPREADSHEET_NAME = 'AsahiJapanTours';
 let spreadsheetId: string | null = null;
 
 /**
- * Authorize with Google using OAuth2 
- * This is the most reliable method for accessing Google Sheets
+ * Authorize with Google using Service Account or API Key
+ * Service Account allows both read and write access
+ * API Key allows only read access
  */
 async function authorize() {
   try {
-    // Kiểm tra và ghi log tất cả các biến môi trường liên quan đến Google Sheets
+    // Kiểm tra và ghi log các biến môi trường
     console.log('ENV variables check:');
     console.log('GOOGLE_SPREADSHEET_URL:', process.env.GOOGLE_SPREADSHEET_URL);
     
-    // Lấy đường dẫn trực tiếp tới Google Sheets từ biến môi trường hoặc sử dụng mặc định
-    const defaultSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/1DQ1e6k4I65O5NxmX8loJ_SKUI7aoIj3WCu5BMLUCznw/edit?usp=drive_link";
+    // Lấy đường dẫn tới Google Sheets từ biến môi trường hoặc sử dụng mặc định
+    const defaultSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/1DQ1e6k4I65O5NxmX8loJ_SKUI7aoIj3WCu5BMLUCznw/edit?usp=sharing";
     const spreadsheetUrl = process.env.GOOGLE_SPREADSHEET_URL || defaultSpreadsheetUrl;
     
     console.log('Using spreadsheet URL:', spreadsheetUrl);
@@ -34,32 +36,30 @@ async function authorize() {
     } else {
       console.warn('Could not extract spreadsheet ID from URL. Will attempt to find by name.');
     }
+
+    // Phương pháp 1: Sử dụng Service Account (đọc và ghi)
+    const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    const serviceAccountPrivateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
     
-    // Kiểm tra các biến môi trường xác thực OAuth2
-    const clientId = process.env.GOOGLE_CLIENT_ID;
-    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
-    
-    if (clientId && clientSecret && refreshToken) {
-      console.log('Using OAuth2 authentication with refresh token');
+    if (serviceAccountEmail && serviceAccountPrivateKey) {
+      console.log('Using Service Account for full access (read & write)');
       
-      const oauth2Client = new google.auth.OAuth2(
-        clientId,
-        clientSecret,
-        'https://developers.google.com/oauthplayground'
-      );
+      // Xử lý private key (thay thế \\n bằng \n nếu cần)
+      const privateKey = serviceAccountPrivateKey.replace(/\\n/g, '\n');
       
-      oauth2Client.setCredentials({
-        refresh_token: refreshToken
+      const auth = new JWT({
+        email: serviceAccountEmail,
+        key: privateKey,
+        scopes: SCOPES
       });
       
       return google.sheets({
         version: 'v4',
-        auth: oauth2Client
+        auth: auth
       });
     }
     
-    // Sử dụng API key nếu không có OAuth2
+    // Phương pháp 2: Sử dụng API key (chỉ đọc)
     const apiKey = process.env.GOOGLE_API_KEY;
     if (apiKey) {
       console.log('Using Google API key for authenticated public access (read-only)');
