@@ -17,9 +17,9 @@ export function isAdmin(user: User): boolean {
 }
 
 export function isAuthenticated(req: any): boolean {
-  return !!req.session.user;
+  return req.isAuthenticated && req.isAuthenticated();
 }
 
 export function isAdminUser(req: any): boolean {
-  return isAuthenticated(req) && req.session.user.role === 'admin';
+  return isAuthenticated(req) && req.user && req.user.role === 'admin';
 }
