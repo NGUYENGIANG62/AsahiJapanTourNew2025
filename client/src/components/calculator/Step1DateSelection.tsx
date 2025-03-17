@@ -10,6 +10,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import ContactInfo from '@/components/ContactInfo';
 
 const Step1DateSelection = () => {
   const { t } = useTranslation();
