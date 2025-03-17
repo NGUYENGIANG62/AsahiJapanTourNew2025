@@ -172,7 +172,12 @@ const enTranslations = {
       pricePerPerson: 'Price per person:',
       tourForPeople: 'Tour for',
       daysExceeded: 'Your selected days',
-      exceedsTourDays: 'exceeds the standard tour duration'
+      exceedsTourDays: 'exceeds the standard tour duration',
+      fullName: 'Full Name',
+      age: 'Age',
+      phone: 'Phone',
+      email: 'Email',
+      tourRequestInfo: 'Tour request information will be sent to Asahi VietLife for detailed consultation'
     }
   },
   languages: {
