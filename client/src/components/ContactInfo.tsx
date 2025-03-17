@@ -34,7 +34,7 @@ const ContactInfo = ({ compact = false }: ContactInfoProps) => {
               alt="Asahi VietLife Logo" 
               className="h-8 w-auto mr-2"
             />
-            {t('common.contactUs')}
+            <span>Asahi VietLife</span>
           </CardTitle>
           <CardDescription>
             {t('common.contactDescription')}

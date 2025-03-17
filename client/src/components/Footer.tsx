@@ -14,16 +14,16 @@ const Footer = () => {
           {/* Company Info */}
           <div>
             <Link href="/">
-              <a className="flex items-center mb-4">
+              <div className="flex items-center mb-4 cursor-pointer">
                 <img 
                   src={asahiLogo} 
                   alt="Asahi VietLife Logo" 
                   className="h-10 w-auto mr-2"
                 />
                 <span className="font-heading text-xl font-bold text-primary">
-                  {t('common.appName')}
+                  Asahi VietLife
                 </span>
-              </a>
+              </div>
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
               {t('common.companyDescription')}
@@ -85,23 +85,23 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/">
-                  <a className="text-muted-foreground hover:text-primary transition-colors">
+                  <div className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
                     {t('common.homePage')}
-                  </a>
+                  </div>
                 </Link>
               </li>
               <li>
                 <Link href="/calculator">
-                  <a className="text-muted-foreground hover:text-primary transition-colors">
+                  <div className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
                     {t('common.tourCalculator')}
-                  </a>
+                  </div>
                 </Link>
               </li>
               <li>
                 <Link href="/login">
-                  <a className="text-muted-foreground hover:text-primary transition-colors">
+                  <div className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
                     {t('common.login')}
-                  </a>
+                  </div>
                 </Link>
               </li>
             </ul>
