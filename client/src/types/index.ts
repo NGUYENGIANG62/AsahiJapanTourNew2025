@@ -81,6 +81,15 @@ export type Currency = 'JPY' | 'USD' | 'VND';
 
 export type RoomType = 'single' | 'double' | 'triple';
 
+export type SpecialService = {
+  geishaShow?: boolean;
+  kimonoExperience?: boolean;
+  teaCeremony?: boolean;
+  wagyuDinner?: boolean;
+  sumoShow?: boolean;
+  notes?: string;
+};
+
 export type CalculatorFormData = {
   tourId: number;
   startDate: string;
@@ -99,6 +108,8 @@ export type CalculatorFormData = {
   includeGuide?: boolean;
   guideId?: number;
   currency: Currency;
+  // Dịch vụ đặc biệt thêm ngoài tour
+  specialServices?: SpecialService;
 };
 
 export type CalculationResult = {
