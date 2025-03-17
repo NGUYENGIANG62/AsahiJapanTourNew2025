@@ -15,21 +15,13 @@ const transporter = nodemailer.createTransport({
   secure: true, // use SSL
   auth: {
     user: process.env.EMAIL_USER || 'hoangtucuoirong@gmail.com',
-    pass: process.env.EMAIL_PASSWORD
+    pass: process.env.EMAIL_PASSWORD || 'rsto qnza iavp xeop' // App password
   },
   debug: true // Show debug output
 });
 
 export const sendEmail = async (request: EmailRequest): Promise<{ success: boolean; message: string }> => {
   const { name, email, subject, message } = request;
-
-  if (!process.env.EMAIL_PASSWORD) {
-    console.warn('EMAIL_PASSWORD not set. Email service is not fully configured.');
-    return { 
-      success: false, 
-      message: 'Email service is not configured. Please try again later.'
-    };
-  }
 
   try {
     const mailOptions = {
