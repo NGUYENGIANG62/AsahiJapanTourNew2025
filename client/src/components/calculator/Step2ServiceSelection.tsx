@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { CalculatorContext } from '@/context/CalculatorContext';
+import { useAuth } from '@/hooks/useAuth';
 import { Tour, Vehicle } from '@/types';
 import { Label } from '@/components/ui/label';
 import {
@@ -30,6 +31,7 @@ import {
 
 const Step2ServiceSelection = () => {
   const { t } = useTranslation();
+  const { user, isAdmin } = useAuth();
   const { formData, updateFormData } = useContext(CalculatorContext);
 
   // Fetch tours
@@ -100,7 +102,11 @@ const Step2ServiceSelection = () => {
               <CardFooter className="bg-muted/50 pt-2">
                 <div className="text-sm font-medium flex items-center">
                   <Banknote className="h-4 w-4 mr-1 text-green-600" />
-                  Base price: {selectedTour.basePrice.toLocaleString()} JPY per person
+                  {isAdmin ? (
+                    <>Base price: {selectedTour.basePrice.toLocaleString()} JPY per person</>
+                  ) : (
+                    <>Tour duration: {selectedTour.durationDays} {selectedTour.durationDays === 1 ? 'day' : 'days'}</>
+                  )}
                 </div>
               </CardFooter>
             </Card>
@@ -143,16 +149,23 @@ const Step2ServiceSelection = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pb-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Vehicle Price:</span>
-                    <div className="font-medium">{selectedVehicle.pricePerDay.toLocaleString()} JPY per day</div>
+                {isAdmin ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Vehicle Price:</span>
+                      <div className="font-medium">{selectedVehicle.pricePerDay.toLocaleString()} JPY per day</div>
+                    </div>
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Driver Cost:</span>
+                      <div className="font-medium">{selectedVehicle.driverCostPerDay.toLocaleString()} JPY per day</div>
+                    </div>
                   </div>
+                ) : (
                   <div className="text-sm">
-                    <span className="text-muted-foreground">Driver Cost:</span>
-                    <div className="font-medium">{selectedVehicle.driverCostPerDay.toLocaleString()} JPY per day</div>
+                    <span className="text-muted-foreground">Capacity:</span>
+                    <div className="font-medium">{selectedVehicle.seats} passengers</div>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           )}
