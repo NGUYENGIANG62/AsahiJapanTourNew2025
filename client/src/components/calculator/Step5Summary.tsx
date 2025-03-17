@@ -213,6 +213,15 @@ const Step5Summary = () => {
       // Prepare the email content
       const emailSubject = `Yêu cầu tư vấn tour: ${tour?.name || 'Tour mới'} - ${formatDate(formData.startDate)}`;
       
+      // Add customer information
+      const customerInfo = `
+        Thông tin khách hàng:
+        Họ tên: ${customerName || 'Không cung cấp'}
+        Tuổi: ${customerAge || 'Không cung cấp'}
+        Điện thoại: ${customerPhone || 'Không cung cấp'}
+        Email: ${customerEmail}
+      `;
+      
       const tourDetails = `
         Tour: ${tour?.name || 'Chưa chọn'}
         Địa điểm: ${tour?.location || 'Chưa chọn'}
@@ -225,8 +234,9 @@ const Step5Summary = () => {
         Tổng chi phí: ${formatCurrency(calculation?.totalInRequestedCurrency || 0)}
         ${formData.participants > 1 ? `Chi phí mỗi người: ${formatCurrency((calculation?.totalInRequestedCurrency || 0) / formData.participants)}` : ''}
         ${preferredLocations ? `Địa điểm mong muốn: ${preferredLocations}` : ''}
-        Email khách hàng: ${customerEmail}
       `;
+
+      const fullMessage = customerInfo + '\n' + tourDetails;
 
       // Send email via the real API endpoint
       const response = await fetch('/api/send-tour-inquiry', {
@@ -235,10 +245,10 @@ const Step5Summary = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: customerEmail.split('@')[0],  // Use part of email as name if no name provided
+          name: customerName || customerEmail.split('@')[0], // Use provided name or part of email
           email: customerEmail,
           subject: emailSubject,
-          message: tourDetails
+          message: fullMessage
         }),
       });
 
