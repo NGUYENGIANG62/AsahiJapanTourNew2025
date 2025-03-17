@@ -210,7 +210,15 @@ export async function getSheetData(sheetName: string): Promise<any[]> {
     return rows.slice(1).map(row => {
       const item: Record<string, any> = {};
       headers.forEach((header, index) => {
-        item[header] = row[index];
+        let value = row[index];
+        
+        // Special handling for known array fields
+        if (header === 'languages' && typeof value === 'string' && value.includes(',')) {
+          // Convert comma-separated string back to array
+          value = value.split(',').map(v => v.trim());
+        }
+        
+        item[header] = value;
       });
       return item;
     });
@@ -241,8 +249,18 @@ export async function updateSheetItem(sheetName: string, item: any): Promise<voi
     // Extract header row
     const headers = rows[0];
     
-    // Create a row of values in the correct order
-    const values = headers.map(header => item[header] || '');
+    // Create a row of values in the correct order, converting arrays to strings
+    const values = headers.map(header => {
+      const value = item[header];
+      
+      // Handle array values by converting them to comma-separated strings
+      if (Array.isArray(value)) {
+        return value.join(',');
+      }
+      
+      // Handle undefined or null values
+      return value !== undefined && value !== null ? value : '';
+    });
     
     // Find if this item already exists (by ID)
     const rowIndex = rows.findIndex((row, index) => index > 0 && row[0] === item.id.toString());
