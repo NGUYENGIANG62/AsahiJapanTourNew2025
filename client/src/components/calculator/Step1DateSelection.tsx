@@ -15,6 +15,8 @@ import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Facebook, Mail, Phone } from 'lucide-react';
 import i18n from '@/lib/i18n';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const Step1DateSelection = () => {
   const { t } = useTranslation();
@@ -64,8 +66,9 @@ const Step1DateSelection = () => {
   }, [i18n.language, refetchSeason, currentMonth]);
   
   // Handle date change
-  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newStartDate = e.target.value;
+  const handleStartDateChange = (date: Date | null) => {
+    if (!date) return;
+    const newStartDate = date.toISOString().split('T')[0];
     updateFormData({ startDate: newStartDate });
     
     // If end date is before start date, reset end date
@@ -74,8 +77,10 @@ const Step1DateSelection = () => {
     }
   };
   
-  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateFormData({ endDate: e.target.value });
+  const handleEndDateChange = (date: Date | null) => {
+    if (!date) return;
+    const newEndDate = date.toISOString().split('T')[0];
+    updateFormData({ endDate: newEndDate });
   };
 
   return (
@@ -91,29 +96,35 @@ const Step1DateSelection = () => {
               <Label className="block text-sm font-medium text-neutral mb-2">
                 {t('calculator.startDate')}
               </Label>
-              <input 
-                type="date" 
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
-                min={today}
-                value={formData.startDate}
-                onChange={handleStartDateChange}
-                lang={i18n.language}
-              />
+              <div className="w-full px-3 py-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-primary/50 focus-within:outline-none">
+                <DatePicker 
+                  className="w-full outline-none"
+                  selected={formData.startDate ? new Date(formData.startDate) : null}
+                  onChange={handleStartDateChange}
+                  minDate={new Date()}
+                  dateFormat="yyyy/MM/dd"
+                  locale={i18n.language}
+                  placeholderText={t('calculator.selectTourDates')}
+                />
+              </div>
             </div>
             
             <div>
               <Label className="block text-sm font-medium text-neutral mb-2">
                 {t('calculator.endDate')}
               </Label>
-              <input 
-                type="date" 
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
-                min={formData.startDate || today}
-                value={formData.endDate}
-                onChange={handleEndDateChange}
-                disabled={!formData.startDate}
-                lang={i18n.language}
-              />
+              <div className="w-full px-3 py-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-primary/50 focus-within:outline-none">
+                <DatePicker 
+                  className="w-full outline-none"
+                  selected={formData.endDate ? new Date(formData.endDate) : null}
+                  onChange={handleEndDateChange}
+                  minDate={formData.startDate ? new Date(formData.startDate) : new Date()}
+                  dateFormat="yyyy/MM/dd"
+                  locale={i18n.language}
+                  placeholderText={t('calculator.selectTourDates')}
+                  disabled={!formData.startDate}
+                />
+              </div>
             </div>
           </div>
           
