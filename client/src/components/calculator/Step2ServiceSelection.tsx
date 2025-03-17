@@ -5,6 +5,7 @@ import { CalculatorContext } from '@/context/CalculatorContext';
 import { useAuth } from '@/hooks/useAuth';
 import { Tour, Vehicle } from '@/types';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -149,6 +150,26 @@ const Step2ServiceSelection = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pb-2">
+                <div className="mb-4">
+                  <Label htmlFor="vehicleCount" className="block text-sm mb-1">
+                    Number of vehicles
+                  </Label>
+                  <Input
+                    id="vehicleCount"
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={formData.vehicleCount || 1}
+                    onChange={(e) => {
+                      const count = parseInt(e.target.value);
+                      if (!isNaN(count) && count > 0 && count <= 10) {
+                        updateFormData({ vehicleCount: count });
+                      }
+                    }}
+                    className="w-full max-w-xs"
+                  />
+                </div>
+                
                 {isAdmin ? (
                   <div className="grid grid-cols-2 gap-2">
                     <div className="text-sm">

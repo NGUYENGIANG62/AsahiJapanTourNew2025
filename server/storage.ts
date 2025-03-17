@@ -204,6 +204,15 @@ export class MemStorage implements IStorage {
       driverCostPerDay: 5000 // 5,000 JPY per day
     });
     
+    this.vehicles.set(this.currentVehicleId, {
+      id: this.currentVehicleId++,
+      name: 'Extra Large Bus (45 seats)',
+      seats: 45,
+      luggageCapacity: 40, // 40 suitcases
+      pricePerDay: 70000, // 70,000 JPY per day
+      driverCostPerDay: 5000 // 5,000 JPY per day
+    });
+    
     // Initialize with sample tours
     this.tours.set(this.currentTourId, {
       id: this.currentTourId++,
