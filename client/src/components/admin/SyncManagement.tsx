@@ -1,13 +1,12 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, CloudCog, Download, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, CloudCog, CloudOff, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest, queryClient } from '@/lib/queryClient';
+import { apiRequest, getQueryFn } from '@/lib/queryClient';
 
 type SyncStatus = {
   lastSync: string | null;
@@ -17,204 +16,220 @@ type SyncStatus = {
 const SyncManagement = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const [syncType, setSyncType] = useState<'from-sheets' | 'to-sheets' | null>(null);
+  const queryClient = useQueryClient();
+  const [syncInProgress, setSyncInProgress] = useState(false);
 
-  // Fetch current sync status
-  const { data: syncStatus, isLoading: isLoadingStatus, error: statusError } = useQuery<SyncStatus>({
+  // Fetch last sync timestamp
+  const { data: syncStatus, isLoading, error, refetch } = useQuery<SyncStatus>({
     queryKey: ['/api/sync/status'],
-    refetchInterval: 30000, // Refresh every 30 seconds
+    queryFn: getQueryFn({ on401: 'throw' }),
   });
 
-  // Sync from Google Sheets to application
+  // Mutation to sync data from Google Sheets to local storage
   const syncFromSheetsMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('POST', '/api/sync/from-sheets');
-      return response.json();
+      const res = await apiRequest('POST', '/api/sync/from-sheets');
+      return await res.json();
     },
     onSuccess: () => {
       toast({
-        title: t('admin.syncSuccess'),
-        description: t('admin.syncFromSheetsSuccess'),
+        title: t('common.success'),
+        description: t('sync.fromSheetsSuccess'),
         variant: 'default',
       });
-      // Invalidate all data queries
+      refetch();
       queryClient.invalidateQueries({ queryKey: ['/api/tours'] });
       queryClient.invalidateQueries({ queryKey: ['/api/vehicles'] });
       queryClient.invalidateQueries({ queryKey: ['/api/hotels'] });
       queryClient.invalidateQueries({ queryKey: ['/api/guides'] });
       queryClient.invalidateQueries({ queryKey: ['/api/seasons'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/sync/status'] });
-      setSyncType(null);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
-        title: t('admin.syncError'),
-        description: t('admin.syncFromSheetsError'),
+        title: t('common.error'),
+        description: error.message,
         variant: 'destructive',
       });
-      console.error('Sync error:', error);
-      setSyncType(null);
+    },
+    onSettled: () => {
+      setSyncInProgress(false);
     }
   });
 
-  // Sync from application to Google Sheets
+  // Mutation to sync data from local storage to Google Sheets
   const syncToSheetsMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('POST', '/api/sync/to-sheets');
-      return response.json();
+      const res = await apiRequest('POST', '/api/sync/to-sheets');
+      return await res.json();
     },
     onSuccess: () => {
       toast({
-        title: t('admin.syncSuccess'),
-        description: t('admin.syncToSheetsSuccess'),
+        title: t('common.success'),
+        description: t('sync.toSheetsSuccess'),
         variant: 'default',
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/sync/status'] });
-      setSyncType(null);
+      refetch();
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
-        title: t('admin.syncError'),
-        description: t('admin.syncToSheetsError'),
+        title: t('common.error'),
+        description: error.message,
         variant: 'destructive',
       });
-      console.error('Sync error:', error);
-      setSyncType(null);
+    },
+    onSettled: () => {
+      setSyncInProgress(false);
     }
   });
 
-  const isSyncing = syncFromSheetsMutation.isPending || syncToSheetsMutation.isPending;
-  const errorMessage = statusError ? String(statusError) : '';
+  const handleSyncFromSheets = () => {
+    setSyncInProgress(true);
+    syncFromSheetsMutation.mutate();
+  };
+
+  const handleSyncToSheets = () => {
+    setSyncInProgress(true);
+    syncToSheetsMutation.mutate();
+  };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return t('admin.never');
+    if (!dateString) return t('sync.never');
+    
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat('default', {
       year: 'numeric',
-      month: 'short',
-      day: '2-digit',
+      month: 'long',
+      day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     }).format(date);
   };
 
-  const handleSyncFromSheets = () => {
-    setSyncType('from-sheets');
-    syncFromSheetsMutation.mutate();
-  };
-
-  const handleSyncToSheets = () => {
-    setSyncType('to-sheets');
-    syncToSheetsMutation.mutate();
-  };
+  // Add necessary sync translations to i18n.ts
+  useEffect(() => {
+    if (!t('sync.title', { ns: 'translation' })) {
+      // These translations would normally be in i18n.ts
+      // This is just a safeguard
+      console.log('Sync translations not found in i18n');
+    }
+  }, [t]);
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>{t('admin.googleSheetsSync')}</CardTitle>
-            <CardDescription>
-              {t('admin.googleSheetsSyncDescription')}
-            </CardDescription>
-          </div>
-          <CloudCog className="h-8 w-8 text-primary opacity-80" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        {/* Status Information */}
-        <div className="mb-6 space-y-4">
-          <div className="flex flex-col space-y-2">
-            <span className="text-sm font-medium">{t('admin.lastSyncTime')}:</span>
-            {isLoadingStatus ? (
-              <div className="flex items-center space-x-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-gray-500">{t('admin.loading')}</span>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">{t('admin.googleSheetsSync')}</h2>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => refetch()}
+          disabled={isLoading || syncInProgress}
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+          {t('common.refresh')}
+        </Button>
+      </div>
+
+      <div className="grid gap-6">
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>{t('common.error')}</AlertTitle>
+            <AlertDescription>
+              {error instanceof Error ? error.message : t('sync.errorFetchingStatus')}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CloudCog className="h-5 w-5" />
+              {t('sync.status')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="flex items-center justify-center p-6">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
-                <Badge variant="outline">
-                  {syncStatus ? formatDate(syncStatus.lastSync) : t('admin.never')}
-                </Badge>
-                {syncStatus?.lastSync && (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                )}
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm font-medium">{t('sync.lastSyncTime')}</p>
+                  <p className="mt-1 text-lg font-semibold">
+                    {formatDate(syncStatus?.lastSync || null)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{t('sync.connectionStatus')}</p>
+                  <div className="mt-2 flex items-center">
+                    {syncStatus?.status === 'connected' ? (
+                      <>
+                        <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                        <span className="text-green-600 font-medium">{t('sync.connected')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <CloudOff className="h-5 w-5 text-orange-500 mr-2" />
+                        <span className="text-orange-600 font-medium">{t('sync.notConnected')}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
-          </div>
-
-          {errorMessage && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>{t('admin.error')}</AlertTitle>
-              <AlertDescription>
-                {errorMessage}
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
-
-        {/* Sync Actions */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">
-              {t('admin.syncFromSheets')}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {t('admin.syncFromSheetsDescription')}
-            </p>
-            <Button
-              variant="outline"
-              className="w-full justify-center mt-2"
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2 border-t pt-6">
+            <Button 
+              variant="default" 
+              className="w-full sm:w-auto"
               onClick={handleSyncFromSheets}
-              disabled={isSyncing}
+              disabled={isLoading || syncInProgress || syncFromSheetsMutation.isPending}
             >
-              {syncType === 'from-sheets' && isSyncing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t('admin.syncing')}
-                </>
+              {syncFromSheetsMutation.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <>
-                  <Download className="mr-2 h-4 w-4" />
-                  {t('admin.importFromSheets')}
-                </>
+                <CloudCog className="mr-2 h-4 w-4" />
               )}
+              {t('sync.fromSheets')}
             </Button>
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">
-              {t('admin.syncToSheets')}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {t('admin.syncToSheetsDescription')}
-            </p>
-            <Button
-              variant="outline"
-              className="w-full justify-center mt-2"
+            <Button 
+              variant="outline" 
+              className="w-full sm:w-auto"
               onClick={handleSyncToSheets}
-              disabled={isSyncing}
+              disabled={isLoading || syncInProgress || syncToSheetsMutation.isPending}
             >
-              {syncType === 'to-sheets' && isSyncing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t('admin.syncing')}
-                </>
+              {syncToSheetsMutation.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <>
-                  <Upload className="mr-2 h-4 w-4" />
-                  {t('admin.exportToSheets')}
-                </>
+                <CloudCog className="mr-2 h-4 w-4" />
               )}
+              {t('sync.toSheets')}
             </Button>
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="border-t pt-4 text-sm text-gray-500">
-        {t('admin.syncNote')}
-      </CardFooter>
-    </Card>
+          </CardFooter>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('sync.help')}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h3 className="font-semibold mb-1">{t('sync.fromSheetsTitle')}</h3>
+              <p className="text-sm text-muted-foreground">{t('sync.fromSheetsDescription')}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">{t('sync.toSheetsTitle')}</h3>
+              <p className="text-sm text-muted-foreground">{t('sync.toSheetsDescription')}</p>
+            </div>
+            <div className="mt-4 p-4 bg-amber-50 rounded-md border border-amber-200">
+              <h3 className="font-semibold text-amber-800 mb-1">{t('sync.note')}</h3>
+              <p className="text-sm text-amber-700">{t('sync.noteDescription')}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 
