@@ -470,7 +470,11 @@ const Step5Summary = () => {
                     <ul className="space-y-2">
                       <li className="flex items-center">
                         <Car className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <span>{vehicle?.name || 'No vehicle selected'}</span>
+                        <span>
+                          {vehicle 
+                            ? `${formData.vehicleCount || 1}x ${vehicle.name}` 
+                            : 'No vehicle selected'}
+                        </span>
                       </li>
                       
                       <li className="flex items-center">
@@ -558,11 +562,15 @@ const Step5Summary = () => {
                       <TableCell className="text-right">{formatCurrency(calculation.costs.baseCost)}</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>{t('calculator.summary.vehicleCost')}</TableCell>
+                      <TableCell>
+                        {vehicle ? `${t('calculator.summary.vehicleCost')} (${formData.vehicleCount || 1}x ${vehicle.name})` : t('calculator.summary.vehicleCost')}
+                      </TableCell>
                       <TableCell className="text-right">{formatCurrency(calculation.costs.vehicleCost)}</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>{t('calculator.summary.driverCost')}</TableCell>
+                      <TableCell>
+                        {t('calculator.summary.driverCost')} {formData.vehicleCount && formData.vehicleCount > 1 ? `(${formData.vehicleCount} drivers)` : ''}
+                      </TableCell>
                       <TableCell className="text-right">{formatCurrency(calculation.costs.driverCost)}</TableCell>
                     </TableRow>
                     {calculation.costs.hotelCost > 0 && (
@@ -634,6 +642,11 @@ const Step5Summary = () => {
                       <div className="text-xs text-muted-foreground text-left mt-1">
                         Từ {formatDate(formData.startDate)} đến {formatDate(formData.endDate)}
                       </div>
+                      {vehicle && (
+                        <div className="text-xs text-muted-foreground text-left mt-1">
+                          Phương tiện: {formData.vehicleCount || 1}x {vehicle.name}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="border rounded-md p-3">
