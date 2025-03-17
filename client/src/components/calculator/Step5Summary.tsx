@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { CalculatorContext } from '@/context/CalculatorContext';
+import { useAuth } from '@/hooks/useAuth';
 import { Tour, Vehicle, Hotel, Guide, Season } from '@/types';
 import { 
   Card, 
@@ -37,6 +38,7 @@ import { format } from 'date-fns';
 
 const Step5Summary = () => {
   const { t } = useTranslation();
+  const { user, isAdmin } = useAuth();
   const { 
     formData, 
     calculation,
@@ -285,7 +287,7 @@ const Step5Summary = () => {
             </CardHeader>
             <CardContent>
               {/* For admin users, show detailed breakdown */}
-              {isAdmin(user) ? (
+              {isAdmin ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
