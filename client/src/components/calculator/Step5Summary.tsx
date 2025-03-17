@@ -50,7 +50,8 @@ import {
   Mail,
   AlertCircle,
   Loader2,
-  Phone
+  Phone,
+  Facebook
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 
@@ -680,30 +681,34 @@ const Step5Summary = () => {
                       Gửi yêu cầu tư vấn qua email
                     </button>
                     
-                    {/* Company Contact Information */}
+                    {/* Welcoming Message */}
                     <div className="mt-6 border rounded-md p-4 bg-muted/10 text-left">
-                      <h4 className="font-medium mb-2">Thông tin liên hệ</h4>
-                      <ul className="space-y-2 text-sm">
-                        <li className="flex items-start">
-                          <Map className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
-                          <span>1-35 Adachi, Adachi-ku, Tokyo, Japan</span>
-                        </li>
-                        <li className="flex items-start">
-                          <Mail className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
-                          <div>
-                            <div>hoangtucuoirong@gmail.com</div>
-                          </div>
-                        </li>
-                        <li className="flex items-start">
-                          <Phone className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
-                          <div>
-                            <div>Hotline: 03-6675-4977</div>
-                            <div>070-2813-6693 (Mrs. Rina - Nhật)</div>
-                            <div>070-2794-4770 (Mr. Truong Giang - Việt Nam) Zalo – Whatapp -Line</div>
-                            <div>Mr. Linh - Hướng dẫn viên du lịch (English): 07091881073</div>
-                          </div>
-                        </li>
-                      </ul>
+                      <h4 className="font-medium mb-2 text-primary">Chào mừng đến với AsahiJapanTour</h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Cảm ơn bạn đã chọn dịch vụ của chúng tôi. Chúng tôi cam kết mang đến cho bạn trải nghiệm du lịch Nhật Bản tuyệt vời nhất!
+                      </p>
+                      <div className="flex items-center gap-2 mt-3">
+                        <a 
+                          href="https://www.facebook.com/profile.php?id=61566880418544" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-primary hover:text-primary/80 transition-colors"
+                        >
+                          <Facebook className="h-5 w-5" />
+                        </a>
+                        <a 
+                          href="mailto:hoangtucuoirong@gmail.com" 
+                          className="text-primary hover:text-primary/80 transition-colors"
+                        >
+                          <Mail className="h-5 w-5" />
+                        </a>
+                        <a 
+                          href="tel:0366754977" 
+                          className="text-primary hover:text-primary/80 transition-colors"
+                        >
+                          <Phone className="h-5 w-5" />
+                        </a>
+                      </div>
                     </div>
                   </div>
                   
