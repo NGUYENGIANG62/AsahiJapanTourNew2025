@@ -178,12 +178,25 @@ const Step5Summary = () => {
   const getRoomTypeLabel = () => {
     if (!formData.roomType) return '';
     
-    switch (formData.roomType) {
-      case 'single': return t('calculator.singleRoom');
-      case 'double': return t('calculator.doubleRoom');
-      case 'triple': return t('calculator.tripleRoom');
-      default: return formData.roomType;
+    const singleRoomCount = formData.singleRoomCount || 0;
+    const doubleRoomCount = formData.doubleRoomCount || 0;
+    const tripleRoomCount = formData.tripleRoomCount || 0;
+    
+    const roomDetails = [];
+    
+    if (singleRoomCount > 0) {
+      roomDetails.push(`${singleRoomCount} ${t('calculator.singleRoom')}`);
     }
+    
+    if (doubleRoomCount > 0) {
+      roomDetails.push(`${doubleRoomCount} ${t('calculator.doubleRoom')}`);
+    }
+    
+    if (tripleRoomCount > 0) {
+      roomDetails.push(`${tripleRoomCount} ${t('calculator.tripleRoom')}`);
+    }
+    
+    return roomDetails.length > 0 ? roomDetails.join(', ') : t(`calculator.${formData.roomType}Room`);
   };
 
   // Email submission dialog

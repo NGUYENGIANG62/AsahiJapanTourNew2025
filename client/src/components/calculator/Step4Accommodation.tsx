@@ -71,6 +71,9 @@ const Step4Accommodation = () => {
       updateFormData({ 
         hotelId: undefined, 
         roomType: undefined, 
+        singleRoomCount: 0,
+        doubleRoomCount: 0,
+        tripleRoomCount: 0,
         includeBreakfast: false 
       });
     } else {
@@ -86,6 +89,19 @@ const Step4Accommodation = () => {
   // Handle breakfast checkbox
   const handleBreakfastChange = (checked: boolean) => {
     updateFormData({ includeBreakfast: checked });
+  };
+  
+  // Handle room quantity changes
+  const handleSingleRoomChange = (value: number) => {
+    updateFormData({ singleRoomCount: Math.max(0, value) });
+  };
+  
+  const handleDoubleRoomChange = (value: number) => {
+    updateFormData({ doubleRoomCount: Math.max(0, value) });
+  };
+  
+  const handleTripleRoomChange = (value: number) => {
+    updateFormData({ tripleRoomCount: Math.max(0, value) });
   };
 
   // Handle meal selections
@@ -210,7 +226,100 @@ const Step4Accommodation = () => {
                     </Select>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
+                  {/* Room Quantity Selection */}
+                  <div className="mt-4 space-y-4">
+                    <Label className="block text-sm font-medium text-neutral mb-2">
+                      {t('calculator.roomQuantity')}
+                    </Label>
+                    
+                    <div className="space-y-4">
+                      {/* Single Room Selection */}
+                      <div className="flex items-center justify-between border rounded-md p-3">
+                        <div>
+                          <h4 className="font-medium">{t('calculator.singleRoom')}</h4>
+                          <p className="text-sm text-muted-foreground">{selectedHotel?.singleRoomPrice.toLocaleString()} JPY / night</p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleSingleRoomChange(singleRoomCount - 1)}
+                            disabled={singleRoomCount === 0}
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="w-8 text-center">{singleRoomCount}</span>
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleSingleRoomChange(singleRoomCount + 1)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {/* Double Room Selection */}
+                      <div className="flex items-center justify-between border rounded-md p-3">
+                        <div>
+                          <h4 className="font-medium">{t('calculator.doubleRoom')}</h4>
+                          <p className="text-sm text-muted-foreground">{selectedHotel?.doubleRoomPrice.toLocaleString()} JPY / night</p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleDoubleRoomChange(doubleRoomCount - 1)}
+                            disabled={doubleRoomCount === 0}
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="w-8 text-center">{doubleRoomCount}</span>
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleDoubleRoomChange(doubleRoomCount + 1)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {/* Triple Room Selection */}
+                      <div className="flex items-center justify-between border rounded-md p-3">
+                        <div>
+                          <h4 className="font-medium">{t('calculator.tripleRoom')}</h4>
+                          <p className="text-sm text-muted-foreground">{selectedHotel?.tripleRoomPrice.toLocaleString()} JPY / night</p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleTripleRoomChange(tripleRoomCount - 1)}
+                            disabled={tripleRoomCount === 0}
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="w-8 text-center">{tripleRoomCount}</span>
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleTripleRoomChange(tripleRoomCount + 1)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 mt-4">
                     <Checkbox 
                       id="breakfast" 
                       checked={formData.includeBreakfast || false} 
