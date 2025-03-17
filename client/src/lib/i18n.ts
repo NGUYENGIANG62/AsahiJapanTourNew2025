@@ -717,7 +717,12 @@ const koTranslations = {
     tourFor: '투어 대상',
     pricePerPerson: '1인당 가격',
     tourExceedsDuration: '선택하신 일수({days}일)가 기본 투어 기간({standardDays}일)을 초과합니다. "희망 방문지" 필드에 방문하고 싶은 장소를 입력해 주세요.',
-    startMessage: '저희 투어 서비스에 관심을 가져주셔서 감사합니다. 여행 날짜를 선택하여 시작해 보세요!'
+    startMessage: '저희 투어 서비스에 관심을 가져주셔서 감사합니다. 여행 날짜를 선택하여 시작해 보세요!',
+    fullName: '이름',
+    age: '나이',
+    phone: '전화번호',
+    email: '이메일',
+    tourRequestInfo: '투어 요청 정보는 상세 상담을 위해 아사히 VietLife로 전송됩니다'
   },
   auth: {
     id: 'ID',
@@ -935,7 +940,12 @@ const viTranslations = {
     tourFor: 'Tour cho',
     pricePerPerson: 'Giá cho mỗi người',
     tourExceedsDuration: 'Số ngày bạn chọn ({days} ngày) vượt quá số ngày tiêu chuẩn của tour ({standardDays} ngày). Vui lòng nhập địa điểm bạn muốn đến trong phần "Địa điểm mong muốn".',
-    startMessage: 'Cảm ơn bạn đã quan tâm đến dịch vụ tour của chúng tôi. Hãy bắt đầu bằng việc chọn ngày cho chuyến đi của bạn!'
+    startMessage: 'Cảm ơn bạn đã quan tâm đến dịch vụ tour của chúng tôi. Hãy bắt đầu bằng việc chọn ngày cho chuyến đi của bạn!',
+    fullName: 'Họ tên',
+    age: 'Tuổi',
+    phone: 'Điện thoại',
+    email: 'Email',
+    tourRequestInfo: 'Thông tin yêu cầu tour sẽ được gửi đến Asahi VietLife để tư vấn chi tiết'
   },
   auth: {
     id: 'ID',
