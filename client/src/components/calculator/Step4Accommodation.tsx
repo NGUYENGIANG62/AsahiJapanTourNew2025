@@ -28,13 +28,22 @@ import {
   Languages, 
   Star,
   Coffee,
-  LucideUtensilsCrossed
+  LucideUtensilsCrossed,
+  Plus,
+  Minus
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const Step4Accommodation = () => {
   const { t } = useTranslation();
   const { formData, updateFormData } = useContext(CalculatorContext);
+  
+  // Initialize room counts from formData or set defaults
+  const singleRoomCount = formData.singleRoomCount ?? 0;
+  const doubleRoomCount = formData.doubleRoomCount ?? 0;
+  const tripleRoomCount = formData.tripleRoomCount ?? 0;
 
   // Fetch hotels
   const { data: hotels = [], isLoading: isLoadingHotels } = useQuery<Hotel[]>({
