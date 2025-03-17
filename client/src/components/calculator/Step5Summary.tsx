@@ -224,25 +224,38 @@ const Step5Summary = () => {
         Email khách hàng: ${customerEmail}
       `;
 
-      // In a real implementation, we would use a server API to send the email
-      // For now, we'll simulate success after a short delay
-      setTimeout(() => {
-        console.log("Email would be sent to: asahivietlife@outlook.com");
-        console.log("Subject:", emailSubject);
-        console.log("Content:", tourDetails);
-        
+      // Send email via the real API endpoint
+      const response = await fetch('/api/send-tour-inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: customerEmail.split('@')[0],  // Use part of email as name if no name provided
+          email: customerEmail,
+          subject: emailSubject,
+          message: tourDetails
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
         setEmailStatus('success');
+        setShowContactInfo(false);
         toast({
           title: "Yêu cầu của bạn đã được gửi",
-          description: "Chúng tôi sẽ liên hệ lại với bạn sớm nhất có thể",
+          description: "Thông tin tour đã được gửi đến AsahiVietLife. Chúng tôi sẽ liên hệ lại với bạn sớm nhất có thể.",
         });
-      }, 1500);
+      } else {
+        throw new Error(result.message || 'Lỗi không xác định');
+      }
     } catch (error) {
       console.error("Error sending email:", error);
       setEmailStatus('error');
       toast({
         title: "Không thể gửi yêu cầu",
-        description: "Đã xảy ra lỗi khi gửi email. Vui lòng thử lại sau.",
+        description: error instanceof Error ? error.message : "Đã xảy ra lỗi khi gửi email. Vui lòng thử lại sau.",
         variant: "destructive"
       });
     }
