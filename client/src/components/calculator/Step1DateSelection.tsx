@@ -136,9 +136,9 @@ const Step1DateSelection = () => {
         <div className="lg:col-span-1">
           <Card>
             <CardContent className="pt-6">
-              <h3 className="font-medium text-primary mb-3">Chào mừng đến với AsahiJapanTours.com</h3>
+              <h3 className="font-medium text-primary mb-3">{t('common.welcomeMessage', 'Chào mừng đến với AsahiJapanTours.com')}</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Cảm ơn bạn đã quan tâm đến dịch vụ tour của chúng tôi. Hãy bắt đầu bằng việc chọn ngày cho chuyến đi của bạn!
+                {t('common.welcomeDescription', 'Cảm ơn bạn đã quan tâm đến dịch vụ tour của chúng tôi. Hãy bắt đầu bằng việc chọn ngày cho chuyến đi của bạn!')}
               </p>
               <div className="flex items-center gap-2 mt-4">
                 <a 
