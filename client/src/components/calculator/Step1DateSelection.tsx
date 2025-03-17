@@ -1,16 +1,19 @@
-import { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { CalculatorContext } from '@/context/CalculatorContext';
 import { Season } from '@/types';
 import { 
   Card, 
-  CardContent 
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import ContactInfo from '@/components/ContactInfo';
+import { Facebook, Mail, Phone } from 'lucide-react';
 
 const Step1DateSelection = () => {
   const { t } = useTranslation();
@@ -129,9 +132,38 @@ const Step1DateSelection = () => {
           ) : null}
         </div>
         
-        {/* Contact Info Card */}
+        {/* Welcome Card */}
         <div className="lg:col-span-1">
-          <ContactInfo />
+          <Card>
+            <CardContent className="pt-6">
+              <h3 className="font-medium text-primary mb-3">Chào mừng đến với AsahiJapanTour</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Cảm ơn bạn đã quan tâm đến dịch vụ tour của chúng tôi. Hãy bắt đầu bằng việc chọn ngày cho chuyến đi của bạn!
+              </p>
+              <div className="flex items-center gap-2 mt-4">
+                <a 
+                  href="https://www.facebook.com/profile.php?id=61566880418544" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary/80 transition-colors"
+                >
+                  <Facebook className="h-5 w-5" />
+                </a>
+                <a 
+                  href="mailto:hoangtucuoirong@gmail.com" 
+                  className="text-primary hover:text-primary/80 transition-colors"
+                >
+                  <Mail className="h-5 w-5" />
+                </a>
+                <a 
+                  href="tel:0366754977" 
+                  className="text-primary hover:text-primary/80 transition-colors"
+                >
+                  <Phone className="h-5 w-5" />
+                </a>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
