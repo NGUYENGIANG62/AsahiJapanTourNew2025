@@ -97,13 +97,23 @@ export class MemStorage implements IStorage {
 
   private async initializeData() {
     // Create default admin user
-    const hashedPassword = await bcrypt.hash('Kiminonaha01', 10);
+    const adminPassword = await bcrypt.hash('Kiminonaha01', 10);
     
     this.users.set(this.currentUserId, {
       id: this.currentUserId++,
       username: 'AsahiVietLifeJapanTour',
-      password: hashedPassword,
+      password: adminPassword,
       role: 'admin'
+    });
+    
+    // Create default customer user
+    const customerPassword = await bcrypt.hash('AsahiTour2024', 10);
+    
+    this.users.set(this.currentUserId, {
+      id: this.currentUserId++,
+      username: 'customer',
+      password: customerPassword,
+      role: 'user'
     });
     
     // Create default settings
