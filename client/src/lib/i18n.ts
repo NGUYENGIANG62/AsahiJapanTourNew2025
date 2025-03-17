@@ -276,6 +276,8 @@ const jaTranslations = {
     age: '年齢',
     phone: '電話番号',
     email: 'メール',
+    regularSeason: '通常シーズン',
+    regularSeasonDescription: '通常の旅行シーズン中の日付を選択されました。標準料金が適用されます。',
     tourRequestInfo: 'ツアーリクエスト情報は詳細な相談のために旭ベトライフに送信されます'
   },
   auth: {
@@ -499,6 +501,8 @@ const zhTranslations = {
     age: '年龄',
     phone: '电话',
     email: '电子邮件',
+    regularSeason: '常规季节',
+    regularSeasonDescription: '您已选择常规旅游季节的日期。标准价格适用。',
     tourRequestInfo: '旅行请求信息将发送给旭日越南生活进行详细咨询'
   },
   auth: {
@@ -722,6 +726,8 @@ const koTranslations = {
     age: '나이',
     phone: '전화번호',
     email: '이메일',
+    regularSeason: '일반 시즌',
+    regularSeasonDescription: '일반 여행 시즌 기간의 날짜를 선택하셨습니다. 표준 요금이 적용됩니다.',
     tourRequestInfo: '투어 요청 정보는 상세 상담을 위해 아사히 VietLife로 전송됩니다'
   },
   auth: {
@@ -945,6 +951,8 @@ const viTranslations = {
     age: 'Tuổi',
     phone: 'Điện thoại',
     email: 'Email',
+    regularSeason: 'Mùa thông thường',
+    regularSeasonDescription: 'Bạn đã chọn ngày trong mùa du lịch thông thường. Áp dụng giá chuẩn.',
     tourRequestInfo: 'Thông tin yêu cầu tour sẽ được gửi đến Asahi VietLife để tư vấn chi tiết'
   },
   auth: {
