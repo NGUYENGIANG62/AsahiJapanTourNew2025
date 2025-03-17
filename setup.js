@@ -30,13 +30,14 @@ const askQuestions = async () => {
       config.EMAIL_PASSWORD = emailPassword || '';
       
       console.log('\n--- Thiết lập Google Sheets ---');
-      console.log('Bạn có thể chọn một trong ba phương pháp xác thực sau:');
+      console.log('Bạn có thể chọn một trong các phương pháp xác thực sau:');
       console.log('1. API Key (chỉ đọc dữ liệu)');
       console.log('2. Service Account (đọc và ghi dữ liệu)');
       console.log('3. OAuth2 (không khuyến nghị)');
-      console.log('4. Bỏ qua thiết lập Google Sheets');
+      console.log('4. Cấu hình nhanh (sử dụng Google Sheets của AsahiVietLife)');
+      console.log('5. Bỏ qua thiết lập Google Sheets');
       
-      rl.question('\nChọn phương pháp (1-4): ', (authMethod) => {
+      rl.question('\nChọn phương pháp (1-5): ', (authMethod) => {
         const method = parseInt(authMethod, 10);
         
         if (method === 1) {
@@ -86,6 +87,36 @@ const askQuestions = async () => {
                 });
               });
             });
+          });
+        } else if (method === 4) {
+          // Cấu hình nhanh sử dụng Google Sheets của AsahiVietLife
+          console.log('\nCấu hình nhanh được chọn. Sử dụng cấu hình mặc định của AsahiVietLife.');
+          config.GOOGLE_SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1DQ1e6k4I65O5NxmX8loJ_SKUI7aoIj3WCu5BMLUCznw/edit?usp=sharing';
+          
+          rl.question('\nBạn có Service Account JSON key không? (y/n): ', (hasKey) => {
+            if (hasKey.toLowerCase() === 'y') {
+              rl.question('Nhập đường dẫn đến file JSON của Service Account: ', (jsonPath) => {
+                try {
+                  const serviceAccountJson = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+                  config.GOOGLE_SERVICE_ACCOUNT_EMAIL = serviceAccountJson.client_email;
+                  config.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY = serviceAccountJson.private_key;
+                  console.log('\nĐã cấu hình Service Account thành công!');
+                  rl.close();
+                  resolve(config);
+                } catch (error) {
+                  console.error('Lỗi khi đọc file JSON:', error);
+                  console.log('Chuyển sang sử dụng API key chỉ đọc...');
+                  config.GOOGLE_API_KEY = 'AIzaSyD8-gNTMNBQBV5iqq-QTEJCGvv6w-sMpTY'; // Demo API key chỉ đọc
+                  rl.close();
+                  resolve(config);
+                }
+              });
+            } else {
+              console.log('Sử dụng chế độ chỉ đọc với API key mặc định.');
+              config.GOOGLE_API_KEY = 'AIzaSyD8-gNTMNBQBV5iqq-QTEJCGvv6w-sMpTY'; // Demo API key chỉ đọc
+              rl.close();
+              resolve(config);
+            }
           });
         } else {
           // Bỏ qua

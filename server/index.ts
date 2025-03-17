@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import * as dotenv from "dotenv";
+import { startScheduledTasks } from "./scheduledTasks";
 
 // Tải các biến môi trường từ file .env 
 dotenv.config();
@@ -77,5 +78,8 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Khởi động tác vụ đồng bộ tự động
+    startScheduledTasks();
   });
 })();
