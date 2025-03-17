@@ -117,7 +117,7 @@ const Step1DateSelection = () => {
             <Alert className="bg-accent border-secondary">
               <InfoCircledIcon className="h-5 w-5 text-secondary" />
               <AlertTitle>{season.name}</AlertTitle>
-              <AlertDescription className="mt-1 text-sm text-muted-foreground">
+              <AlertDescription className="mt-1 text-sm text-muted-foreground whitespace-pre-line">
                 {season.description}
               </AlertDescription>
             </Alert>
