@@ -357,6 +357,26 @@ const Step5Summary = () => {
                   <div className="text-3xl font-bold text-primary">
                     {formatCurrency(calculation.totalInRequestedCurrency)}
                   </div>
+                  
+                  {calculation.calculationDetails.participants > 1 && (
+                    <div className="mt-3 text-lg font-semibold">
+                      <span className="mr-2">Giá cho mỗi người:</span>
+                      {formatCurrency(calculation.totalInRequestedCurrency / calculation.calculationDetails.participants)}
+                    </div>
+                  )}
+                  
+                  <div className="mt-4 flex flex-col gap-1">
+                    <div className="p-3 border rounded-md bg-muted/20">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">Tour cho {calculation.calculationDetails.participants} người</span>
+                        <span className="font-semibold">{formatCurrency(calculation.totalInRequestedCurrency)}</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground text-left mt-1">
+                        {calculation.tourDetails.durationDays} ngày, {calculation.tourDetails.name}, {calculation.tourDetails.location}
+                      </div>
+                    </div>
+                  </div>
+                  
                   <p className="mt-4 text-muted-foreground">
                     {t('calculator.summary.includesTax')}
                   </p>
