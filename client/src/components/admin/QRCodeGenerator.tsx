@@ -18,19 +18,12 @@ const QRCodeGenerator = () => {
   useEffect(() => {
     // Initialize QR code when component mounts
     if (canvasRef.current) {
-      // Use the AsahiVietLifeJapanTours text with URL encoded within
+      // Use direct URL for compatibility
       const appUrl = window.location.origin;
-      const qrData = {
-        text: "AsahiVietLifeJapanTours",
-        url: appUrl
-      };
-      
-      // Convert to JSON string for QR code
-      const qrContent = JSON.stringify(qrData);
       
       QRCode.toCanvas(
         canvasRef.current,
-        qrContent,
+        appUrl,
         { 
           width: Math.min(250, window.innerWidth - 40), 
           margin: 0,
@@ -51,8 +44,8 @@ const QRCodeGenerator = () => {
 
   const generateQRCode = async () => {
     try {
-      // Determine the URL to encode
-      const baseUrl = qrCodeType === 'app' 
+      // Determine the URL to encode (direct URL for compatibility)
+      const qrUrl = qrCodeType === 'app' 
         ? window.location.origin
         : url;
       
@@ -65,20 +58,11 @@ const QRCodeGenerator = () => {
         return;
       }
 
-      // Create data object with display text and URL
-      const qrData = {
-        text: "AsahiVietLifeJapanTours",
-        url: baseUrl
-      };
-      
-      // Convert to JSON string for QR code
-      const qrContent = JSON.stringify(qrData);
-
       // Generate QR code as data URL
       if (canvasRef.current) {
         QRCode.toCanvas(
           canvasRef.current,
-          qrContent,
+          qrUrl,
           { 
             width: Math.min(250, window.innerWidth - 40), 
             margin: 0,
@@ -120,17 +104,69 @@ const QRCodeGenerator = () => {
       return;
     }
 
-    const link = document.createElement('a');
-    link.href = qrCodeDataURL;
-    link.download = 'asahi-japan-tours-qrcode.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      // Tạo canvas mới để vẽ toàn bộ QR code với header và footer
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Không thể tạo canvas context');
 
-    toast({
-      title: 'Tải xuống thành công',
-      description: 'Mã QR đã được tải xuống.',
-    });
+      // Thiết lập kích thước canvas
+      canvas.width = 300;
+      canvas.height = 340;
+
+      // Vẽ nền
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Vẽ header
+      ctx.fillStyle = '#2563eb'; // bg-blue-600
+      ctx.fillRect(0, 0, canvas.width, 30);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('ASAHI VIETLIFE JAPAN TOURS', canvas.width / 2, 20);
+
+      // Vẽ QR code image
+      const img = new Image();
+      img.src = qrCodeDataURL;
+      
+      // Đợi image tải xong
+      img.onload = () => {
+        // Vẽ QR code vào giữa canvas
+        ctx.drawImage(img, 25, 40, 250, 250);
+        
+        // Vẽ footer
+        ctx.fillStyle = '#2563eb'; // bg-blue-600
+        ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Scan to visit us', canvas.width / 2, canvas.height - 12);
+        
+        // Tạo URL từ canvas
+        const finalDataURL = canvas.toDataURL('image/png');
+        
+        // Tạo link download
+        const link = document.createElement('a');
+        link.href = finalDataURL;
+        link.download = 'asahi-japan-tours-qrcode.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast({
+          title: 'Tải xuống thành công',
+          description: 'Mã QR đã được tải xuống với logo và thông tin.',
+        });
+      };
+    } catch (error) {
+      console.error('Error generating QR code for download:', error);
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể tạo file tải xuống.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const copyToClipboard = () => {
@@ -143,16 +179,46 @@ const QRCodeGenerator = () => {
       return;
     }
 
-    // Create a temporary image and then copy it
-    const img = new Image();
-    img.src = qrCodeDataURL;
-    img.onload = () => {
+    try {
+      // Tạo canvas mới để vẽ toàn bộ QR code với header và footer
       const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
       const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(img, 0, 0);
+      if (!ctx) throw new Error('Không thể tạo canvas context');
+
+      // Thiết lập kích thước canvas
+      canvas.width = 300;
+      canvas.height = 340;
+
+      // Vẽ nền
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Vẽ header
+      ctx.fillStyle = '#2563eb'; // bg-blue-600
+      ctx.fillRect(0, 0, canvas.width, 30);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('ASAHI VIETLIFE JAPAN TOURS', canvas.width / 2, 20);
+
+      // Vẽ QR code image
+      const img = new Image();
+      img.src = qrCodeDataURL;
+      
+      // Đợi image tải xong
+      img.onload = () => {
+        // Vẽ QR code vào giữa canvas
+        ctx.drawImage(img, 25, 40, 250, 250);
+        
+        // Vẽ footer
+        ctx.fillStyle = '#2563eb'; // bg-blue-600
+        ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Scan to visit us', canvas.width / 2, canvas.height - 12);
+        
+        // Tạo URL từ canvas và copy
         canvas.toBlob((blob) => {
           if (blob) {
             navigator.clipboard.write([
@@ -162,7 +228,7 @@ const QRCodeGenerator = () => {
             ]).then(() => {
               toast({
                 title: 'Sao chép thành công',
-                description: 'Mã QR đã được sao chép vào clipboard.',
+                description: 'Mã QR đã được sao chép vào clipboard với đầy đủ thông tin.',
               });
             }).catch(err => {
               console.error('Error copying to clipboard:', err);
@@ -174,8 +240,15 @@ const QRCodeGenerator = () => {
             });
           }
         });
-      }
-    };
+      };
+    } catch (error) {
+      console.error('Error copying QR code to clipboard:', error);
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể sao chép mã QR.',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -229,19 +302,29 @@ const QRCodeGenerator = () => {
         </Tabs>
 
         <div className="flex flex-col items-center mt-4">
-          <div className="w-full max-w-[280px] mx-auto relative bg-white p-4 rounded-lg shadow-sm">
+          <div className="w-full max-w-[280px] mx-auto relative bg-white p-4 pb-6 rounded-lg shadow-sm">
+            {/* Tiêu đề trên QR code */}
+            <div className="absolute left-0 right-0 top-0 text-center bg-blue-600 text-white py-1 font-medium text-xs rounded-t-lg">
+              ASAHI VIETLIFE JAPAN TOURS
+            </div>
+            
             <canvas 
               ref={canvasRef} 
-              className="border border-gray-200 rounded-md w-full h-auto max-w-full"
+              className="border border-gray-200 rounded-md w-full h-auto max-w-full mt-4"
               width="250" 
               height="250"
             ></canvas>
+            
+            {/* Chữ dưới mã QR */}
+            <div className="absolute left-0 right-0 bottom-0 text-center bg-blue-600 text-white py-1 text-xs rounded-b-lg">
+              Scan to visit us
+            </div>
           </div>
           
           {qrCodeDataURL && (
             <div className="mt-4 text-center text-sm text-gray-500">
-              <p>Quét mã QR này để thấy: <strong>AsahiVietLifeJapanTours</strong></p>
-              <p className="text-xs mt-1">Mã QR đã được cải thiện để hiển thị tên thân thiện thay vì URL</p>
+              <p>Quét mã QR này để mở <strong>AsahiVietLifeJapanTours</strong></p>
+              <p className="text-xs mt-1">Mã QR sẽ đưa người dùng trực tiếp đến trang web, không hiển thị URL khả nghi</p>
             </div>
           )}
         </div>
