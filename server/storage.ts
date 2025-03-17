@@ -153,39 +153,78 @@ export class MemStorage implements IStorage {
       value: '3000' // 3000 JPY per person
     });
     
-    // Initialize with sample seasons
+    // Initialize with detailed seasonal information
+    
+    // Spring Season (March - May)
     this.seasons.set(this.currentSeasonId, {
       id: this.currentSeasonId++,
       name: 'Cherry Blossom Season',
       startMonth: 3, // March
       endMonth: 5,   // May
-      description: 'The beautiful cherry blossom season in Japan with higher accommodation rates. Cherry blossom viewing spots will be included in available tours.',
+      description: '🌸 Spring (March - May): Cherry blossom season, Hina Matsuri doll festival (March 3), Takayama Festival (April 14-15), Golden Week (April 29-May 5), Fuji wisteria blooms, and Shibazakura flowers at Mt. Fuji base.',
       priceMultiplier: 1.3, // 30% price increase
       nameJa: '桜の季節',
       nameZh: '樱花季节',
       nameKo: '벚꽃 시즌',
-      nameVi: 'Mùa hoa anh đào',
-      descriptionJa: '日本の美しい桜の季節です。宿泊料金が高くなります。ツアーには桜の名所が含まれます。',
-      descriptionZh: '日本美丽的樱花季节，住宿费用较高。樱花观赏点将包含在可用的旅游行程中。',
-      descriptionKo: '일본의 아름다운 벚꽃 시즌으로 숙박 요금이 높습니다. 벚꽃 관람 명소가 여행 일정에 포함됩니다.',
-      descriptionVi: 'Mùa hoa anh đào đẹp ở Nhật Bản với giá phòng cao hơn. Các điểm ngắm hoa anh đào sẽ được đưa vào các tour du lịch.'
+      nameVi: 'Mùa Xuân - Mùa hoa anh đào',
+      descriptionJa: '🌸 春 (3月～5月): 桜の季節、ひな祭り (3月3日)、高山祭 (4月14-15日)、ゴールデンウィーク (4月29日-5月5日)、藤の花、富士山麓の芝桜。',
+      descriptionZh: '🌸 春季 (3月-5月): 樱花季节、雏人偶节 (3月3日)、高山祭 (4月14-15日)、黄金周 (4月29日-5月5日)、紫藤花盛开、富士山脚下的芝樱。',
+      descriptionKo: '🌸 봄 (3월-5월): 벚꽃 시즌, 히나마츠리 인형 축제 (3월 3일), 다카야마 축제 (4월 14-15일), 골든위크 (4월 29일-5월 5일), 등나무 꽃 만개, 후지산 기슭의 시바자쿠라.',
+      descriptionVi: '🌸 Mùa Xuân (Tháng 3 – Tháng 5): Mùa hoa anh đào, lễ hội búp bê Hina Matsuri (3/3), lễ hội Takayama (14-15/4), Tuần lễ vàng (29/4 – 5/5), hoa tử đằng nở rộ, hoa Shibazakura dưới chân núi Phú Sĩ.'
     });
     
+    // Summer Season (June - August)
+    this.seasons.set(this.currentSeasonId, {
+      id: this.currentSeasonId++,
+      name: 'Summer Festival Season',
+      startMonth: 6, // June
+      endMonth: 8,   // August
+      description: '🌿 Summer (June - August): Rainy season, Hydrangea blooms in Kamakura & Kyoto, Gion Matsuri in Kyoto, Mt. Fuji climbing season, Tenjin Matsuri in Osaka, fireworks festivals, Obon holiday, and Nebuta Matsuri lantern parade in Aomori.',
+      priceMultiplier: 1.1, // 10% price increase
+      nameJa: '夏祭りシーズン',
+      nameZh: '夏季节日季节',
+      nameKo: '여름 축제 시즌',
+      nameVi: 'Mùa Hè - Mùa lễ hội',
+      descriptionJa: '🌿 夏 (6月～8月): 梅雨、鎌倉と京都の紫陽花、祇園祭、富士山登山シーズン、天神祭、花火大会、お盆、青森のねぶた祭り。',
+      descriptionZh: '🌿 夏季 (6月-8月): 梅雨季节、镰仓和京都的绣球花盛开、京都祗园祭、富士山攀登季节、大阪天神祭、烟花大会、盂兰盆节、青森睡魔祭。',
+      descriptionKo: '🌿 여름 (6월-8월): 장마철, 가마쿠라와 교토의 수국 개화, 기온 마쓰리, 후지산 등반 시즌, 오사카 텐진 마쓰리, 불꽃 축제, 오본 휴일, 아오모리 네부타 축제.',
+      descriptionVi: '🌿 Mùa Hè (Tháng 6 – Tháng 8): Mùa mưa, hoa cẩm tú cầu nở ở Kamakura và Kyoto, lễ hội Gion Matsuri ở Kyoto, mùa leo núi Phú Sĩ, lễ hội Tenjin Matsuri ở Osaka, lễ hội pháo hoa, lễ hội Obon tưởng nhớ tổ tiên, và lễ hội Nebuta Matsuri ở Aomori.'
+    });
+    
+    // Autumn Season (September - November)
     this.seasons.set(this.currentSeasonId, {
       id: this.currentSeasonId++,
       name: 'Autumn Foliage',
-      startMonth: 10, // October
+      startMonth: 9, // September
       endMonth: 11,   // November
-      description: 'Experience the stunning autumn colors throughout Japan. This popular season features moderate accommodation rates.',
+      description: '🍁 Autumn (September - November): Golden rice fields, Kishiwada Danjiri Festival in Osaka, maple leaves changing colors in Hokkaido and highlands, Jidai Matsuri in Kyoto, and Shichi-Go-San festival for children aged 3, 5, and 7.',
       priceMultiplier: 1.2, // 20% price increase
       nameJa: '紅葉シーズン',
       nameZh: '秋叶季节',
       nameKo: '단풍 시즌',
-      nameVi: 'Mùa lá thu',
-      descriptionJa: '日本全国で見事な秋の色を体験してください。この人気のシーズンは適度な宿泊料金が特徴です。',
-      descriptionZh: '体验日本各地令人惊叹的秋季色彩。这个受欢迎的季节住宿费适中。',
-      descriptionKo: '일본 전역의 아름다운 가을 색상을 경험하세요. 이 인기 시즌은 적당한 숙박 요금이 특징입니다.',
-      descriptionVi: 'Trải nghiệm màu sắc mùa thu tuyệt đẹp khắp Nhật Bản. Mùa phổ biến này có giá phòng vừa phải.'
+      nameVi: 'Mùa Thu - Mùa lá đỏ',
+      descriptionJa: '🍁 秋 (9月～11月): 黄金色の稲穂、岸和田だんじり祭り、北海道と高地での紅葉、時代祭、七五三。',
+      descriptionZh: '🍁 秋季 (9月-11月): 金黄稻田、大阪岸和田地车祭、北海道和高地枫叶变色、京都时代祭、七五三儿童成长礼。',
+      descriptionKo: '🍁 가을 (9월-11월): 황금빛 논, 오사카의 기시와다 단지리 축제, 홋카이도와 고지대에서 단풍 색 변화, 교토의 지다이 마쓰리, 3, 5, 7세 어린이를 위한 시치고산 축제.',
+      descriptionVi: '🍁 Mùa Thu (Tháng 9 – Tháng 11): Mùa lúa chín vàng, lễ hội Kishiwada Danjiri ở Osaka, lá phong đổi màu ở Hokkaido và vùng cao, lễ hội Jidai Matsuri ở Kyoto, và lễ hội Shichi-Go-San cho trẻ em 3, 5, 7 tuổi.'
+    });
+    
+    // Winter Season (December - February)
+    this.seasons.set(this.currentSeasonId, {
+      id: this.currentSeasonId++,
+      name: 'Winter Snow Season',
+      startMonth: 12, // December
+      endMonth: 2,   // February
+      description: '❄️ Winter (December - February): Christmas illuminations in Tokyo and Osaka, ski season in Hokkaido and Nagano, popular onsen (hot springs), New Year celebrations at temples, Sapporo White Illumination, Sapporo Snow Festival with ice sculptures, Yokote Kamakura snow hut festival, and snow monkeys bathing in onsen at Jigokudani.',
+      priceMultiplier: 1.15, // 15% price increase
+      nameJa: '冬の雪シーズン',
+      nameZh: '冬季雪季',
+      nameKo: '겨울 눈 시즌',
+      nameVi: 'Mùa Đông - Mùa tuyết',
+      descriptionJa: '❄️ 冬 (12月～2月): 東京と大阪のクリスマスイルミネーション、北海道と長野のスキーシーズン、温泉、寺院での新年の祝賀、札幌ホワイトイルミネーション、札幌雪まつり、横手かまくら、地獄谷の雪猿。',
+      descriptionZh: '❄️ 冬季 (12月-2月): 东京和大阪的圣诞彩灯、北海道和长野的滑雪季节、温泉受欢迎、寺庙新年庆祝、札幌白色灯饰、札幌冰雪节、横手雪屋节、地狱谷温泉中的雪猴。',
+      descriptionKo: '❄️ 겨울 (12월-2월): 도쿄와 오사카의 크리스마스 일루미네이션, 홋카이도와 나가노의 스키 시즌, 인기 있는 온천, 사원에서의 새해 축하 행사, 삿포로 화이트 일루미네이션, 얼음 조각이 있는 삿포로 눈 축제, 요코테 카마쿠라 눈집 축제, 지고쿠다니에서 온천에 목욕하는 눈 원숭이.',
+      descriptionVi: '❄️ Mùa Đông (Tháng 12 – Tháng 2): Đèn trang trí Giáng sinh ở Tokyo và Osaka, mùa trượt tuyết ở Hokkaido và Nagano, các khu nghỉ dưỡng onsen (suối nước nóng) phổ biến, lễ đón năm mới tại các đền chùa, lễ hội ánh sáng Sapporo, lễ hội tuyết Sapporo với điêu khắc băng, lễ hội lều tuyết Yokote Kamakura, và khỉ tuyết tắm onsen tại Jigokudani.'
     });
     
     // Initialize with sample vehicles
