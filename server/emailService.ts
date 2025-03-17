@@ -10,11 +10,14 @@ interface EmailRequest {
 
 // Create a transporter
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // use SSL
   auth: {
     user: process.env.EMAIL_USER || 'hoangtucuoirong@gmail.com',
     pass: process.env.EMAIL_PASSWORD
-  }
+  },
+  debug: true // Show debug output
 });
 
 export const sendEmail = async (request: EmailRequest): Promise<{ success: boolean; message: string }> => {
