@@ -70,7 +70,7 @@ const Step2ServiceSelection = () => {
               onValueChange={(value) => updateFormData({ tourId: parseInt(value) })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a tour" />
+                <SelectValue placeholder={t('calculator.selectTourPlaceholder', 'Select a tour')} />
               </SelectTrigger>
               <SelectContent>
                 {tours.map((tour) => (
@@ -128,12 +128,12 @@ const Step2ServiceSelection = () => {
               onValueChange={(value) => updateFormData({ vehicleId: parseInt(value) })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a vehicle" />
+                <SelectValue placeholder={t('calculator.selectVehiclePlaceholder', 'Select a vehicle')} />
               </SelectTrigger>
               <SelectContent>
                 {vehicles.map((vehicle) => (
                   <SelectItem key={vehicle.id} value={vehicle.id.toString()}>
-                    {vehicle.name} - {vehicle.seats} seats, {vehicle.luggageCapacity} suitcases
+                    {vehicle.name} - {vehicle.seats} {t('calculator.seats', 'seats')}, {vehicle.luggageCapacity} {t('calculator.suitcases', 'suitcases')}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -146,13 +146,13 @@ const Step2ServiceSelection = () => {
               <CardHeader className="pb-2">
                 <CardTitle>{selectedVehicle.name}</CardTitle>
                 <CardDescription className="flex items-center">
-                  <User className="h-4 w-4 mr-1" /> {selectedVehicle.seats} seats | {selectedVehicle.luggageCapacity} suitcases
+                  <User className="h-4 w-4 mr-1" /> {selectedVehicle.seats} {t('calculator.seats', 'seats')} | {selectedVehicle.luggageCapacity} {t('calculator.suitcases', 'suitcases')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pb-2">
                 <div className="mb-4">
                   <Label htmlFor="vehicleCount" className="block text-sm mb-1">
-                    Number of vehicles
+                    {t('calculator.numberOfVehicles', 'Number of vehicles')}
                   </Label>
                   <Input
                     id="vehicleCount"
@@ -184,8 +184,8 @@ const Step2ServiceSelection = () => {
                 ) : (
                   <div className="text-sm space-y-2">
                     <div>
-                      <span className="text-muted-foreground">Passenger Capacity:</span>
-                      <div className="font-medium">{selectedVehicle.seats} people</div>
+                      <span className="text-muted-foreground">{t('calculator.passengerCapacity', 'Passenger Capacity')}:</span>
+                      <div className="font-medium">{selectedVehicle.seats} {t('calculator.people', 'people')}</div>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Luggage Capacity:</span>
