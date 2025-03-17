@@ -14,7 +14,8 @@
 ✅ **Giao diện quản trị**: Quản lý thông tin tour, phương tiện, khách sạn, hướng dẫn viên, mùa  
 ✅ **Tích hợp Google Sheets**: Đồng bộ dữ liệu với Google Sheets để dễ dàng quản lý  
 ✅ **Gửi email tự động**: Gửi thông tin yêu cầu tư vấn qua email  
-✅ **Xác thực người dùng**: Phân quyền admin và khách hàng
+✅ **Xác thực người dùng**: Phân quyền admin và khách hàng  
+✅ **Dịch vụ đặc biệt**: Tùy chọn đặt các dịch vụ đặc biệt như biểu diễn Geisha, trải nghiệm Kimono, lễ uống trà...
 
 ## Demo & Screenshots
 
@@ -26,21 +27,31 @@
 |-------------------------|----------------|
 | <img src="./attached_assets/image_1742201642536.png" alt="Calculator Screen" width="100%"/> | <img src="./attached_assets/image_1742206392753.png" alt="Admin Screen" width="100%"/> |
 
-## Cài đặt nhanh
+## Triển khai độc lập (không phụ thuộc Replit)
 
-### Windows
-
-1. Clone repository
-2. Chạy file `start.bat` để tự động thiết lập và khởi động ứng dụng
-
-### Linux/macOS
+### Cài đặt từ GitHub
 
 ```bash
-git clone https://github.com/yourusername/asahijapantours.git
+# 1. Clone repository từ GitHub
+git clone https://github.com/your-username/asahijapantours.git
 cd asahijapantours
+
+# 2. Cài đặt các dependencies
 npm install
+
+# 3. Tạo file .env từ mẫu
+cp .env.example .env
+# Cấu hình các biến môi trường trong file .env theo hướng dẫn bên trong
+
+# 4. Chạy script thiết lập
 node setup.js
+
+# 5. Khởi động ứng dụng ở chế độ development
 npm run dev
+
+# Hoặc build và chạy ở chế độ production
+npm run build
+npm start
 ```
 
 ## Cài đặt chi tiết
