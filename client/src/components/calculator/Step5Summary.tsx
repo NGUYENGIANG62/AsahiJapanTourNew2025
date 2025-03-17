@@ -383,9 +383,9 @@ const Step5Summary = () => {
       <Dialog open={showContactDirectly} onOpenChange={setShowContactDirectly}>
         <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
-            <DialogTitle>Thông tin liên hệ trực tiếp</DialogTitle>
+            <DialogTitle>{t('calculator.summary.directContactInfo', 'Thông tin liên hệ trực tiếp')}</DialogTitle>
             <DialogDescription>
-              Vui lòng liên hệ với chúng tôi qua các thông tin dưới đây để được tư vấn nhanh chóng
+              {t('calculator.summary.contactUsPrompt', 'Vui lòng liên hệ với chúng tôi qua các thông tin dưới đây để được tư vấn nhanh chóng')}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -415,7 +415,7 @@ const Step5Summary = () => {
           </div>
           <DialogFooter>
             <Button onClick={() => setShowContactDirectly(false)}>
-              Đã hiểu
+              {t('calculator.summary.understood', 'Đã hiểu')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -467,7 +467,7 @@ const Step5Summary = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="font-medium mb-2">Selected Options</h4>
+                    <h4 className="font-medium mb-2">{t('calculator.summary.selectedOptions', 'Selected Options')}</h4>
                     <ul className="space-y-2">
                       <li className="flex items-center">
                         <Car className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -499,20 +499,20 @@ const Step5Summary = () => {
                   </div>
                   
                   <div>
-                    <h4 className="font-medium mb-2">Inclusions</h4>
+                    <h4 className="font-medium mb-2">{t('calculator.summary.inclusions', 'Inclusions')}</h4>
                     <ul className="space-y-2">
                       <li className="flex items-center">
                         {formData.includeBreakfast 
                           ? <CheckCircle2 className="mr-2 h-4 w-4 text-success" /> 
                           : <XCircle className="mr-2 h-4 w-4 text-muted-foreground" />}
-                        <span>Breakfast</span>
+                        <span>{t('calculator.meals.breakfast', 'Breakfast')}</span>
                       </li>
                       
                       <li className="flex items-center">
                         {formData.includeLunch 
                           ? <CheckCircle2 className="mr-2 h-4 w-4 text-success" /> 
                           : <XCircle className="mr-2 h-4 w-4 text-muted-foreground" />}
-                        <span>Lunch</span>
+                        <span>{t('calculator.meals.lunch', 'Lunch')}</span>
                       </li>
                       
                       <li className="flex items-center">
