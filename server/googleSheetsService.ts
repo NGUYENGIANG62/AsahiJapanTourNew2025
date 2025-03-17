@@ -11,16 +11,14 @@ const SPREADSHEET_NAME = 'AsahiJapanTours';
 let spreadsheetId: string | null = null;
 
 /**
- * Authorize with Google using OAuth2
+ * Authorize with Google using Direct Access
+ * This is a simplified approach for development and testing purposes
  */
 async function authorize() {
   try {
     // Kiểm tra và ghi log tất cả các biến môi trường liên quan đến Google Sheets
     console.log('ENV variables check:');
     console.log('GOOGLE_SPREADSHEET_URL:', process.env.GOOGLE_SPREADSHEET_URL);
-    console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
-    console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? '✓ exists' : 'missing');
-    console.log('GOOGLE_REFRESH_TOKEN:', process.env.GOOGLE_REFRESH_TOKEN ? '✓ exists' : 'missing');
     
     // Lấy đường dẫn trực tiếp tới Google Sheets từ biến môi trường hoặc sử dụng mặc định
     const defaultSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/1DQ1e6k4I65O5NxmX8loJ_SKUI7aoIj3WCu5BMLUCznw/edit?usp=drive_link";
@@ -37,48 +35,25 @@ async function authorize() {
       console.warn('Could not extract spreadsheet ID from URL. Will attempt to find by name.');
     }
     
-    // Get credentials from environment variables
-    const clientId = process.env.GOOGLE_CLIENT_ID;
-    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+    // Sử dụng phương pháp truy cập công khai nếu bảng tính chia sẻ "anyone with the link can view"
+    // Lưu ý: Phương pháp này chỉ hoạt động nếu Google Sheet đã được chia sẻ công khai
+    // Đối với ứng dụng production, nên sử dụng Service Account với cấp quyền phù hợp
     
-    // Kiểm tra xem có đầy đủ thông tin đăng nhập không
-    if (!clientId || !clientSecret || !refreshToken) {
-      console.error('Missing required OAuth2.0 credentials:');
-      if (!clientId) console.error('- GOOGLE_CLIENT_ID is missing');
-      if (!clientSecret) console.error('- GOOGLE_CLIENT_SECRET is missing');
-      if (!refreshToken) console.error('- GOOGLE_REFRESH_TOKEN is missing');
-      
-      throw new Error('Missing required Google OAuth credentials');
+    console.log('Setting up API client for direct public access');
+    
+    // Kiểm tra xem có API key không - nếu có, sử dụng nó để tăng giới hạn request
+    const apiKey = process.env.GOOGLE_API_KEY;
+    if (apiKey) {
+      console.log('Using Google API key for authenticated public access');
+      return google.sheets({
+        version: 'v4',
+        auth: apiKey
+      });
     }
     
-    console.log('Setting up OAuth2 client with provided credentials');
-    
-    // Khởi tạo OAuth2 client
-    const oAuth2Client = new google.auth.OAuth2(
-      clientId,
-      clientSecret,
-      '' // Redirect URI để trống khi chỉ sử dụng refresh token
-    );
-    
-    // Thiết lập thông tin xác thực đầy đủ
-    oAuth2Client.setCredentials({
-      refresh_token: refreshToken,
-      client_id: clientId,
-      client_secret: clientSecret
-    });
-    
-    // Mở rộng thời gian hết hạn của token
-    oAuth2Client.on('tokens', (tokens) => {
-      if (tokens.refresh_token) {
-        console.log('New refresh token received, consider updating your .env file');
-      }
-    });
-    
-    // Tạo đối tượng API sheets sử dụng thông tin xác thực đã được thiết lập
+    // Nếu không có API key, vẫn có thể truy cập với quota thấp hơn
     return google.sheets({ 
-      version: 'v4', 
-      auth: oAuth2Client 
+      version: 'v4'
     });
   } catch (error) {
     console.error('Authorization error:', error);
@@ -88,6 +63,8 @@ async function authorize() {
 
 /**
  * Find the spreadsheet ID based on name
+ * Lưu ý: Phương pháp này không còn hoạt động khi chúng ta không có xác thực
+ * Thay vào đó, chúng ta đã trích xuất ID từ URL
  */
 async function findSpreadsheetId(sheetsApi: sheets_v4.Sheets): Promise<string> {
   // If we already have the ID cached, return it
@@ -95,63 +72,31 @@ async function findSpreadsheetId(sheetsApi: sheets_v4.Sheets): Promise<string> {
     return spreadsheetId;
   }
 
-  try {
-    // List user's files to find the spreadsheet
-    const drive = google.drive({ version: 'v3', auth: sheetsApi.context._options.auth });
-    const response = await drive.files.list({
-      q: `name='${SPREADSHEET_NAME}' and mimeType='application/vnd.google-apps.spreadsheet'`,
-      fields: 'files(id, name)',
-    });
-
-    const files = response.data.files;
-    if (!files || files.length === 0) {
-      throw new Error(`Spreadsheet "${SPREADSHEET_NAME}" not found.`);
-    }
-
-    // Cache and return the ID
-    spreadsheetId = files[0].id || '';
-    return spreadsheetId;
-  } catch (error) {
-    console.error('Error finding spreadsheet:', error);
-    throw error;
-  }
+  // Vì chúng ta không có xác thực, không thể tìm kiếm spreadsheet theo tên
+  throw new Error(`Spreadsheet ID không được xác định. Vui lòng cung cấp ID trong GOOGLE_SPREADSHEET_URL.`);
 }
 
 /**
  * Create a new spreadsheet if it doesn't exist
+ * Lưu ý: Phương pháp này không còn hoạt động khi chúng ta không có xác thực
  */
 async function createSpreadsheet(sheetsApi: sheets_v4.Sheets): Promise<string> {
-  try {
-    // Create a new spreadsheet
-    const response = await sheetsApi.spreadsheets.create({
-      requestBody: {
-        properties: {
-          title: SPREADSHEET_NAME,
-        },
-        sheets: [
-          { properties: { title: 'Tours' } },
-          { properties: { title: 'Vehicles' } },
-          { properties: { title: 'Hotels' } },
-          { properties: { title: 'Guides' } },
-          { properties: { title: 'Seasons' } },
-        ],
-      },
-    });
-
-    if (!response.data.spreadsheetId) {
-      throw new Error('Failed to create spreadsheet');
-    }
-
-    // Initialize the spreadsheet with headers
-    await initializeSheets(sheetsApi, response.data.spreadsheetId);
-
-    // Cache and return the ID
-    spreadsheetId = response.data.spreadsheetId;
-    return spreadsheetId;
-  } catch (error) {
-    console.error('Error creating spreadsheet:', error);
-    throw error;
-  }
+  // Không có quyền tạo bảng tính khi không có xác thực, hãy hiển thị thông báo hướng dẫn
+  throw new Error(
+    'Không thể tự động tạo Google Spreadsheet. Vui lòng tạo bảng tính thủ công và cập nhật URL trong biến môi trường GOOGLE_SPREADSHEET_URL.' + 
+    '\nHướng dẫn:' +
+    '\n1. Đi đến drive.google.com và tạo một Google Sheets mới' +
+    '\n2. Đặt tên bảng tính là "AsahiJapanTours"' + 
+    '\n3. Tạo các sheet: Tours, Vehicles, Hotels, Guides, Seasons' +
+    '\n4. Thêm tiêu đề vào mỗi sheet theo mẫu sau:' +
+    '\n   - Tours: id, name, code, location, description, durationDays, basePrice, imageUrl, nameJa, nameZh' +
+    '\n   - Vehicles: id, name, seats, luggageCapacity, pricePerDay, driverCostPerDay' +
+    '\n   - Hotels: id, name, location, stars, singleRoomPrice, doubleRoomPrice, tripleRoomPrice, breakfastPrice, imageUrl' +
+    '\n   - Guides: id, name, languages, pricePerDay' +
+    '\n   - Seasons: id, name, startMonth, endMonth, description, priceMultiplier, nameJa, nameZh' +
+    '\n5. Chia sẻ bảng tính với quyền "Bất kỳ ai có liên kết" có thể xem' +
+    '\n6. Sao chép URL và cập nhật vào biến môi trường GOOGLE_SPREADSHEET_URL'
+  );
 }
 
 /**
