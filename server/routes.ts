@@ -578,9 +578,10 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       // Get base costs
       let baseCost = tour.basePrice * calculationData.participants;
       
-      // Add vehicle costs
-      const vehicleCost = vehicle.pricePerDay * durationDays;
-      const driverCost = vehicle.driverCostPerDay * durationDays;
+      // Add vehicle costs based on number of vehicles
+      const vehicleCount = calculationData.vehicleCount || 1; // Default to 1 if not specified
+      const vehicleCost = vehicle.pricePerDay * durationDays * vehicleCount;
+      const driverCost = vehicle.driverCostPerDay * durationDays * vehicleCount;
       
       // Add hotel costs if selected
       let hotelCost = 0;
