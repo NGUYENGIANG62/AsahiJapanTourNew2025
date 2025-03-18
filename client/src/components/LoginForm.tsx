@@ -8,6 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
 import LanguageSelector from '@/components/LanguageSelector';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const LoginForm = () => {
   const { t } = useTranslation();
@@ -19,10 +21,11 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [attemptCount, setAttemptCount] = useState(0);
   
   const handleLogin = async () => {
     if (!userId || !password) {
-      setError(t('common.login_error'));
+      setError(t('auth.fieldRequired'));
       return;
     }
     
@@ -30,7 +33,7 @@ const LoginForm = () => {
     setError(null);
     
     try {
-      const success = await login(userId, password);
+      const { success, errorMessage } = await login(userId, password);
       
       if (success) {
         toast({
@@ -38,15 +41,22 @@ const LoginForm = () => {
           description: t('common.login_success'),
           duration: 2000,
         });
-        
-        // Redirect based on user role
-        // This will happen in the auth context after login
+        // Redirect based on user role happens in the auth context
       } else {
-        setError(t('common.login_error'));
+        setAttemptCount(prev => prev + 1);
+        if (errorMessage) {
+          setError(errorMessage);
+        } else if (attemptCount >= 2) {
+          // After 3 failed attempts, show a more helpful message
+          setError(t('auth.loginHelpText'));
+        } else {
+          setError(t('common.login_error'));
+        }
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError(t('common.login_error'));
+      setAttemptCount(prev => prev + 1);
+      setError(t('auth.serverError'));
     } finally {
       setIsLoading(false);
     }
@@ -111,9 +121,18 @@ const LoginForm = () => {
           </div>
           
           {error && (
-            <div className="mt-4 text-destructive text-sm">
-              {error}
-            </div>
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="mt-1">
+                {error}
+                {attemptCount >= 2 && (
+                  <div className="mt-2 text-xs">
+                    <p>{t('auth.adminCredentials')}: <strong>AsahiVietLifeJapanTour</strong></p>
+                    <p>{t('auth.customerCredentials')}: <strong>customer</strong></p>
+                  </div>
+                )}
+              </AlertDescription>
+            </Alert>
           )}
         </form>
       </CardContent>

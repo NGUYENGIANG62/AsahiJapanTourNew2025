@@ -3,12 +3,17 @@ import { User } from '@/types';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
+type LoginResult = {
+  success: boolean;
+  errorMessage?: string;
+};
+
 type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isLoading: boolean;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<LoginResult>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 };
@@ -18,7 +23,7 @@ export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isAdmin: false,
   isLoading: true,
-  login: async () => false,
+  login: async () => ({ success: false }),
   logout: async () => {},
   checkAuth: async () => {},
 });
@@ -53,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkAuth();
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (username: string, password: string): Promise<LoginResult> => {
     try {
       setIsLoading(true);
       const response = await apiRequest('POST', '/api/auth/login', { username, password });
@@ -61,24 +66,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
-        return true;
+        return { success: true };
       } else {
         const errorData = await response.json();
+        const errorMessage = errorData.message || 'Invalid credentials';
+        
         toast({
           title: 'Login Error',
-          description: errorData.message || 'Invalid credentials',
+          description: errorMessage,
           variant: 'destructive',
         });
-        return false;
+        
+        return { 
+          success: false, 
+          errorMessage 
+        };
       }
     } catch (error) {
       console.error('Login error:', error);
+      const errorMessage = 'A network error occurred. Please try again later.';
+      
       toast({
-        title: 'Login Error',
-        description: 'An unexpected error occurred',
+        title: 'Connection Error',
+        description: errorMessage,
         variant: 'destructive',
       });
-      return false;
+      
+      return { 
+        success: false, 
+        errorMessage 
+      };
     } finally {
       setIsLoading(false);
     }
