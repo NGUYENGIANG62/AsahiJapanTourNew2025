@@ -62,32 +62,47 @@ const CompanySettings = () => {
     return await response.json();
   };
   
-  // Tạo các queries cho tất cả các cài đặt
-  const createSettingQueries = () => {
-    const settingKeys = settings.map(setting => setting.key);
-    return settingKeys.map(key => {
-      return useQuery({
-        queryKey: [`/api/settings/${key}`],
-        queryFn: () => fetchSetting(key),
-      });
-    });
-  };
-  
-  const settingQueries = createSettingQueries();
+  // Use a single query key but fetch individual settings
+  const { data: allSettingsData, isLoading: isSettingsLoading } = useQuery({
+    queryKey: ['/api/settings'],
+    queryFn: async () => {
+      // Fetch each setting individually and handle not found errors gracefully
+      const results = await Promise.all(
+        settings.map(async (setting) => {
+          try {
+            const response = await fetch(`/api/settings/${setting.key}`, {
+              credentials: 'include',
+            });
+            
+            if (!response.ok) {
+              // If setting doesn't exist yet, return a default of '0'
+              return { key: setting.key, value: '0' };
+            }
+            
+            const data = await response.json();
+            return { key: setting.key, value: data.value };
+          } catch (error) {
+            console.log(`Setting ${setting.key} not found, using default value`);
+            return { key: setting.key, value: '0' };
+          }
+        })
+      );
+      return results;
+    },
+    // Giảm thiểu số lần gọi API khi component re-render
+    staleTime: 30000 // 30 seconds
+  });
   
   // Update settings when data is loaded
   useEffect(() => {
-    // Xử lý các phản hồi từ các query
-    settingQueries.forEach((query, index) => {
-      if (query.data) {
-        const settingKey = settings[index]?.key;
-        if (settingKey) {
-          updateSettingValue(settingKey, query.data.value);
+    if (allSettingsData) {
+      allSettingsData.forEach((item) => {
+        if (item && item.key) {
+          updateSettingValue(item.key, item.value);
         }
-      }
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settingQueries]);
+      });
+    }
+  }, [allSettingsData]);
   
   // Update setting value
   const updateSettingValue = (key: string, value: string) => {
@@ -114,7 +129,9 @@ const CompanySettings = () => {
         title: t('common.success'),
         description: `${variables.key} updated successfully`,
       });
+      // Invalidate both the individual query and the main query
       queryClient.invalidateQueries({ queryKey: [`/api/settings/${variables.key}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
     },
     onError: (error) => {
       toast({
@@ -130,8 +147,8 @@ const CompanySettings = () => {
     updateSettingMutation.mutate({ key, value });
   };
   
-  // Check if any settings are loading
-  const isLoading = settingQueries.some(query => query.isLoading);
+  // Use the loading state from our useQuery
+  const isLoading = isSettingsLoading;
 
   return (
     <Card>
