@@ -44,6 +44,9 @@ export function AiAssistant() {
     }
   }, [messages]);
   
+  // State để theo dõi chế độ nhập hiện tại
+  const [inputMode, setInputMode] = useState<'normal' | 'tour_suggestion'>('normal');
+  
   const handleSendMessage = async () => {
     if (!userMessage.trim()) return;
     
@@ -55,14 +58,18 @@ export function AiAssistant() {
     };
     
     setMessages((prev) => [...prev, newUserMessage]);
-    setUserMessage('');
+    const currentMessage = userMessage; // Lưu lại tin nhắn hiện tại
+    setUserMessage(''); // Xóa tin nhắn sau khi gửi
     setIsLoading(true);
     
     try {
+      // Xác định loại yêu cầu dựa trên chế độ nhập
+      const requestType = inputMode === 'tour_suggestion' ? 'tour_suggestion' : 'custom_question';
+      
       // Gửi yêu cầu đến API
       const response = await apiRequest('POST', '/api/ai-assistant', {
-        type: 'custom_question',
-        message: userMessage,
+        type: requestType,
+        message: currentMessage,
       });
       
       const data = await response.json();
@@ -76,6 +83,9 @@ export function AiAssistant() {
           timestamp: new Date(),
         },
       ]);
+      
+      // Đặt lại chế độ nhập về normal sau khi gửi
+      setInputMode('normal');
     } catch (error) {
       console.error("Error querying AI assistant:", error);
       // Thêm tin nhắn lỗi
@@ -93,6 +103,9 @@ export function AiAssistant() {
         description: "Không thể kết nối đến trợ lý AI, vui lòng thử lại sau",
         variant: "destructive",
       });
+      
+      // Đặt lại chế độ nhập về normal sau khi gặp lỗi
+      setInputMode('normal');
     } finally {
       setIsLoading(false);
     }
@@ -179,52 +192,26 @@ export function AiAssistant() {
   };
   
   const handleTourSuggestion = async () => {
+    // Chuyển đổi trạng thái input mode sang tour_suggestion
+    setInputMode('tour_suggestion');
+    
     // Hiển thị popup yêu cầu người dùng nhập yêu cầu tour
     toast({
-      title: "Nhập mô tả tour",
-      description: "Vui lòng nhập yêu cầu của bạn vào hộp chat và gửi để nhận gợi ý tour phù hợp.",
+      title: "Gợi ý tour du lịch",
+      description: "Mô tả ngắn gọn nhu cầu du lịch của bạn để nhận gợi ý tour phù hợp. Ví dụ: thời gian, sở thích, ngân sách...",
       duration: 5000,
     });
     
     // Đặt tin nhắn gợi ý vào hộp chat
-    setUserMessage("Tôi muốn đi du lịch Nhật Bản...");
+    setUserMessage("Tôi muốn đi du lịch Nhật Bản khoảng 1 tuần vào tháng 5, thích văn hóa truyền thống và ẩm thực, ngân sách trung bình...");
     
-    // Tạo một hàm trợ giúp để gửi yêu cầu tour suggestion
-    const sendTourSuggestionRequest = async (message: string) => {
-      setIsLoading(true);
-      
-      try {
-        const response = await apiRequest('POST', '/api/ai-assistant', {
-          type: 'tour_suggestion',
-          message: message
-        });
-        
-        const data = await response.json();
-        
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'user',
-            content: message,
-            timestamp: new Date(),
-          },
-          {
-            role: 'assistant',
-            content: data.message,
-            timestamp: new Date(),
-          },
-        ]);
-      } catch (error) {
-        console.error("Error getting tour suggestions:", error);
-        toast({
-          title: "Lỗi",
-          description: "Không thể lấy gợi ý tour từ trợ lý AI",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // Focus vào textarea
+    const textarea = document.querySelector('textarea');
+    if (textarea) {
+      setTimeout(() => {
+        textarea.focus();
+      }, 100);
+    }
   };
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -321,7 +308,7 @@ export function AiAssistant() {
           <Separator />
           
           <div className="p-4 pt-2">
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button
                 variant="outline"
                 size="sm"
@@ -330,6 +317,17 @@ export function AiAssistant() {
                 className="bg-gradient-to-r from-blue-400 to-indigo-400 text-white border-none hover:opacity-90"
               >
                 <Plane className="h-3.5 w-3.5 mr-1" /> Tour
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleTourSuggestion}
+                disabled={isLoading}
+                className={`bg-gradient-to-r from-purple-400 to-violet-400 text-white border-none hover:opacity-90 ${
+                  inputMode === 'tour_suggestion' ? 'ring-2 ring-purple-300' : ''
+                }`}
+              >
+                <Map className="h-3.5 w-3.5 mr-1" /> Gợi ý
               </Button>
               <Button
                 variant="outline"
@@ -356,8 +354,16 @@ export function AiAssistant() {
                 value={userMessage}
                 onChange={(e) => setUserMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Nhập câu hỏi của bạn cho Leo..."
-                className="min-h-[80px] resize-none focus:border-purple-400 focus:ring-purple-300"
+                placeholder={
+                  inputMode === 'tour_suggestion'
+                    ? "Mô tả nhu cầu du lịch của bạn (thời gian, sở thích, ngân sách...)..."
+                    : "Nhập câu hỏi của bạn cho Leo..."
+                }
+                className={`min-h-[80px] resize-none ${
+                  inputMode === 'tour_suggestion'
+                    ? 'focus:border-violet-400 focus:ring-violet-300 border-violet-200'
+                    : 'focus:border-purple-400 focus:ring-purple-300'
+                }`}
                 disabled={isLoading}
               />
               <Button
