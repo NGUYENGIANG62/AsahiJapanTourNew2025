@@ -767,7 +767,7 @@ const Step5Summary = () => {
                       </div>
                       {vehicle && (
                         <div className="text-xs text-muted-foreground text-left mt-1">
-                          {t('calculator.summary.transport', 'Phương tiện')}: {formData.vehicleCount || 1}x {vehicle.name} ({vehicle.seats} {t('calculator.summary.seats', 'chỗ')}, {t('calculator.summary.luggage', 'hành lý')}: {vehicle.luggageCapacity} kg)
+                          {t('calculator.summary.transport', 'Phương tiện')}: {formData.vehicleCount || 1}x {vehicle.name} ({vehicle.seats} {t('calculator.summary.seats', 'chỗ')}, {t('calculator.summary.luggage', 'hành lý')}: {vehicle.luggageCapacity})
                         </div>
                       )}
                     </div>
