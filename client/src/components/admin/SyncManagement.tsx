@@ -14,6 +14,7 @@ type SyncStatus = {
   lastSync: string | null;
   status: string;
   dataSource?: string;
+  dataSourceName?: string;
   userRole?: string;
 };
 
@@ -47,7 +48,8 @@ const SyncManagement = () => {
   // Mutation to sync data from Google Sheets to local storage
   const syncFromSheetsMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest('POST', '/api/sync/from-sheets');
+      const payload = syncStatus?.userRole === 'admin' ? { dataSource: selectedDataSource } : {};
+      const res = await apiRequest('POST', '/api/sync/from-sheets', payload);
       return await res.json();
     },
     onSuccess: (data) => {
@@ -194,15 +196,20 @@ const SyncManagement = () => {
                 <div>
                   <p className="text-sm font-medium">{t('sync.connectionStatus')}</p>
                   <div className="mt-2 flex items-center">
-                    {syncStatus?.status === 'connected' ? (
+                    {syncStatus?.status === 'synced' ? (
                       <>
                         <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                        <span className="text-green-600 font-medium">{t('sync.connected')}</span>
+                        <span className="text-green-600 font-medium">Synchronized</span>
+                      </>
+                    ) : syncStatus?.status === 'error' ? (
+                      <>
+                        <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+                        <span className="text-red-600 font-medium">Synchronization Error</span>
                       </>
                     ) : (
                       <>
                         <CloudOff className="h-5 w-5 text-orange-500 mr-2" />
-                        <span className="text-orange-600 font-medium">{t('sync.notConnected')}</span>
+                        <span className="text-orange-600 font-medium">Not Synchronized</span>
                       </>
                     )}
                   </div>
@@ -215,16 +222,20 @@ const SyncManagement = () => {
                     <div className="mt-1 flex items-center">
                       <Cloud className="h-4 w-4 text-blue-600 mr-2" />
                       <span className="font-semibold text-blue-700">
-                        {syncStatus.dataSource === 'default' 
-                          ? 'Default Spreadsheet' 
-                          : `Agency Spreadsheet: ${syncStatus.dataSource}`}
+                        {syncStatus.dataSourceName || 
+                          (syncStatus.dataSource === 'default' 
+                            ? 'Default Spreadsheet' 
+                            : `Agency Spreadsheet: ${syncStatus.dataSource}`)}
                       </span>
                     </div>
-                    {syncStatus.userRole && (
-                      <p className="mt-1 text-xs text-blue-600">
-                        User role: {syncStatus.userRole}
-                      </p>
-                    )}
+                    <p className="mt-1 text-xs text-blue-600">
+                      {syncStatus.dataSource !== 'default' && syncStatus.dataSource && 
+                        <span className="block">Spreadsheet ID: {syncStatus.dataSource}</span>
+                      }
+                      {syncStatus.userRole && (
+                        <span>User role: {syncStatus.userRole}</span>
+                      )}
+                    </p>
                   </div>
                 )}
                 
