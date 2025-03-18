@@ -576,9 +576,7 @@ export class MemStorage implements IStorage {
     const hotel: Hotel = { 
       ...insertHotel, 
       id,
-      imageUrl: insertHotel.imageUrl || null,
-      lunchPrice: insertHotel.lunchPrice || 0,
-      dinnerPrice: insertHotel.dinnerPrice || 0
+      imageUrl: insertHotel.imageUrl || null
     };
     this.hotels.set(id, hotel);
     return hotel;
@@ -774,6 +772,7 @@ export class MemStorage implements IStorage {
   async createOrUpdateHotel(hotel: any): Promise<Hotel> {
     if (hotel.id && this.hotels.has(Number(hotel.id))) {
       const id = Number(hotel.id);
+      // Update hotel - remove lunch and dinner prices
       return this.updateHotel(id, {
         name: hotel.name,
         location: hotel.location,
@@ -782,12 +781,11 @@ export class MemStorage implements IStorage {
         doubleRoomPrice: Number(hotel.doubleRoomPrice) || 0,
         tripleRoomPrice: Number(hotel.tripleRoomPrice) || 0,
         breakfastPrice: Number(hotel.breakfastPrice) || 0,
-        lunchPrice: Number(hotel.lunchPrice) || 0,
-        dinnerPrice: Number(hotel.dinnerPrice) || 0,
         imageUrl: hotel.imageUrl
       }) as Promise<Hotel>;
     } else {
       // If no ID or ID not found, create new
+      // Create hotel - remove lunch and dinner prices
       return this.createHotel({
         name: hotel.name,
         location: hotel.location,
@@ -796,8 +794,6 @@ export class MemStorage implements IStorage {
         doubleRoomPrice: Number(hotel.doubleRoomPrice) || 0,
         tripleRoomPrice: Number(hotel.tripleRoomPrice) || 0,
         breakfastPrice: Number(hotel.breakfastPrice) || 0,
-        lunchPrice: Number(hotel.lunchPrice) || 0,
-        dinnerPrice: Number(hotel.dinnerPrice) || 0,
         imageUrl: hotel.imageUrl
       });
     }
