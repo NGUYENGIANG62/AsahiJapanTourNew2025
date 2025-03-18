@@ -1,21 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useLocation } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
 import LanguageSelector from '@/components/LanguageSelector';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, UserCircle2, ShieldAlert } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const LoginForm = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { login } = useAuth();
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
   
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
@@ -23,7 +21,13 @@ const LoginForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
   
+  // Clear error when language changes
+  useEffect(() => {
+    if (error) setError(null);
+  }, [i18n.language]);
+  
   const handleLogin = async () => {
+    // Validate form
     if (!userId || !password) {
       setError(t('auth.fieldRequired'));
       return;
@@ -44,6 +48,8 @@ const LoginForm = () => {
         // Redirect based on user role happens in the auth context
       } else {
         setAttemptCount(prev => prev + 1);
+        
+        // Show appropriate error message based on attempt count
         if (errorMessage) {
           setError(errorMessage);
         } else if (attemptCount >= 2) {
@@ -65,7 +71,7 @@ const LoginForm = () => {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardContent className="p-8">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 className="font-heading text-3xl font-bold text-primary mb-2">
             {t('common.appName')}
           </h1>
@@ -75,13 +81,14 @@ const LoginForm = () => {
         </div>
         
         {/* Language Selector */}
-        <div className="flex justify-end mb-6">
+        <div className="flex justify-end mb-4">
           <LanguageSelector />
         </div>
         
         <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
-          <div className="mb-6">
-            <Label htmlFor="user-id" className="block mb-2">
+          <div className="mb-5">
+            <Label htmlFor="user-id" className="flex items-center gap-2 mb-2">
+              <UserCircle2 className="h-4 w-4" />
               {t('auth.id')}
             </Label>
             <Input 
@@ -92,11 +99,14 @@ const LoginForm = () => {
               onChange={(e) => setUserId(e.target.value)}
               disabled={isLoading}
               required
+              autoComplete="username"
+              className={error && !userId ? "border-red-500" : ""}
             />
           </div>
           
-          <div className="mb-6">
-            <Label htmlFor="password" className="block mb-2">
+          <div className="mb-5">
+            <Label htmlFor="password" className="flex items-center gap-2 mb-2">
+              <ShieldAlert className="h-4 w-4" />
               {t('auth.password')}
             </Label>
             <Input 
@@ -107,13 +117,15 @@ const LoginForm = () => {
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
               required
+              autoComplete="current-password"
+              className={error && !password ? "border-red-500" : ""}
             />
           </div>
           
-          <div className="mt-8">
+          <div className="mt-6">
             <Button 
               type="submit" 
-              className="w-full" 
+              className="w-full py-6 text-base" 
               disabled={isLoading}
             >
               {isLoading ? t('common.loading') : t('common.login')}
@@ -126,9 +138,15 @@ const LoginForm = () => {
               <AlertDescription className="mt-1">
                 {error}
                 {attemptCount >= 2 && (
-                  <div className="mt-2 text-xs">
-                    <p>{t('auth.adminCredentials')}: <strong>AsahiVietLifeJapanTour</strong></p>
-                    <p>{t('auth.customerCredentials')}: <strong>customer</strong></p>
+                  <div className="mt-2 text-xs bg-black/5 p-2 rounded">
+                    <p className="flex items-center gap-1 mb-1">
+                      <strong>{t('auth.adminCredentials')}:</strong> 
+                      <span className="font-mono">AsahiVietLifeJapanTour</span>
+                    </p>
+                    <p className="flex items-center gap-1">
+                      <strong>{t('auth.customerCredentials')}:</strong>
+                      <span className="font-mono">customer</span>
+                    </p>
                   </div>
                 )}
               </AlertDescription>
