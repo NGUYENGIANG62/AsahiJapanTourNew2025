@@ -251,6 +251,7 @@ const Step5Summary = () => {
         if (formData.specialServices.sumoShow) services.push('Xem đấu Sumo');
         if (formData.specialServices.disneylandTickets) services.push('Vé Disneyland');
         if (formData.specialServices.universalStudioTickets) services.push('Vé Universal Studio');
+        if (formData.specialServices.airportTransfer) services.push('Dịch vụ đưa đón sân bay');
         
         specialServicesText = services.length > 0 
           ? `Dịch vụ đặc biệt: ${services.join(', ')}`
@@ -616,6 +617,12 @@ const Step5Summary = () => {
                                 <span className="text-sm">Vé Universal Studio</span>
                               </li>
                             )}
+                            {formData.specialServices.airportTransfer && (
+                              <li className="flex items-center">
+                                <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
+                                <span className="text-sm">Dịch vụ đưa đón sân bay</span>
+                              </li>
+                            )}
                             {formData.specialServices.notes && (
                               <li className="text-sm text-muted-foreground mt-1">
                                 <strong>Ghi chú:</strong> {formData.specialServices.notes}
@@ -627,7 +634,8 @@ const Step5Summary = () => {
                                formData.specialServices.wagyuDinner || 
                                formData.specialServices.sumoShow ||
                                formData.specialServices.disneylandTickets ||
-                               formData.specialServices.universalStudioTickets) && (
+                               formData.specialServices.universalStudioTickets ||
+                               formData.specialServices.airportTransfer) && (
                               <li className="text-sm text-muted-foreground">
                                 Không có dịch vụ đặc biệt
                               </li>
