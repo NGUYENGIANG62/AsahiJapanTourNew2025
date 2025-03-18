@@ -118,7 +118,9 @@ export class MemStorage implements IStorage {
       id: this.currentUserId++,
       username: 'AsahiVietLifeJapanTour',
       password: adminPassword,
-      role: 'admin'
+      role: 'admin',
+      agencyId: null,
+      dataSource: null
     });
     
     // Create default customer user
@@ -128,7 +130,21 @@ export class MemStorage implements IStorage {
       id: this.currentUserId++,
       username: 'customer',
       password: customerPassword,
-      role: 'user'
+      role: 'user',
+      agencyId: null,
+      dataSource: null
+    });
+    
+    // Create agent user for Nam A
+    const agentPassword = await bcrypt.hash('MyFriend2025', 10);
+    
+    this.users.set(this.currentUserId, {
+      id: this.currentUserId++,
+      username: 'AsahiLKNamA',
+      password: agentPassword,
+      role: 'agent',
+      agencyId: 'NamA',
+      dataSource: 'https://docs.google.com/spreadsheets/d/1Z7o-i4dfVlXKp599OGDOZCgxwSS3epxgMLi57-t3r6A/edit?usp=sharing'
     });
     
     // Create default settings
@@ -466,7 +482,9 @@ export class MemStorage implements IStorage {
     const user: User = { 
       ...insertUser, 
       id,
-      role: insertUser.role || 'user' // Default to user role if not specified
+      role: insertUser.role || 'user', // Default to user role if not specified
+      agencyId: insertUser.agencyId || null, 
+      dataSource: insertUser.dataSource || null
     };
     this.users.set(id, user);
     return user;

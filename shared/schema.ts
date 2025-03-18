@@ -7,13 +7,17 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  role: text("role").notNull().default("user"), // "admin" or "user"
+  role: text("role").notNull().default("user"), // "admin", "user", or "agent"
+  agencyId: text("agency_id"), // ID của đại lý (nếu role là "agent")
+  dataSource: text("data_source"), // Nguồn dữ liệu Google Sheets riêng (nếu có)
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
   role: true,
+  agencyId: true,
+  dataSource: true,
 });
 
 // TOURS
