@@ -135,7 +135,7 @@ export class MemStorage implements IStorage {
     this.settings.set('profit_margin', {
       id: this.currentSettingId++,
       key: 'profit_margin',
-      value: '20' // 20% profit margin
+      value: '15' // 15% profit margin
     });
     
     this.settings.set('tax_rate', {
@@ -147,7 +147,7 @@ export class MemStorage implements IStorage {
     this.settings.set('lunchPrice', {
       id: this.currentSettingId++,
       key: 'lunchPrice',
-      value: '2000' // 2000 JPY per person per day
+      value: '2500' // 2500 JPY per person per day
     });
     
     this.settings.set('dinnerPrice', {
