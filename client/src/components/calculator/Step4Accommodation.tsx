@@ -109,6 +109,11 @@ const Step4Accommodation = () => {
   const handleTripleRoomChange = (value: number) => {
     updateFormData({ tripleRoomCount: Math.max(0, value) });
   };
+  
+  // Handle staying nights change
+  const handleStayingNightsChange = (value: number) => {
+    updateFormData({ stayingNights: Math.max(0, value) });
+  };
 
   // Handle meal selections
   const handleLunchChange = (checked: boolean) => {

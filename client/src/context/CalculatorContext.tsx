@@ -26,6 +26,7 @@ const initialFormData: CalculatorFormData = {
   vehicleId: 0,
   vehicleCount: 1,
   participants: 1,
+  stayingNights: 0,
   currency: 'JPY',
   specialServices: {
     geishaShow: false,

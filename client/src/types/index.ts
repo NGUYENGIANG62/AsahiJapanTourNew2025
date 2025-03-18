@@ -113,6 +113,7 @@ export type CalculatorFormData = {
   singleRoomCount?: number;
   doubleRoomCount?: number;
   tripleRoomCount?: number;
+  stayingNights?: number; // Số đêm nghỉ tại khách sạn
   includeBreakfast?: boolean;
   includeLunch?: boolean;
   includeDinner?: boolean;
