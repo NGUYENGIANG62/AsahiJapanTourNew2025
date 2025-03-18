@@ -779,19 +779,19 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
               let guideSingleRoomPrice = 0;
               let guideBreakfastPrice = 0;
               
-              // Set prices based on star rating
+              // Set prices based on star rating (giá trực tiếp từ Google Sheets)
               switch (calculationData.hotelStars) {
                 case 3:
-                  guideSingleRoomPrice = parseFloat(await storage.getSetting('hotel_3star_single') || '12000');
-                  guideBreakfastPrice = parseFloat(await storage.getSetting('hotel_3star_breakfast') || '1500');
+                  guideSingleRoomPrice = 9500; // Dựa trên Google Sheets cho Tokyo Plaza Hotel (3 sao)
+                  guideBreakfastPrice = 2000; 
                   break;
                 case 4:
-                  guideSingleRoomPrice = parseFloat(await storage.getSetting('hotel_4star_single') || '18000');
-                  guideBreakfastPrice = parseFloat(await storage.getSetting('hotel_4star_breakfast') || '2000');
+                  guideSingleRoomPrice = 18000; // Dựa trên Google Sheets cho Kyoto Royal Resort (4 sao)
+                  guideBreakfastPrice = 2500;
                   break;
                 case 5:
-                  guideSingleRoomPrice = parseFloat(await storage.getSetting('hotel_5star_single') || '25000');
-                  guideBreakfastPrice = parseFloat(await storage.getSetting('hotel_5star_breakfast') || '3000');
+                  guideSingleRoomPrice = 35000; // Dựa trên Google Sheets cho Tokyo Plaza Luxury (5 sao)
+                  guideBreakfastPrice = 4000;
                   break;
               }
               
@@ -820,17 +820,9 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
           
           // Guide gets the same meals as participants
           if (calculationData.includeLunch || calculationData.includeDinner) {
-            let lunchCost = parseFloat(await storage.getSetting('meal_cost_lunch') || '2000');
-            let dinnerCost = parseFloat(await storage.getSetting('meal_cost_dinner') || '3000');
-            
-            // Nếu đã chọn khách sạn cụ thể, ưu tiên sử dụng giá từ khách sạn (nếu có)
-            if (calculationData.hotelId) {
-              const hotel = await storage.getHotel(calculationData.hotelId);
-              if (hotel) {
-                lunchCost = hotel.lunchPrice ? hotel.lunchPrice : lunchCost;
-                dinnerCost = hotel.dinnerPrice ? hotel.dinnerPrice : dinnerCost;
-              }
-            }
+            // Lấy giá trị bữa ăn từ Google Sheets (đồng nhất cho tất cả tour và độc lập với khách sạn)
+            let lunchCost = parseFloat(await storage.getSetting('meal_cost_lunch') || '2500');
+            let dinnerCost = parseFloat(await storage.getSetting('meal_cost_dinner') || '3500');
             
             // Chỉ tính chi phí cho những bữa ăn được chọn
             const totalLunchCost = calculationData.includeLunch ? lunchCost : 0;
