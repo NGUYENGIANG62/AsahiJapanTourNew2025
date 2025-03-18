@@ -42,6 +42,8 @@ export type Hotel = {
   doubleRoomPrice: number;
   tripleRoomPrice: number;
   breakfastPrice: number;
+  lunchPrice?: number;
+  dinnerPrice?: number;
   imageUrl?: string;
 };
 
