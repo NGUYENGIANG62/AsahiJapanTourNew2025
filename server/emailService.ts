@@ -28,7 +28,7 @@ console.log("Email configuration:", {
 });
 
 export const sendEmail = async (request: EmailRequest): Promise<{ success: boolean; message: string }> => {
-  const { name, email, subject, message } = request;
+  const { name, email, phone, subject, message } = request;
 
   try {
     // Cấu hình email gửi đi với thông tin liên hệ của khách hàng
@@ -39,7 +39,7 @@ export const sendEmail = async (request: EmailRequest): Promise<{ success: boole
       html: `
         <h1>Yêu cầu tư vấn tour mới</h1>
         <p><strong>Từ:</strong> ${name || 'Khách hàng'} (${email})</p>
-        <p><strong>Số điện thoại:</strong> ${request.phone || 'Không cung cấp'}</p>
+        <p><strong>Số điện thoại:</strong> ${phone || 'Không cung cấp'}</p>
         <div style="white-space: pre-wrap; font-family: monospace; background-color: #f5f5f5; padding: 15px; border-radius: 5px;">
           ${message.replace(/\n/g, '<br>')}
         </div>
