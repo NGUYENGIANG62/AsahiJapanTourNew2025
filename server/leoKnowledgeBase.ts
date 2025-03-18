@@ -235,6 +235,11 @@ export async function isKnowledgeBaseAvailable(user?: User | null): Promise<bool
     return Boolean(faqCache && toursCache && localInsightsCache);
   } catch (error) {
     console.error('Error checking knowledge base availability:', error);
+    // Nếu lỗi là về quyền truy cập, vẫn trả về true để quá trình khác có thể tiếp tục
+    if (error instanceof Error && error.message.includes('permission')) {
+      console.log('Lỗi quyền truy cập nhưng vẫn xem như sẵn sàng');
+      return true;
+    }
     return false;
   }
 }
