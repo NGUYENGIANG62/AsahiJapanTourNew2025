@@ -76,14 +76,14 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
 
   // Authentication Routes
   apiRouter.post("/auth/login", (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err: Error | null, user: any, info: { message: string }) => {
       if (err) {
         return next(err);
       }
       if (!user) {
         return res.status(401).json({ message: info.message || "Invalid credentials" });
       }
-      req.logIn(user, (err) => {
+      req.logIn(user, (err: Error | null) => {
         if (err) {
           return next(err);
         }
@@ -97,7 +97,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   });
 
   apiRouter.post("/auth/logout", (req, res) => {
-    req.logout(() => {
+    req.logout((err: Error | null) => {
       res.json({ message: "Logged out successfully" });
     });
   });
