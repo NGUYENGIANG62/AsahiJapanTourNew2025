@@ -154,21 +154,22 @@ const Step2ServiceSelection = () => {
                   <Label htmlFor="vehicleCount" className="block text-sm mb-1">
                     {t('calculator.numberOfVehicles', 'Number of vehicles')}
                   </Label>
-                  <Select
-                    value={(formData.vehicleCount || 1).toString()}
-                    onValueChange={(value) => updateFormData({ vehicleCount: parseInt(value) })}
-                  >
-                    <SelectTrigger className="w-full max-w-xs">
-                      <SelectValue placeholder={t('calculator.selectCount', 'Select count')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                        <SelectItem key={num} value={num.toString()}>
-                          {num}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center">
+                    <Input
+                      id="vehicleCount"
+                      type="number"
+                      min="1"
+                      max="20"
+                      className="w-20"
+                      value={(formData.vehicleCount || 1).toString()}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value > 0 && value <= 20) {
+                          updateFormData({ vehicleCount: value });
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
                 
                 {isAdmin ? (
