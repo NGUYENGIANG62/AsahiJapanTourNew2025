@@ -34,19 +34,44 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { Search, Plus, Edit, Trash, Languages } from 'lucide-react';
+import { 
+  Search, 
+  Plus, 
+  Edit, 
+  Trash, 
+  Languages, 
+  FilterX,
+  Filter,
+  Award,
+  BadgeCheck,
+  Users
+} from 'lucide-react';
 
 // Form schema
 const guideSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
   languages: z.array(z.string()).min(1, 'Select at least one language'),
   pricePerDay: z.coerce.number().min(1, 'Price must be at least 1'),
+  experience: z.coerce.number().min(0, 'Experience cannot be negative').optional(),
+  hasInternationalLicense: z.boolean().optional(),
+  personality: z.string().optional(),
+  gender: z.string().optional(),
+  age: z.coerce.number().min(18, 'Age must be at least 18 years').max(100, 'Age must be realistic').optional(),
 });
 
 type GuideFormValues = z.infer<typeof guideSchema>;
@@ -73,11 +98,38 @@ const GuideManagement = () => {
     queryKey: ['/api/guides'],
   });
   
-  // Filter guides by search term
-  const filteredGuides = guides.filter(guide => 
-    guide.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter guides by search term and other filters
+  const filteredGuides = guides.filter(guide => {
+    // Search by name
+    if (!guide.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return false;
+    }
+    
+    // Filter by language
+    if (filterLanguage && !guide.languages.includes(filterLanguage)) {
+      return false;
+    }
+    
+    // Filter by experience (if defined)
+    if (filterExperience !== null && guide.experience) {
+      if (guide.experience < filterExperience) {
+        return false;
+      }
+    }
+    
+    // Filter by license
+    if (filterLicense !== null && guide.hasInternationalLicense !== filterLicense) {
+      return false;
+    }
+    
+    return true;
+  });
   
+  // Filter states
+  const [filterLanguage, setFilterLanguage] = useState<string | null>(null);
+  const [filterExperience, setFilterExperience] = useState<number | null>(null);
+  const [filterLicense, setFilterLicense] = useState<boolean | null>(null);
+
   // Form
   const form = useForm<GuideFormValues>({
     resolver: zodResolver(guideSchema),
@@ -85,6 +137,11 @@ const GuideManagement = () => {
       name: '',
       languages: ['english'],
       pricePerDay: 0,
+      experience: undefined,
+      hasInternationalLicense: false,
+      personality: '',
+      gender: '',
+      age: undefined,
     },
   });
   
@@ -176,6 +233,11 @@ const GuideManagement = () => {
       name: guide.name,
       languages: guide.languages,
       pricePerDay: guide.pricePerDay,
+      experience: guide.experience,
+      hasInternationalLicense: guide.hasInternationalLicense || false,
+      personality: guide.personality || '',
+      gender: guide.gender || '',
+      age: guide.age,
     });
     setIsFormDialogOpen(true);
   };
@@ -193,8 +255,21 @@ const GuideManagement = () => {
       name: '',
       languages: ['english'],
       pricePerDay: 0,
+      experience: undefined,
+      hasInternationalLicense: false,
+      personality: '',
+      gender: '',
+      age: undefined,
     });
     setIsFormDialogOpen(true);
+  };
+  
+  // Reset all filters
+  const resetFilters = () => {
+    setFilterLanguage(null);
+    setFilterExperience(null);
+    setFilterLicense(null);
+    setSearchTerm('');
   };
   
   // Handle confirm delete
