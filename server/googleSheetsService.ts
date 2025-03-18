@@ -453,14 +453,10 @@ export async function syncDataFromSheets(storage: any) {
     // Sync Hotels
     const hotels = await getSheetData('Hotels');
     for (const hotel of hotels) {
-      // Đảm bảo lunchPrice và dinnerPrice được thiết lập đúng
-      // Nếu không có, gán giá trị mặc định (giá trung bình theo hạng sao)
-      if (!hotel.lunchPrice) {
-        hotel.lunchPrice = 2500; // Giá mặc định cho bữa trưa
-      }
-      if (!hotel.dinnerPrice) {
-        hotel.dinnerPrice = 3500; // Giá mặc định cho bữa tối
-      }
+      // Khách sạn không còn cung cấp bữa ăn trưa và tối, vì đó là các dịch vụ độc lập
+      // Xóa các giá trị lunchPrice và dinnerPrice nếu có
+      if ('lunchPrice' in hotel) delete hotel.lunchPrice;
+      if ('dinnerPrice' in hotel) delete hotel.dinnerPrice;
       
       await storage.createOrUpdateHotel(hotel);
     }
@@ -571,10 +567,10 @@ export async function syncDataToSheets(storage: any, language: string = 'en') {
       await updateSheetItem('Seasons', localizedSeason);
     }
     
-    // Sync Settings - chỉ đồng bộ các cài đặt quan trọng (profit_margin, tax_rate) theo Google Sheets
+    // Sync Settings - đồng bộ các cài đặt quan trọng và giá bữa ăn từ Google Sheets
     try {
       const settingKeys = [
-        'profit_margin', 'tax_rate'
+        'profit_margin', 'tax_rate', 'meal_cost_lunch', 'meal_cost_dinner'
       ];
       
       for (const key of settingKeys) {
