@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useRef } from 'react';
+import { useContext, useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { CalculatorContext } from '@/context/CalculatorContext';
@@ -75,36 +75,52 @@ const Step5Summary = () => {
   const [showContactDirectly, setShowContactDirectly] = useState<boolean>(false);
   const preferredLocationsRef = useRef<HTMLTextAreaElement>(null);
   
+  console.log("Current formData:", formData); // Debugging
+
   // Fetch data for the summary
   const { data: tour } = useQuery<Tour>({
     queryKey: ['/api/tours', formData.tourId],
     enabled: !!formData.tourId,
   });
   
-  const { data: vehicle } = useQuery<Vehicle>({
-    queryKey: ['/api/vehicles', formData.vehicleId],
-    enabled: !!formData.vehicleId,
+  // Fetch vehicle data
+  const { data: allVehicles } = useQuery<Vehicle[]>({
+    queryKey: ['/api/vehicles'],
     staleTime: 0,
     refetchOnMount: true,
-    refetchOnWindowFocus: true
   });
   
-  // Tìm khách sạn đầu tiên có số sao phù hợp (cho việc tính giá)
-  const { data: hotel } = useQuery<Hotel>({
-    queryKey: ['/api/hotels', formData.hotelId],
-    enabled: !!formData.hotelId, // Cần có hotelId cụ thể để lấy thông tin khách sạn
+  // Get selected vehicle from all vehicles
+  const vehicle = useMemo(() => {
+    if (!allVehicles || !formData.vehicleId) return null;
+    return allVehicles.find(v => v.id === formData.vehicleId) || null;
+  }, [allVehicles, formData.vehicleId]);
+  
+  // Fetch hotel data
+  const { data: allHotels } = useQuery<Hotel[]>({
+    queryKey: ['/api/hotels'],
     staleTime: 0,
     refetchOnMount: true,
-    refetchOnWindowFocus: true
   });
   
-  const { data: guide } = useQuery<Guide>({
-    queryKey: ['/api/guides', formData.guideId],
-    enabled: !!formData.guideId && formData.includeGuide,
+  // Get selected hotel
+  const hotel = useMemo(() => {
+    if (!allHotels || !formData.hotelId) return null;
+    return allHotels.find(h => h.id === formData.hotelId) || null;
+  }, [allHotels, formData.hotelId]);
+  
+  // Fetch guide data
+  const { data: allGuides } = useQuery<Guide[]>({
+    queryKey: ['/api/guides'],
     staleTime: 0,
     refetchOnMount: true,
-    refetchOnWindowFocus: true
   });
+  
+  // Get selected guide
+  const guide = useMemo(() => {
+    if (!allGuides || !formData.guideId || !formData.includeGuide) return null;
+    return allGuides.find(g => g.id === formData.guideId) || null;
+  }, [allGuides, formData.guideId, formData.includeGuide]);
   
   // Format dates
   const formatDate = (dateString: string) => {
@@ -508,25 +524,29 @@ const Step5Summary = () => {
                       <li className="flex items-start">
                         <Car className="mr-2 h-4 w-4 mt-1 text-muted-foreground" />
                         <div>
-                          {formData.vehicleId && formData.vehicleId > 0
-                            ? vehicle && vehicle.name
-                              ? (
-                                <>
-                                  <div className="font-medium">{formData.vehicleCount || 1}x {vehicle.name}</div>
+                          {formData.vehicleId > 0
+                            ? (
+                              <>
+                                <div className="font-medium">
+                                  {vehicle 
+                                    ? `${formData.vehicleCount || 1}x ${vehicle.name}`
+                                    : `Xe đã chọn (ID: ${formData.vehicleId})`}
+                                </div>
+                                {vehicle && (
                                   <div className="text-xs text-muted-foreground mt-1">
                                     <span className="mr-2">{vehicle.seats} {t('calculator.summary.seats', 'chỗ ngồi')}</span>
                                     <span>{t('calculator.summary.luggage', 'Hành lý')}: {vehicle.luggageCapacity} kg</span>
                                     {vehicle.driverCostPerDay > 0 && <div>Chi phí tài xế: {formatCurrency(vehicle.driverCostPerDay)}/ngày</div>}
                                   </div>
-                                  {formData.specialServices?.airportTransfer && (
-                                    <div className="text-xs text-success font-medium mt-1">
-                                      <CheckCircle2 className="inline-block mr-1 h-3 w-3" />
-                                      Bao gồm dịch vụ đưa đón sân bay
-                                    </div>
-                                  )}
-                                </>
-                              ) 
-                              : <span className="text-amber-600">Đang tải thông tin phương tiện...</span>
+                                )}
+                                {formData.specialServices?.airportTransfer && (
+                                  <div className="text-xs text-success font-medium mt-1">
+                                    <CheckCircle2 className="inline-block mr-1 h-3 w-3" />
+                                    Bao gồm dịch vụ đưa đón sân bay
+                                  </div>
+                                )}
+                              </>
+                            ) 
                             : <span className="text-amber-600">{t('calculator.summary.noVehicleSelected', 'Chưa chọn phương tiện')}</span>
                           }
                         </div>
