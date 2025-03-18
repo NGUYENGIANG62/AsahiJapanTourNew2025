@@ -246,6 +246,8 @@ const Step5Summary = () => {
         if (formData.specialServices.teaCeremony) services.push('Trà đạo truyền thống');
         if (formData.specialServices.wagyuDinner) services.push('Ăn tối với bò Wagyu');
         if (formData.specialServices.sumoShow) services.push('Xem đấu Sumo');
+        if (formData.specialServices.disneylandTickets) services.push('Vé Disneyland');
+        if (formData.specialServices.universalStudioTickets) services.push('Vé Universal Studio');
         
         specialServicesText = services.length > 0 
           ? `Dịch vụ đặc biệt: ${services.join(', ')}`
