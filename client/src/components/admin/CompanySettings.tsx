@@ -32,6 +32,21 @@ const CompanySettings = () => {
     { key: 'tax_rate', value: '', label: t('admin.taxRate'), suffix: '%' },
     { key: 'meal_cost_lunch', value: '', label: t('admin.mealCostLunch'), suffix: 'JPY' },
     { key: 'meal_cost_dinner', value: '', label: t('admin.mealCostDinner'), suffix: 'JPY' },
+    // Khách sạn 3 sao
+    { key: 'hotel_3star_single', value: '', label: t('admin.hotel3StarSingle', 'Khách sạn 3 sao - Phòng đơn'), suffix: 'JPY' },
+    { key: 'hotel_3star_double', value: '', label: t('admin.hotel3StarDouble', 'Khách sạn 3 sao - Phòng đôi'), suffix: 'JPY' },
+    { key: 'hotel_3star_triple', value: '', label: t('admin.hotel3StarTriple', 'Khách sạn 3 sao - Phòng ba'), suffix: 'JPY' },
+    { key: 'hotel_3star_breakfast', value: '', label: t('admin.hotel3StarBreakfast', 'Khách sạn 3 sao - Bữa sáng'), suffix: 'JPY' },
+    // Khách sạn 4 sao
+    { key: 'hotel_4star_single', value: '', label: t('admin.hotel4StarSingle', 'Khách sạn 4 sao - Phòng đơn'), suffix: 'JPY' },
+    { key: 'hotel_4star_double', value: '', label: t('admin.hotel4StarDouble', 'Khách sạn 4 sao - Phòng đôi'), suffix: 'JPY' },
+    { key: 'hotel_4star_triple', value: '', label: t('admin.hotel4StarTriple', 'Khách sạn 4 sao - Phòng ba'), suffix: 'JPY' },
+    { key: 'hotel_4star_breakfast', value: '', label: t('admin.hotel4StarBreakfast', 'Khách sạn 4 sao - Bữa sáng'), suffix: 'JPY' },
+    // Khách sạn 5 sao
+    { key: 'hotel_5star_single', value: '', label: t('admin.hotel5StarSingle', 'Khách sạn 5 sao - Phòng đơn'), suffix: 'JPY' },
+    { key: 'hotel_5star_double', value: '', label: t('admin.hotel5StarDouble', 'Khách sạn 5 sao - Phòng đôi'), suffix: 'JPY' },
+    { key: 'hotel_5star_triple', value: '', label: t('admin.hotel5StarTriple', 'Khách sạn 5 sao - Phòng ba'), suffix: 'JPY' },
+    { key: 'hotel_5star_breakfast', value: '', label: t('admin.hotel5StarBreakfast', 'Khách sạn 5 sao - Bữa sáng'), suffix: 'JPY' },
   ]);
   
   // Fetch settings
@@ -47,47 +62,32 @@ const CompanySettings = () => {
     return await response.json();
   };
   
-  // Queries for each setting
-  const profitMarginQuery = useQuery({
-    queryKey: ['/api/settings/profit_margin'],
-    queryFn: () => fetchSetting('profit_margin'),
-  });
+  // Tạo các queries cho tất cả các cài đặt
+  const createSettingQueries = () => {
+    const settingKeys = settings.map(setting => setting.key);
+    return settingKeys.map(key => {
+      return useQuery({
+        queryKey: [`/api/settings/${key}`],
+        queryFn: () => fetchSetting(key),
+      });
+    });
+  };
   
-  const taxRateQuery = useQuery({
-    queryKey: ['/api/settings/tax_rate'],
-    queryFn: () => fetchSetting('tax_rate'),
-  });
-  
-  const mealLunchQuery = useQuery({
-    queryKey: ['/api/settings/meal_cost_lunch'],
-    queryFn: () => fetchSetting('meal_cost_lunch'),
-  });
-  
-  const mealDinnerQuery = useQuery({
-    queryKey: ['/api/settings/meal_cost_dinner'],
-    queryFn: () => fetchSetting('meal_cost_dinner'),
-  });
+  const settingQueries = createSettingQueries();
   
   // Update settings when data is loaded
   useEffect(() => {
-    if (profitMarginQuery.data) {
-      updateSettingValue('profit_margin', profitMarginQuery.data.value);
-    }
-    if (taxRateQuery.data) {
-      updateSettingValue('tax_rate', taxRateQuery.data.value);
-    }
-    if (mealLunchQuery.data) {
-      updateSettingValue('meal_cost_lunch', mealLunchQuery.data.value);
-    }
-    if (mealDinnerQuery.data) {
-      updateSettingValue('meal_cost_dinner', mealDinnerQuery.data.value);
-    }
-  }, [
-    profitMarginQuery.data,
-    taxRateQuery.data,
-    mealLunchQuery.data,
-    mealDinnerQuery.data,
-  ]);
+    // Xử lý các phản hồi từ các query
+    settingQueries.forEach((query, index) => {
+      if (query.data) {
+        const settingKey = settings[index]?.key;
+        if (settingKey) {
+          updateSettingValue(settingKey, query.data.value);
+        }
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settingQueries]);
   
   // Update setting value
   const updateSettingValue = (key: string, value: string) => {
@@ -131,11 +131,7 @@ const CompanySettings = () => {
   };
   
   // Check if any settings are loading
-  const isLoading = 
-    profitMarginQuery.isLoading || 
-    taxRateQuery.isLoading || 
-    mealLunchQuery.isLoading || 
-    mealDinnerQuery.isLoading;
+  const isLoading = settingQueries.some(query => query.isLoading);
 
   return (
     <Card>
