@@ -51,7 +51,9 @@ import {
   AlertCircle,
   Loader2,
   Phone,
-  Facebook
+  Facebook,
+  PlaneLanding,
+  PlaneTakeoff
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 
