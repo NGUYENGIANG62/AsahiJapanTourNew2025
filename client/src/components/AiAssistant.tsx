@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Brain, Send, RefreshCw, Bot, X, Plane, DollarSign, MessageSquare } from 'lucide-react';
+import { Brain, Send, RefreshCw, Bot, X, Plane, DollarSign, MessageSquare, Map } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
@@ -176,6 +176,55 @@ export function AiAssistant() {
     } finally {
       setIsLoading(false);
     }
+  };
+  
+  const handleTourSuggestion = async () => {
+    // Hiển thị popup yêu cầu người dùng nhập yêu cầu tour
+    toast({
+      title: "Nhập mô tả tour",
+      description: "Vui lòng nhập yêu cầu của bạn vào hộp chat và gửi để nhận gợi ý tour phù hợp.",
+      duration: 5000,
+    });
+    
+    // Đặt tin nhắn gợi ý vào hộp chat
+    setUserMessage("Tôi muốn đi du lịch Nhật Bản...");
+    
+    // Tạo một hàm trợ giúp để gửi yêu cầu tour suggestion
+    const sendTourSuggestionRequest = async (message: string) => {
+      setIsLoading(true);
+      
+      try {
+        const response = await apiRequest('POST', '/api/ai-assistant', {
+          type: 'tour_suggestion',
+          message: message
+        });
+        
+        const data = await response.json();
+        
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'user',
+            content: message,
+            timestamp: new Date(),
+          },
+          {
+            role: 'assistant',
+            content: data.message,
+            timestamp: new Date(),
+          },
+        ]);
+      } catch (error) {
+        console.error("Error getting tour suggestions:", error);
+        toast({
+          title: "Lỗi",
+          description: "Không thể lấy gợi ý tour từ trợ lý AI",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
   };
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
