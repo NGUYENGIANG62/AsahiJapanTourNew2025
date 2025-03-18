@@ -79,6 +79,11 @@ export const guides = pgTable("guides", {
   name: text("name").notNull(),
   languages: text("languages").array().notNull(), // ["english", "vietnamese", etc.]
   pricePerDay: real("price_per_day").notNull(), // in JPY
+  experience: integer("experience").default(0), // Years of experience
+  hasInternationalLicense: boolean("has_international_license").default(false), // Has international tour guide license
+  personality: text("personality"), // Guide's personality traits
+  gender: text("gender"), // Male, Female
+  age: integer("age").default(0), // Age of the guide
 });
 
 export const insertGuideSchema = createInsertSchema(guides).omit({
