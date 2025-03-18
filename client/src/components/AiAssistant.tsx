@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Brain, Send, RefreshCw, Bot, X } from 'lucide-react';
+import { Brain, Send, RefreshCw, Bot, X, Plane, DollarSign, MessageSquare } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,7 +31,7 @@ export function AiAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'system',
-      content: 'Xin chào! Tôi là trợ lý AI của AsahiJapanTours. Tôi có thể giúp gì cho bạn về các tour du lịch tại Nhật Bản?',
+      content: 'Xin chào! Tôi là Leo - trợ lý ảo của AsahiJapanTours. Tôi có thể giúp gì cho bạn về các tour du lịch tại Nhật Bản?',
       timestamp: new Date(),
     },
   ]);
@@ -189,7 +189,7 @@ export function AiAssistant() {
     setMessages([
       {
         role: 'system',
-        content: 'Xin chào! Tôi là trợ lý AI của AsahiJapanTours. Tôi có thể giúp gì cho bạn về các tour du lịch tại Nhật Bản?',
+        content: 'Xin chào! Tôi là Leo - trợ lý ảo của AsahiJapanTours. Tôi có thể giúp gì cho bạn về các tour du lịch tại Nhật Bản?',
         timestamp: new Date(),
       },
     ]);
@@ -199,22 +199,33 @@ export function AiAssistant() {
     return (
       <Button
         size="icon"
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl z-50"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl z-50 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-none animate-pulse"
         onClick={() => setIsOpen(true)}
       >
-        <Brain className="h-6 w-6" />
+        <div className="relative">
+          <Brain className="h-6 w-6" />
+          <span className="absolute -top-2 -right-2 flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+          </span>
+        </div>
       </Button>
     );
   }
   
   return (
-    <Card className="fixed bottom-6 right-6 w-[350px] h-[500px] shadow-lg z-50 flex flex-col">
-      <CardHeader className="px-4 py-2 flex flex-row items-center justify-between border-b">
+    <Card className="fixed bottom-6 right-6 w-[380px] h-[500px] shadow-xl z-50 flex flex-col overflow-hidden border border-purple-200 dark:border-purple-800">
+      <CardHeader className="px-4 py-2 flex flex-row items-center justify-between bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">
         <CardTitle className="text-md flex items-center">
           <Bot className="mr-2 h-5 w-5" />
-          Trợ lý AsahiTour
+          <span className="flex items-center">
+            Trợ lý ảo Leo
+            <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              Online
+            </span>
+          </span>
         </CardTitle>
-        <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+        <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white hover:bg-white/20">
           <X className="h-4 w-4" />
         </Button>
       </CardHeader>
@@ -236,8 +247,8 @@ export function AiAssistant() {
                   <div
                     className={`rounded-lg px-3 py-2 max-w-[80%] ${
                       message.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted'
+                        ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md'
+                        : 'bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 shadow-md'
                     }`}
                   >
                     {message.content}
@@ -267,24 +278,27 @@ export function AiAssistant() {
                 size="sm"
                 onClick={handleGetTourInfo}
                 disabled={isLoading}
+                className="bg-gradient-to-r from-blue-400 to-indigo-400 text-white border-none hover:opacity-90"
               >
-                Tour
+                <Plane className="h-3.5 w-3.5 mr-1" /> Tour
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleExplainPrice}
                 disabled={isLoading || !calculation}
+                className="bg-gradient-to-r from-green-400 to-emerald-400 text-white border-none hover:opacity-90"
               >
-                Giá
+                <DollarSign className="h-3.5 w-3.5 mr-1" /> Giá
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={clearChat}
                 disabled={isLoading}
+                className="bg-gradient-to-r from-amber-400 to-orange-400 text-white border-none hover:opacity-90"
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-3.5 w-3.5" />
               </Button>
             </div>
             
@@ -293,20 +307,20 @@ export function AiAssistant() {
                 value={userMessage}
                 onChange={(e) => setUserMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Nhập câu hỏi của bạn..."
-                className="min-h-[80px] resize-none"
+                placeholder="Nhập câu hỏi của bạn cho Leo..."
+                className="min-h-[80px] resize-none focus:border-purple-400 focus:ring-purple-300"
                 disabled={isLoading}
               />
               <Button
                 size="icon"
                 onClick={handleSendMessage}
                 disabled={isLoading || !userMessage.trim()}
-                className="self-end"
+                className="self-end bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none hover:opacity-90"
               >
                 {isLoading ? (
                   <RefreshCw className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Send className="h-4 w-4" />
+                  <MessageSquare className="h-4 w-4" />
                 )}
               </Button>
             </div>
