@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import LanguageSelector from './LanguageSelector';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { LogOut, Facebook, Clock } from 'lucide-react';
+import { LogOut, Facebook, Clock, Crown, User, Briefcase } from 'lucide-react';
 import asahiLogo from '../assets/asahi-vietlife-logo.jpg';
 
 const Header = () => {
@@ -41,10 +41,18 @@ const Header = () => {
           {isAuthenticated && (
             <div className="flex items-center space-x-2">
               <Badge 
-                variant={isAdmin ? "destructive" : "secondary"}
-                className="px-2 py-0.5 text-xs rounded-full"
+                variant={isAdmin ? "destructive" : user?.role === 'agent' ? "outline" : "secondary"}
+                className={`px-2 py-0.5 text-xs rounded-full flex items-center ${
+                  user?.role === 'agent' ? 'border-2 border-blue-500 text-blue-600' : ''
+                }`}
               >
-                {isAdmin ? t('common.admin') : t('common.user')}
+                {isAdmin ? (
+                  <><Crown className="h-3 w-3 mr-1" /> {t('common.admin')}</>
+                ) : user?.role === 'agent' ? (
+                  <><Briefcase className="h-3 w-3 mr-1" /> {t('common.agency')}</>
+                ) : (
+                  <><User className="h-3 w-3 mr-1" /> {t('common.customer')}</>
+                )}
               </Badge>
               
               <Button 
