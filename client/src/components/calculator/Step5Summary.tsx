@@ -320,7 +320,7 @@ const Step5Summary = () => {
         Địa điểm: ${tour?.location || 'Chưa chọn'}
         Số ngày: ${calculateDuration()} ngày (${formatDate(formData.startDate)} - ${formatDate(formData.endDate)})
         Số người: ${formData.participants} người
-        Phương tiện: ${vehicle ? `${formData.vehicleCount || 1}x ${vehicle.name} (${vehicle.seats} chỗ ngồi, hành lý: ${vehicle.luggageCapacity}kg)` : 'Chưa chọn'}
+        Phương tiện: ${vehicle ? `${formData.vehicleCount || 1}x ${vehicle.name} (${vehicle.seats} chỗ ngồi, hành lý: ${vehicle.luggageCapacity} cái)` : 'Chưa chọn'}
         Khách sạn: ${formData.hotelStars ? `${formData.hotelStars} sao (${getRoomTypeLabel()}) - ${formData.stayingNights || calculateDuration() - 1} đêm` : 'Không'}
         Hướng dẫn viên: ${guide ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}${guide.experience ? `, ${guide.experience} năm kinh nghiệm` : ''}${guide.hasInternationalLicense ? ', có giấy phép HDV quốc tế' : ''}` : 'Không'}
         Bữa ăn: ${(formData.includeBreakfast ? 'Bữa sáng, ' : '') + (formData.includeLunch ? 'Bữa trưa, ' : '') + (formData.includeDinner ? 'Bữa tối' : '') || 'Không'}
@@ -622,7 +622,7 @@ const Step5Summary = () => {
                                 {vehicle && (
                                   <div className="text-xs text-muted-foreground mt-1">
                                     <span className="mr-2">{vehicle.seats} {t('calculator.summary.seats', 'chỗ ngồi')}</span>
-                                    <span>{t('calculator.summary.luggage', 'Hành lý')}: {vehicle.luggageCapacity} kg</span>
+                                    <span>{t('calculator.summary.luggage', 'Hành lý')}: {vehicle.luggageCapacity} cái</span>
                                     {vehicle.driverCostPerDay > 0 && <div>Chi phí tài xế: {formatCurrency(vehicle.driverCostPerDay)}/ngày</div>}
                                   </div>
                                 )}
@@ -955,7 +955,7 @@ const Step5Summary = () => {
                       </div>
                       {vehicle && (
                         <div className="text-xs text-muted-foreground text-left mt-1">
-                          {t('calculator.summary.transport', 'Phương tiện')}: {formData.vehicleCount || 1}x {vehicle.name} ({vehicle.seats} {t('calculator.summary.seats', 'chỗ')}, {t('calculator.summary.luggage', 'hành lý')}: {vehicle.luggageCapacity})
+                          {t('calculator.summary.transport', 'Phương tiện')}: {formData.vehicleCount || 1}x {vehicle.name} ({vehicle.seats} {t('calculator.summary.seats', 'chỗ')}, {t('calculator.summary.luggage', 'hành lý')}: {vehicle.luggageCapacity} cái)
                         </div>
                       )}
                     </div>
