@@ -154,6 +154,81 @@ export class MemStorage implements IStorage {
       value: '3000' // 3000 JPY per person
     });
     
+    // Khách sạn 3 sao
+    this.settings.set('hotel_3star_single', {
+      id: this.currentSettingId++,
+      key: 'hotel_3star_single',
+      value: '9500' // 9500 JPY per night
+    });
+    
+    this.settings.set('hotel_3star_double', {
+      id: this.currentSettingId++,
+      key: 'hotel_3star_double',
+      value: '15000' // 15000 JPY per night
+    });
+    
+    this.settings.set('hotel_3star_triple', {
+      id: this.currentSettingId++,
+      key: 'hotel_3star_triple',
+      value: '19000' // 19000 JPY per night
+    });
+    
+    this.settings.set('hotel_3star_breakfast', {
+      id: this.currentSettingId++,
+      key: 'hotel_3star_breakfast',
+      value: '1500' // 1500 JPY per person
+    });
+    
+    // Khách sạn 4 sao
+    this.settings.set('hotel_4star_single', {
+      id: this.currentSettingId++,
+      key: 'hotel_4star_single',
+      value: '15000' // 15000 JPY per night
+    });
+    
+    this.settings.set('hotel_4star_double', {
+      id: this.currentSettingId++,
+      key: 'hotel_4star_double',
+      value: '25000' // 25000 JPY per night
+    });
+    
+    this.settings.set('hotel_4star_triple', {
+      id: this.currentSettingId++,
+      key: 'hotel_4star_triple',
+      value: '32000' // 32000 JPY per night
+    });
+    
+    this.settings.set('hotel_4star_breakfast', {
+      id: this.currentSettingId++,
+      key: 'hotel_4star_breakfast',
+      value: '2000' // 2000 JPY per person
+    });
+    
+    // Khách sạn 5 sao
+    this.settings.set('hotel_5star_single', {
+      id: this.currentSettingId++,
+      key: 'hotel_5star_single',
+      value: '25000' // 25000 JPY per night
+    });
+    
+    this.settings.set('hotel_5star_double', {
+      id: this.currentSettingId++,
+      key: 'hotel_5star_double',
+      value: '40000' // 40000 JPY per night
+    });
+    
+    this.settings.set('hotel_5star_triple', {
+      id: this.currentSettingId++,
+      key: 'hotel_5star_triple',
+      value: '50000' // 50000 JPY per night
+    });
+    
+    this.settings.set('hotel_5star_breakfast', {
+      id: this.currentSettingId++,
+      key: 'hotel_5star_breakfast',
+      value: '3000' // 3000 JPY per person
+    });
+    
     // Initialize with detailed seasonal information
     
     // Spring Season (March - May)
