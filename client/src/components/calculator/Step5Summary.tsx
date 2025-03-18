@@ -188,14 +188,17 @@ const Step5Summary = () => {
   
   // Format currency
   const formatCurrency = (amount: number) => {
+    // Làm tròn số trước khi hiển thị
+    const roundedAmount = Math.round(amount);
+    
     if (currency === 'JPY') {
-      return `¥${amount.toLocaleString()}`;
+      return `¥${Math.round(roundedAmount).toLocaleString()}`;
     } else if (currency === 'USD') {
-      return `$${amount.toLocaleString()}`;
+      return `$${Math.round(roundedAmount).toLocaleString()}`;
     } else if (currency === 'VND') {
-      return `₫${amount.toLocaleString()}`;
+      return `₫${Math.round(roundedAmount).toLocaleString()}`;
     }
-    return amount.toLocaleString();
+    return Math.round(roundedAmount).toLocaleString();
   };
   
   // Get calculated amount from calculation result
