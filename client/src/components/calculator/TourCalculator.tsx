@@ -43,7 +43,12 @@ const TourCalculator = () => {
 
   // Handle next button click
   const handleNext = () => {
-    if (currentStep === 6) {
+    if (currentStep === 5) {
+      // Khi chuyển từ bước 5 (Dịch vụ đặc biệt) sang bước 6 (Summary), tính giá
+      calculatePrice();
+      nextStep();
+    } else if (currentStep === 6) {
+      // Đã ở bước cuối, khi nhấn nút tính toán lại giá
       calculatePrice();
     } else {
       nextStep();
