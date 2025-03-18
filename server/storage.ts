@@ -692,19 +692,40 @@ export class MemStorage implements IStorage {
       ? guide.languages.split(',').map((lang: string) => lang.trim()) 
       : guide.languages || [];
     
+    // Convert hasInternationalLicense to boolean
+    let hasLicense = false;
+    if (guide.hasInternationalLicense === true || 
+        guide.hasInternationalLicense === 'true' || 
+        guide.hasInternationalLicense === 'TRUE' || 
+        guide.hasInternationalLicense === '1' || 
+        guide.hasInternationalLicense === 'Yes' || 
+        guide.hasInternationalLicense === 'yes') {
+      hasLicense = true;
+    }
+    
     if (guide.id && this.guides.has(Number(guide.id))) {
       const id = Number(guide.id);
       return this.updateGuide(id, {
         name: guide.name,
         languages,
-        pricePerDay: Number(guide.pricePerDay) || 0
+        pricePerDay: Number(guide.pricePerDay) || 0,
+        experience: guide.experience ? Number(guide.experience) : undefined,
+        hasInternationalLicense: hasLicense,
+        personality: guide.personality,
+        gender: guide.gender,
+        age: guide.age ? Number(guide.age) : undefined
       }) as Promise<Guide>;
     } else {
       // If no ID or ID not found, create new
       return this.createGuide({
         name: guide.name,
         languages,
-        pricePerDay: Number(guide.pricePerDay) || 0
+        pricePerDay: Number(guide.pricePerDay) || 0,
+        experience: guide.experience ? Number(guide.experience) : undefined,
+        hasInternationalLicense: hasLicense,
+        personality: guide.personality,
+        gender: guide.gender,
+        age: guide.age ? Number(guide.age) : undefined
       });
     }
   }

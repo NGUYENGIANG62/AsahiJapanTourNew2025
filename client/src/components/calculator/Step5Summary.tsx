@@ -499,7 +499,7 @@ const Step5Summary = () => {
                         <Car className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>
                           {vehicle 
-                            ? `${formData.vehicleCount || 1}x ${vehicle.name}` 
+                            ? `${formData.vehicleCount || 1}x ${vehicle.name} (${vehicle.seats} ${t('calculator.summary.seats', 'chỗ')}, ${t('calculator.summary.luggage', 'hành lý')}: ${vehicle.luggageCapacity} kg)` 
                             : t('calculator.summary.noVehicleSelected', 'No vehicle selected')}
                         </span>
                       </li>
