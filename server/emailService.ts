@@ -9,23 +9,32 @@ interface EmailRequest {
   phone?: string;
 }
 
-// Create a transporter
-const transporter = nodemailer.createTransport({
+// Email config - cấu hình cố định
+const EMAIL_CONFIG = {
+  user: 'asahivietlifejapantours@gmail.com',
+  password: 'ifdcappsdrlrxmvi', // App password không có dấu cách
   host: 'smtp.gmail.com',
   port: 465,
-  secure: true, // use SSL
+  secure: true
+};
+
+// Create a transporter
+const transporter = nodemailer.createTransport({
+  host: EMAIL_CONFIG.host,
+  port: EMAIL_CONFIG.port,
+  secure: EMAIL_CONFIG.secure, // use SSL
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD // App password được tạo từ tài khoản Google
+    user: EMAIL_CONFIG.user,
+    pass: EMAIL_CONFIG.password
   },
   debug: true // Bật debug output để xem lỗi chi tiết
 });
 
-// Log cấu hình email để kiểm tra (chỉ hiển thị tên người dùng để bảo mật)
+// Log cấu hình email để kiểm tra (chỉ hiển thị email để dễ debug)
 console.log("Email configuration:", { 
-  user: process.env.EMAIL_USER, 
-  passLength: process.env.EMAIL_PASSWORD ? process.env.EMAIL_PASSWORD.length : 0,
-  configured: !!process.env.EMAIL_PASSWORD
+  user: EMAIL_CONFIG.user, 
+  passLength: EMAIL_CONFIG.password.length,
+  configured: true
 });
 
 export const sendEmail = async (request: EmailRequest): Promise<{ success: boolean; message: string }> => {
@@ -34,7 +43,7 @@ export const sendEmail = async (request: EmailRequest): Promise<{ success: boole
   try {
     // Cấu hình email gửi đi với thông tin liên hệ của khách hàng
     const mailOptions = {
-      from: `AsahiJapanTours <${process.env.EMAIL_USER}>`,
+      from: `AsahiJapanTours <${EMAIL_CONFIG.user}>`,
       to: 'asahivietlifejapantours@gmail.com, asahivietlife@outlook.com',
       subject: subject,
       html: `
