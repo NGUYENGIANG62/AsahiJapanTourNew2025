@@ -2,6 +2,7 @@ import { createContext, useState, ReactNode, useEffect } from 'react';
 import { CalculatorFormData, CalculationResult, Currency, RoomType } from '@/types';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 type CalculatorContextType = {
   currentStep: number;
@@ -65,6 +66,17 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
   const [currency, setCurrency] = useState<Currency>('JPY');
   const [isValid, setIsValid] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth(); // Lấy thông tin người dùng hiện tại
+  
+  // Reset form khi đăng xuất/đăng nhập mới (trừ admin)
+  useEffect(() => {
+    // Reset form data khi người dùng thay đổi hoặc đăng xuất
+    // Giữ lại dữ liệu nếu là admin
+    if (!user || (user && user.role !== 'admin')) {
+      console.log("Resetting calculator data due to user change or logout");
+      resetFormData();
+    }
+  }, [user]);
 
   // Validate current step
   useEffect(() => {
