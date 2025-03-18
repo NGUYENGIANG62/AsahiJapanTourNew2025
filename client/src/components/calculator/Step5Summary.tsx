@@ -498,29 +498,64 @@ const Step5Summary = () => {
                     <ul className="space-y-2">
                       <li className="flex items-center">
                         <Car className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <span>
-                          {vehicle && vehicle.name && vehicle.seats && vehicle.luggageCapacity
-                            ? `${formData.vehicleCount || 1}x ${vehicle.name} (${vehicle.seats} ${t('calculator.summary.seats', 'chỗ')}, ${t('calculator.summary.luggage', 'hành lý')}: ${vehicle.luggageCapacity} kg)` 
-                            : t('calculator.summary.noVehicleSelected', 'No vehicle selected')}
-                        </span>
+                        <div>
+                          {vehicle && vehicle.name
+                            ? (
+                              <>
+                                <div className="font-medium">{formData.vehicleCount || 1}x {vehicle.name}</div>
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  <span className="mr-2">{vehicle.seats} {t('calculator.summary.seats', 'chỗ ngồi')}</span>
+                                  <span>{t('calculator.summary.luggage', 'Hành lý')}: {vehicle.luggageCapacity} kg</span>
+                                  {vehicle.driverCostPerDay > 0 && <div>Chi phí tài xế: {formatCurrency(vehicle.driverCostPerDay)}/ngày</div>}
+                                </div>
+                              </>
+                            ) 
+                            : <span className="text-amber-600">{t('calculator.summary.noVehicleSelected', 'Chưa chọn phương tiện')}</span>
+                          }
+                        </div>
                       </li>
                       
-                      <li className="flex items-center">
-                        <HotelIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <span>
-                          {formData.hotelStars 
-                            ? `${formData.hotelStars} ${t('calculator.summary.stars', 'stars')} (${getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'Không có phòng')}) - ${formData.stayingNights || calculateDuration() - 1} ${t('calculator.summary.nights', 'đêm')}` 
-                            : t('calculator.summary.noHotelSelected', 'No hotel selected')}
-                        </span>
+                      <li className="flex items-start">
+                        <HotelIcon className="mr-2 h-4 w-4 mt-1 text-muted-foreground" />
+                        <div>
+                          {hotel && hotel.name
+                            ? (
+                              <>
+                                <div className="font-medium">{hotel.name} - {hotel.stars} {t('calculator.summary.stars', 'sao')}</div>
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  <div>{getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'Không có phòng')}</div>
+                                  <div>{formData.stayingNights || calculateDuration() - 1} {t('calculator.summary.nights', 'đêm')}</div>
+                                  <div className="mt-1">
+                                    {hotel.singleRoomPrice > 0 && <span className="mr-2">Phòng đơn: {formatCurrency(hotel.singleRoomPrice)}/đêm</span>}
+                                    {hotel.doubleRoomPrice > 0 && <span className="mr-2">Phòng đôi: {formatCurrency(hotel.doubleRoomPrice)}/đêm</span>}
+                                    {hotel.tripleRoomPrice > 0 && <span>Phòng ba: {formatCurrency(hotel.tripleRoomPrice)}/đêm</span>}
+                                  </div>
+                                  {hotel.breakfastPrice > 0 && <div>Bữa sáng: {formatCurrency(hotel.breakfastPrice)}/người</div>}
+                                </div>
+                              </>
+                            ) 
+                            : formData.hotelStars 
+                              ? (
+                                <>
+                                  <div className="font-medium">Khách sạn {formData.hotelStars} {t('calculator.summary.stars', 'sao')}</div>
+                                  <div className="text-xs text-muted-foreground mt-1">
+                                    <div>{getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'Không có phòng')}</div>
+                                    <div>{formData.stayingNights || calculateDuration() - 1} {t('calculator.summary.nights', 'đêm')}</div>
+                                  </div>
+                                </>
+                              )
+                              : <span className="text-amber-600">{t('calculator.summary.noHotelSelected', 'Chưa chọn khách sạn')}</span>
+                          }
+                        </div>
                       </li>
                       
                       <li className="flex items-start">
                         <User className="mr-2 h-4 w-4 mt-1 text-muted-foreground" />
                         <div>
-                          {guide && guide.name
+                          {formData.includeGuide && guide && guide.name
                             ? (<>
                               <div className="flex flex-wrap">
-                                <span className="mr-1">{guide.name}</span>
+                                <span className="mr-1 font-medium">{guide.name}</span>
                                 {guide.languages && guide.languages.length > 0 && 
                                   <span className="text-muted-foreground">({guide.languages.join(', ')})</span>
                                 }
@@ -539,7 +574,9 @@ const Step5Summary = () => {
                                 </div>
                               )}
                             </>)
-                            : <span>{t('calculator.summary.noGuideSelected', 'No guide selected')}</span>
+                            : formData.includeGuide
+                              ? <span className="text-amber-600">Đã chọn bao gồm hướng dẫn viên, nhưng chưa chọn HDV cụ thể</span>
+                              : <span>{t('calculator.summary.noGuideSelected', 'Không bao gồm hướng dẫn viên')}</span>
                           }
                         </div>
                       </li>
