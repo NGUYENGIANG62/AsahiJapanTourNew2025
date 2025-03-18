@@ -84,17 +84,26 @@ const Step5Summary = () => {
   const { data: vehicle } = useQuery<Vehicle>({
     queryKey: ['/api/vehicles', formData.vehicleId],
     enabled: !!formData.vehicleId,
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
   
   // Tìm khách sạn đầu tiên có số sao phù hợp (cho việc tính giá)
   const { data: hotel } = useQuery<Hotel>({
     queryKey: ['/api/hotels', formData.hotelId],
     enabled: !!formData.hotelId, // Cần có hotelId cụ thể để lấy thông tin khách sạn
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
   
   const { data: guide } = useQuery<Guide>({
     queryKey: ['/api/guides', formData.guideId],
-    enabled: !!formData.guideId,
+    enabled: !!formData.guideId && formData.includeGuide,
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
   
   // Format dates
@@ -496,20 +505,28 @@ const Step5Summary = () => {
                   <div>
                     <h4 className="font-medium mb-2">{t('calculator.summary.selectedOptions', 'Selected Options')}</h4>
                     <ul className="space-y-2">
-                      <li className="flex items-center">
-                        <Car className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <li className="flex items-start">
+                        <Car className="mr-2 h-4 w-4 mt-1 text-muted-foreground" />
                         <div>
-                          {vehicle && vehicle.name
-                            ? (
-                              <>
-                                <div className="font-medium">{formData.vehicleCount || 1}x {vehicle.name}</div>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  <span className="mr-2">{vehicle.seats} {t('calculator.summary.seats', 'chỗ ngồi')}</span>
-                                  <span>{t('calculator.summary.luggage', 'Hành lý')}: {vehicle.luggageCapacity} kg</span>
-                                  {vehicle.driverCostPerDay > 0 && <div>Chi phí tài xế: {formatCurrency(vehicle.driverCostPerDay)}/ngày</div>}
-                                </div>
-                              </>
-                            ) 
+                          {formData.vehicleId && formData.vehicleId > 0
+                            ? vehicle && vehicle.name
+                              ? (
+                                <>
+                                  <div className="font-medium">{formData.vehicleCount || 1}x {vehicle.name}</div>
+                                  <div className="text-xs text-muted-foreground mt-1">
+                                    <span className="mr-2">{vehicle.seats} {t('calculator.summary.seats', 'chỗ ngồi')}</span>
+                                    <span>{t('calculator.summary.luggage', 'Hành lý')}: {vehicle.luggageCapacity} kg</span>
+                                    {vehicle.driverCostPerDay > 0 && <div>Chi phí tài xế: {formatCurrency(vehicle.driverCostPerDay)}/ngày</div>}
+                                  </div>
+                                  {formData.specialServices?.airportTransfer && (
+                                    <div className="text-xs text-success font-medium mt-1">
+                                      <CheckCircle2 className="inline-block mr-1 h-3 w-3" />
+                                      Bao gồm dịch vụ đưa đón sân bay
+                                    </div>
+                                  )}
+                                </>
+                              ) 
+                              : <span className="text-amber-600">Đang tải thông tin phương tiện...</span>
                             : <span className="text-amber-600">{t('calculator.summary.noVehicleSelected', 'Chưa chọn phương tiện')}</span>
                           }
                         </div>
@@ -552,31 +569,31 @@ const Step5Summary = () => {
                       <li className="flex items-start">
                         <User className="mr-2 h-4 w-4 mt-1 text-muted-foreground" />
                         <div>
-                          {formData.includeGuide && guide && guide.name
-                            ? (<>
-                              <div className="flex flex-wrap">
-                                <span className="mr-1 font-medium">{guide.name}</span>
-                                {guide.languages && guide.languages.length > 0 && 
-                                  <span className="text-muted-foreground">({guide.languages.join(', ')})</span>
-                                }
-                              </div>
-                              {(guide.experience || guide.hasInternationalLicense || guide.gender || guide.age) && (
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  {guide.experience && <span className="mr-2">{guide.experience} năm kinh nghiệm</span>}
-                                  {guide.hasInternationalLicense && <span className="mr-2">Có giấy phép HDV quốc tế</span>}
-                                  {guide.gender && <span className="mr-2">{guide.gender}</span>}
-                                  {guide.age && <span>{guide.age} tuổi</span>}
+                          {formData.includeGuide
+                            ? (guide && guide.name)
+                              ? (<>
+                                <div className="flex flex-wrap">
+                                  <span className="mr-1 font-medium">{guide.name}</span>
+                                  {guide.languages && guide.languages.length > 0 && 
+                                    <span className="text-muted-foreground">({guide.languages.join(', ')})</span>
+                                  }
                                 </div>
-                              )}
-                              {guide.personality && (
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  Tính cách: {guide.personality}
-                                </div>
-                              )}
-                            </>)
-                            : formData.includeGuide
-                              ? <span className="text-amber-600">Đã chọn bao gồm hướng dẫn viên, nhưng chưa chọn HDV cụ thể</span>
-                              : <span>{t('calculator.summary.noGuideSelected', 'Không bao gồm hướng dẫn viên')}</span>
+                                {(guide.experience || guide.hasInternationalLicense || guide.gender || guide.age) && (
+                                  <div className="text-xs text-muted-foreground mt-1">
+                                    {guide.experience && <span className="mr-2">{guide.experience} năm kinh nghiệm</span>}
+                                    {guide.hasInternationalLicense && <span className="mr-2">Có giấy phép HDV quốc tế</span>}
+                                    {guide.gender && <span className="mr-2">{guide.gender}</span>}
+                                    {guide.age && <span>{guide.age} tuổi</span>}
+                                  </div>
+                                )}
+                                {guide.personality && (
+                                  <div className="text-xs text-muted-foreground mt-1">
+                                    Tính cách: {guide.personality}
+                                  </div>
+                                )}
+                              </>)
+                              : <span className="text-amber-600">Đã chọn bao gồm hướng dẫn viên, nhưng chưa chọn HDV cụ thể</span>
+                            : <span className="text-muted-foreground">{t('calculator.summary.noGuideSelected', 'Không bao gồm hướng dẫn viên')}</span>
                           }
                         </div>
                       </li>
