@@ -59,7 +59,7 @@ const ContactInfo = ({ compact = false }: ContactInfoProps) => {
             <div>
               <div>Hotline: 03-6675-4977</div>
               <div>070-2813-6693 (Mrs. Rina - Nhật)</div>
-              <div>070-2794-4770 (Mr. Truong Giang - Việt Nam)</div>
+              <div>070-2794-4770 (Mr. Truong Giang - Việt Nam) Zalo – WhatsApp – Line</div>
               <div>Mr. Linh - English Guide: 07091881073</div>
             </div>
           </div>

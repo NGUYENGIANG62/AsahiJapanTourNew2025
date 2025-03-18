@@ -361,11 +361,30 @@ const Step5Summary = () => {
       }
     } catch (error) {
       console.error("Error sending email:", error);
+      
+      // Lưu thông tin yêu cầu tour vào localStorage để không mất dữ liệu
+      try {
+        const savedTourRequest = {
+          customerName,
+          customerEmail,
+          tourDetails: `${tour?.name || 'Tour'} (${formatDate(formData.startDate)})`,
+          timestamp: new Date().toISOString()
+        };
+        const savedRequests = JSON.parse(localStorage.getItem('tourRequests') || '[]');
+        savedRequests.push(savedTourRequest);
+        localStorage.setItem('tourRequests', JSON.stringify(savedRequests));
+      } catch (err) {
+        console.error('Error saving tour request to localStorage', err);
+      }
+      
+      // Cập nhật giao diện và hiển thị thông tin liên hệ trực tiếp
       setEmailStatus('error');
+      setShowContactInfo(false);
       setShowContactDirectly(true);
+      
       toast({
-        title: t('calculator.summary.cannotSendRequest', 'Không thể gửi yêu cầu'),
-        description: t('calculator.summary.contactDirectly', 'Vui lòng liên hệ trực tiếp với Asahi VietLife qua thông tin liên hệ bên dưới.'),
+        title: "Không thể gửi yêu cầu qua email",
+        description: "Đã xảy ra lỗi khi gửi email. Thông tin liên hệ được hiển thị bên dưới.",
         variant: "destructive"
       });
     }
@@ -486,8 +505,8 @@ const Step5Summary = () => {
                   <div>
                     <div>Hotline: 03-6675-4977</div>
                     <div>070-2813-6693 (Mrs. Rina - Nhật)</div>
-                    <div>070-2794-4770 (Mr. Truong Giang - Việt Nam) Zalo – Whatapp -Line</div>
-                    <div>Mr. Linh - Hướng dẫn viên du lịch (English): 07091881073</div>
+                    <div>070-2794-4770 (Mr. Truong Giang - Việt Nam) Zalo – WhatsApp – Line</div>
+                    <div>Mr. Linh - English Guide: 07091881073</div>
                   </div>
                 </li>
               </ul>

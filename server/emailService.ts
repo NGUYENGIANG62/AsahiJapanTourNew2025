@@ -15,9 +15,9 @@ const transporter = nodemailer.createTransport({
   secure: true, // use SSL
   auth: {
     user: process.env.EMAIL_USER || 'asahivietlifejapantours@gmail.com',
-    pass: process.env.EMAIL_PASSWORD // Chỉ sử dụng mật khẩu ứng dụng trong biến môi trường
+    pass: process.env.EMAIL_PASSWORD // App password được tạo từ tài khoản Google
   },
-  debug: true // Show debug output
+  debug: false // Tắt debug output trong môi trường production
 });
 
 export const sendEmail = async (request: EmailRequest): Promise<{ success: boolean; message: string }> => {
