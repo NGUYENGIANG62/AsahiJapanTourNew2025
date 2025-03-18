@@ -111,12 +111,15 @@ const Step5Summary = () => {
   const calculateDuration = () => {
     if (!formData.startDate || !formData.endDate) return 0;
     
+    // Ensure proper date parsing with specific format
     const start = new Date(formData.startDate);
     const end = new Date(formData.endDate);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
-    return diffDays;
+    // Add one day to include both start and end day in calculation
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    
+    return diffDays > 0 ? diffDays : 1; // Ensure we always have at least 1 day
   };
   
   // Get tax rate and profit margin from calculation
@@ -263,8 +266,8 @@ const Step5Summary = () => {
         Địa điểm: ${tour?.location || 'Chưa chọn'}
         Số ngày: ${calculateDuration()} ngày (${formatDate(formData.startDate)} - ${formatDate(formData.endDate)})
         Số người: ${formData.participants} người
-        Phương tiện: ${vehicle ? `${formData.vehicleCount || 1}x ${vehicle.name}` : 'Chưa chọn'}
-        Khách sạn: ${formData.hotelStars ? `${formData.hotelStars} sao (${getRoomTypeLabel()})` : 'Không'}
+        Phương tiện: ${vehicle ? `${formData.vehicleCount || 1}x ${vehicle.name} (${vehicle.seats} chỗ)` : 'Chưa chọn'}
+        Khách sạn: ${formData.hotelStars ? `${formData.hotelStars} sao (${getRoomTypeLabel()}) - ${calculateDuration() - 1} đêm` : 'Không'}
         Hướng dẫn viên: ${guide ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}` : 'Không'}
         Bữa ăn: ${(formData.includeBreakfast ? 'Bữa sáng, ' : '') + (formData.includeLunch ? 'Bữa trưa, ' : '') + (formData.includeDinner ? 'Bữa tối' : '') || 'Không'}
         ${specialServicesText}
@@ -505,7 +508,7 @@ const Step5Summary = () => {
                         <HotelIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>
                           {formData.hotelStars 
-                            ? `${formData.hotelStars} ${t('calculator.summary.stars', 'stars')} (${getRoomTypeLabel()})` 
+                            ? `${formData.hotelStars} ${t('calculator.summary.stars', 'stars')} (${getRoomTypeLabel()}) - ${calculateDuration() - 1} ${t('calculator.summary.nights', 'đêm')}` 
                             : t('calculator.summary.noHotelSelected', 'No hotel selected')}
                         </span>
                       </li>
