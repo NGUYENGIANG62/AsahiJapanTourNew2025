@@ -21,6 +21,7 @@ const SpecialServicesStep = () => {
     sumoShow: false,
     disneylandTickets: false,
     universalStudioTickets: false,
+    airportTransfer: false,
     notes: '',
   };
   

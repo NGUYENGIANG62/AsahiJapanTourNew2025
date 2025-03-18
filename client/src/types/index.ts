@@ -94,6 +94,7 @@ export type SpecialService = {
   sumoShow?: boolean;
   disneylandTickets?: boolean;
   universalStudioTickets?: boolean;
+  airportTransfer?: boolean; // Dịch vụ đưa đón sân bay
   notes?: string;
 };
 
