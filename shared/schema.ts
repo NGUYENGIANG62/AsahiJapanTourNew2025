@@ -66,6 +66,8 @@ export const hotels = pgTable("hotels", {
   doubleRoomPrice: real("double_room_price").notNull(), // in JPY
   tripleRoomPrice: real("triple_room_price").notNull(), // in JPY
   breakfastPrice: real("breakfast_price").notNull(), // in JPY
+  lunchPrice: real("lunch_price").default(0), // in JPY
+  dinnerPrice: real("dinner_price").default(0), // in JPY
   imageUrl: text("image_url"),
 });
 
