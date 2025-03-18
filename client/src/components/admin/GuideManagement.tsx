@@ -584,9 +584,10 @@ const GuideManagement = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Gender</FormLabel>
+                          {/* Ensure we only render Select when properly initialized */}
                           <Select
-                            value={field.value || undefined}
-                            onValueChange={field.onChange}
+                            value={field.value === "" ? undefined : field.value}
+                            onValueChange={(value) => field.onChange(value)}
                           >
                             <FormControl>
                               <SelectTrigger>
