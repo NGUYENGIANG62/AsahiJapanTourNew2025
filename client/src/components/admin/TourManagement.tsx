@@ -101,11 +101,16 @@ const TourManagement = () => {
   });
   
   // Filter tours by search term
-  const filteredTours = tours.filter(tour => 
-    tour.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    tour.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tour.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredTours = tours.filter(tour => {
+    if (!tour || !searchTerm) return true;
+    
+    const lowercaseSearchTerm = searchTerm.toLowerCase();
+    return (
+      (tour.name && tour.name.toLowerCase().includes(lowercaseSearchTerm)) || 
+      (tour.code && tour.code.toLowerCase().includes(lowercaseSearchTerm)) ||
+      (tour.location && tour.location.toLowerCase().includes(lowercaseSearchTerm))
+    );
+  });
   
   // Form
   const form = useForm<TourFormValues>({

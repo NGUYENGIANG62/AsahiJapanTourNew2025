@@ -146,24 +146,6 @@ const SpecialServicesStep = () => {
           </div>
         </CardContent>
       </Card>
-      
-      <div className="flex justify-between mt-6">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={prevStep}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {t('common.back')}
-        </Button>
-        <Button 
-          type="button" 
-          onClick={nextStep}
-        >
-          {t('common.next')}
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
     </div>
   );
 };
