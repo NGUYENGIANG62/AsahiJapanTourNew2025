@@ -5,7 +5,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import MemoryStore from "memorystore";
 import { storage } from "./storage";
-import { validateCredentials, isAuthenticated, isAdminUser, isAdminOrAgentUser } from "./auth";
+import { validateCredentials, isAuthenticated, isAdminUser, isAdminOrAgentUser, syncOnLogin } from "./auth";
 import { 
   insertUserSchema, 
   insertTourSchema, 
@@ -96,6 +96,9 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
           return next(err);
         }
         console.log(`User logged in: ${user.username} (${user.role})`);
+        
+        // Trigger data synchronization on login
+        syncOnLogin(user);
         
         // Regenerate session ID after login to prevent session fixation attacks
         req.session.regenerate((err) => {
