@@ -144,16 +144,16 @@ export class MemStorage implements IStorage {
       value: '10' // 10% tax rate
     });
     
-    this.settings.set('meal_cost_lunch', {
+    this.settings.set('lunchPrice', {
       id: this.currentSettingId++,
-      key: 'meal_cost_lunch',
-      value: '2000' // 2000 JPY per person
+      key: 'lunchPrice',
+      value: '2000' // 2000 JPY per person per day
     });
     
-    this.settings.set('meal_cost_dinner', {
+    this.settings.set('dinnerPrice', {
       id: this.currentSettingId++,
-      key: 'meal_cost_dinner',
-      value: '3000' // 3000 JPY per person
+      key: 'dinnerPrice',
+      value: '3000' // 3000 JPY per person per day
     });
     
     // Khách sạn 3 sao
