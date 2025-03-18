@@ -193,3 +193,10 @@ export const calculationSchema = z.object({
 
 export type SpecialService = z.infer<typeof specialServiceSchema>;
 export type Calculation = z.infer<typeof calculationSchema>;
+
+// Các hằng số cho cài đặt đồng bộ
+export const SYNC_SETTINGS = {
+  LAST_SYNC_TIME: 'last_sync_time',
+  CURRENT_DATA_SOURCE: 'current_data_source',
+  CURRENT_DATA_SOURCE_NAME: 'current_data_source_name',
+};

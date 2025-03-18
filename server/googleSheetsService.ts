@@ -546,7 +546,7 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
 /**
  * Sync data from Google Sheets to local storage
  */
-export async function syncDataFromSheets(storage: any, user?: User | null) {
+export async function syncDataFromSheets(storage: any, user?: User | null, specificSource?: string) {
   try {
     // Sử dụng bảng tính theo người dùng (đại lý)
     const { sheetsApi, spreadsheetId, sourceName } = await getSpreadsheetForUser(user);
