@@ -322,7 +322,7 @@ const TourManagement = () => {
                     <TableCell>{tour.avfCode || '-'}</TableCell>
                     <TableCell>{tour.location}</TableCell>
                     <TableCell>{tour.durationDays} {tour.durationDays === 1 ? 'day' : 'days'}</TableCell>
-                    <TableCell>{tour.basePrice.toLocaleString()}</TableCell>
+                    <TableCell>{tour.basePrice ? tour.basePrice.toLocaleString() : '0'}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
                         <Button variant="ghost" size="sm" onClick={() => handleEditTour(tour)}>
