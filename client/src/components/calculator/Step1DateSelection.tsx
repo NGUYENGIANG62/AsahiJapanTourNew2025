@@ -162,6 +162,13 @@ const Step1DateSelection = () => {
               </AlertDescription>
             </Alert>
           ) : null}
+          
+          {/* Flight Details Section - only show if dates are selected */}
+          {formData.startDate && formData.endDate && (
+            <div className="mt-8">
+              <FlightDetails />
+            </div>
+          )}
         </div>
         
         {/* Welcome Card */}
