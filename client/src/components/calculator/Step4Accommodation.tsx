@@ -426,7 +426,15 @@ const Step4Accommodation = () => {
                       <SelectContent>
                         {guides.map((guide) => (
                           <SelectItem key={guide.id} value={guide.id.toString()}>
-                            {guide.name}
+                            {guide.name} {guide.languages && guide.languages.length > 0 ? 
+                              `(${guide.languages.map(lang => {
+                                return lang === 'english' ? t('languages.en') : 
+                                       lang === 'japanese' ? t('languages.ja') :
+                                       lang === 'chinese' ? t('languages.zh') :
+                                       lang === 'korean' ? t('languages.ko') :
+                                       lang === 'vietnamese' ? t('languages.vi') : lang
+                              }).join(', ')})` 
+                              : ''}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -450,13 +458,47 @@ const Step4Accommodation = () => {
                           ))}
                         </div>
                       </div>
-                      <div className="mt-2 text-sm">
-                        <span className="text-muted-foreground">Price per day:</span>
-                        <span className="ml-2 font-medium">{selectedGuide.pricePerDay.toLocaleString()} JPY</span>
-                      </div>
+                      {selectedGuide.experience && selectedGuide.experience > 0 && (
+                        <div className="mt-2 text-sm">
+                          <span className="text-muted-foreground">{t('calculator.guide.experience')}:</span>
+                          <span className="ml-2 font-medium">{selectedGuide.experience} {t('calculator.guide.years')}</span>
+                        </div>
+                      )}
+                      
+                      {selectedGuide.hasInternationalLicense !== undefined && (
+                        <div className="mt-2 text-sm">
+                          <span className="text-muted-foreground">{t('calculator.guide.license')}:</span>
+                          <span className="ml-2 font-medium">
+                            {selectedGuide.hasInternationalLicense ? 
+                              t('calculator.guide.hasLicense') : 
+                              t('calculator.guide.noLicense')}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {selectedGuide.personality && (
+                        <div className="mt-2 text-sm">
+                          <span className="text-muted-foreground">{t('calculator.guide.personality')}:</span>
+                          <span className="ml-2 font-medium">{selectedGuide.personality}</span>
+                        </div>
+                      )}
+                      
+                      {selectedGuide.gender && (
+                        <div className="mt-2 text-sm">
+                          <span className="text-muted-foreground">{t('calculator.guide.gender')}:</span>
+                          <span className="ml-2 font-medium">{selectedGuide.gender}</span>
+                        </div>
+                      )}
+                      
+                      {selectedGuide.age && selectedGuide.age > 0 && (
+                        <div className="mt-2 text-sm">
+                          <span className="text-muted-foreground">{t('calculator.guide.age')}:</span>
+                          <span className="ml-2 font-medium">{selectedGuide.age} {t('calculator.guide.yearsOld')}</span>
+                        </div>
+                      )}
+                      
                       <p className="text-sm text-muted-foreground mt-2">
-                        The guide will accompany your group throughout the tour, helping with translations,
-                        cultural context, and local information.
+                        {t('calculator.guide.description')}
                       </p>
                     </div>
                   )}

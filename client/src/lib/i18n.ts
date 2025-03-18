@@ -134,6 +134,18 @@ const enTranslations = {
     guideSelection: 'Tour Guide Selection',
     includeGuide: 'Include Tour Guide',
     selectGuide: 'Select Guide',
+    guide: {
+      experience: 'Experience',
+      years: 'years',
+      license: 'International License',
+      hasLicense: 'Yes',
+      noLicense: 'No',
+      personality: 'Personality',
+      gender: 'Gender',
+      age: 'Age',
+      yearsOld: 'years old',
+      description: 'The guide will accompany your group throughout the tour, helping with translations, cultural context, and local information.'
+    },
     summary: {
       yourTour: 'Your Tour Summary',
       tourDetails: 'Tour Details',
