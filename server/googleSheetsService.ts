@@ -106,13 +106,14 @@ async function createSpreadsheet(sheetsApi: sheets_v4.Sheets): Promise<string> {
     '\nHướng dẫn:' +
     '\n1. Đi đến drive.google.com và tạo một Google Sheets mới' +
     '\n2. Đặt tên bảng tính là "AsahiJapanTours"' + 
-    '\n3. Tạo các sheet: Tours, Vehicles, Hotels, Guides, Seasons' +
+    '\n3. Tạo các sheet: Tours, Vehicles, Hotels, Guides, Seasons, Settings' +
     '\n4. Thêm tiêu đề vào mỗi sheet theo mẫu sau:' +
     '\n   - Tours: id, name, code, location, description, durationDays, basePrice, imageUrl, nameJa, nameZh' +
     '\n   - Vehicles: id, name, seats, luggageCapacity, pricePerDay, driverCostPerDay' +
     '\n   - Hotels: id, name, location, stars, singleRoomPrice, doubleRoomPrice, tripleRoomPrice, breakfastPrice, imageUrl' +
     '\n   - Guides: id, name, languages, pricePerDay, experience, hasInternationalLicense, personality, gender, age' +
     '\n   - Seasons: id, name, startMonth, endMonth, description, priceMultiplier, nameJa, nameZh' +
+    '\n   - Settings: id, key, value' +
     '\n5. Chia sẻ bảng tính với quyền "Bất kỳ ai có liên kết" có thể xem' +
     '\n6. Sao chép URL và cập nhật vào biến môi trường GOOGLE_SPREADSHEET_URL'
   );
@@ -192,9 +193,61 @@ export async function getSpreadsheet(): Promise<{ sheetsApi: sheets_v4.Sheets, s
 /**
  * Get all data from a sheet
  */
+// Hàm kiểm tra và tạo sheet nếu không tồn tại
+async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sheetName: string): Promise<void> {
+  try {
+    // Kiểm tra xem sheet đã tồn tại chưa
+    const response = await sheetsApi.spreadsheets.get({
+      spreadsheetId,
+    });
+    
+    const sheetExists = response.data.sheets?.some(
+      sheet => sheet.properties?.title === sheetName
+    );
+    
+    if (!sheetExists) {
+      console.log(`Sheet '${sheetName}' không tồn tại, đang tạo mới...`);
+      
+      // Tạo sheet mới
+      await sheetsApi.spreadsheets.batchUpdate({
+        spreadsheetId,
+        requestBody: {
+          requests: [{
+            addSheet: {
+              properties: {
+                title: sheetName
+              }
+            }
+          }]
+        }
+      });
+      
+      // Thêm header nếu là sheet Settings
+      if (sheetName === 'Settings') {
+        await sheetsApi.spreadsheets.values.update({
+          spreadsheetId,
+          range: 'Settings!A1:C1',
+          valueInputOption: 'RAW',
+          requestBody: {
+            values: [['id', 'key', 'value']],
+          },
+        });
+      }
+      
+      console.log(`Sheet '${sheetName}' đã được tạo thành công`);
+    }
+  } catch (error) {
+    console.error(`Lỗi khi kiểm tra/tạo sheet '${sheetName}':`, error);
+    throw error;
+  }
+}
+
 export async function getSheetData(sheetName: string): Promise<any[]> {
   try {
     const { sheetsApi, spreadsheetId } = await getSpreadsheet();
+    
+    // Kiểm tra và tạo sheet nếu cần thiết
+    await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
     
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
@@ -255,6 +308,9 @@ export async function getSheetData(sheetName: string): Promise<any[]> {
 export async function updateSheetItem(sheetName: string, item: any): Promise<void> {
   try {
     const { sheetsApi, spreadsheetId } = await getSpreadsheet();
+    
+    // Kiểm tra và tạo sheet nếu cần thiết
+    await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
     
     // First, get all the data to find the row index
     const response = await sheetsApi.spreadsheets.values.get({
@@ -320,6 +376,9 @@ export async function updateSheetItem(sheetName: string, item: any): Promise<voi
 export async function deleteSheetItem(sheetName: string, id: number): Promise<void> {
   try {
     const { sheetsApi, spreadsheetId } = await getSpreadsheet();
+    
+    // Kiểm tra và tạo sheet nếu cần thiết
+    await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
     
     // First, get all the data to find the row index
     const response = await sheetsApi.spreadsheets.values.get({
