@@ -397,8 +397,6 @@ export class MemStorage implements IStorage {
       doubleRoomPrice: 16000, // Based on Google Sheets
       tripleRoomPrice: 27000, // Based on Google Sheets
       breakfastPrice: 2000,   // Based on Google Sheets
-      lunchPrice: 2500,       // Based on Google Sheets
-      dinnerPrice: 3500,      // Based on Google Sheets
       imageUrl: 'https://source.unsplash.com/featured/?hotel,tokyo'
     });
     
@@ -411,8 +409,6 @@ export class MemStorage implements IStorage {
       doubleRoomPrice: 30000, // Based on Google Sheets
       tripleRoomPrice: 54000, // Based on Google Sheets
       breakfastPrice: 2500,   // Based on Google Sheets
-      lunchPrice: 2500,       // Based on Google Sheets
-      dinnerPrice: 3500,      // Based on Google Sheets
       imageUrl: 'https://source.unsplash.com/featured/?hotel,kyoto'
     });
     
@@ -425,8 +421,6 @@ export class MemStorage implements IStorage {
       doubleRoomPrice: 70000, // Based on Google Sheets
       tripleRoomPrice: 110000, // Based on Google Sheets
       breakfastPrice: 4000,   // Based on Google Sheets
-      lunchPrice: 2500,       // Based on Google Sheets
-      dinnerPrice: 3500,      // Based on Google Sheets
       imageUrl: 'https://source.unsplash.com/featured/?hotel,tokyo,luxury'
     });
     
