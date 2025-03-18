@@ -77,10 +77,17 @@ export function syncOnLogin(user?: User) {
       // Đồng bộ bất đồng bộ để không làm chậm quá trình đăng nhập
       setTimeout(async () => {
         try {
-          await syncDataFromSheets(storage, user);
+          if (user.role === 'agent' && user.dataSource) {
+            console.log(`Auto-syncing agent data for ${user.username} from source: ${user.dataSource}`);
+            await syncDataFromSheets(storage, user);
+          } else if (user.role === 'user') {
+            console.log(`Auto-syncing customer data for ${user.username} from default source`);
+            // Sử dụng nguồn dữ liệu mặc định cho khách hàng thông thường
+            await syncDataFromSheets(storage, { ...user, dataSource: null });
+          }
           console.log(`Auto-sync completed for ${user.username}`);
         } catch (error) {
-          console.error(`Auto-sync failed for ${user.username}:`, error);
+          console.error(`Auto-sync failed for ${user.role === 'agent' ? 'agent' : 'customer'}:`, error);
         }
       }, 100);
     }
