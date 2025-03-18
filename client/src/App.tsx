@@ -48,7 +48,9 @@ function Router() {
           <Route path="/">
             <Redirect to="/login" />
           </Route>
-          <Route component={NotFound} />
+          <Route path="/:rest*">
+            <NotFound />
+          </Route>
         </Switch>
       </main>
       <Footer />

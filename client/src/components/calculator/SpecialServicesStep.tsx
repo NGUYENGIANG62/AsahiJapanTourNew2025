@@ -19,6 +19,8 @@ const SpecialServicesStep = () => {
     teaCeremony: false,
     wagyuDinner: false,
     sumoShow: false,
+    disneylandTickets: false,
+    universalStudioTickets: false,
     notes: '',
   };
   
@@ -105,6 +107,28 @@ const SpecialServicesStep = () => {
                 }
               />
               <Label htmlFor="sumoShow">Xem đấu Sumo</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="disneylandTickets"
+                checked={specialServices.disneylandTickets}
+                onCheckedChange={(checked) => 
+                  handleSpecialServiceChange('disneylandTickets', Boolean(checked))
+                }
+              />
+              <Label htmlFor="disneylandTickets">Vé Disneyland</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="universalStudioTickets"
+                checked={specialServices.universalStudioTickets}
+                onCheckedChange={(checked) => 
+                  handleSpecialServiceChange('universalStudioTickets', Boolean(checked))
+                }
+              />
+              <Label htmlFor="universalStudioTickets">Vé Universal Studio</Label>
             </div>
           </div>
           

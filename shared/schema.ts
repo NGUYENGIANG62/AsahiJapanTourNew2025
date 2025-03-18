@@ -149,6 +149,8 @@ export const specialServiceSchema = z.object({
   teaCeremony: z.boolean().optional(),
   wagyuDinner: z.boolean().optional(),
   sumoShow: z.boolean().optional(),
+  disneylandTickets: z.boolean().optional(),
+  universalStudioTickets: z.boolean().optional(),
   notes: z.string().optional(),
 });
 
