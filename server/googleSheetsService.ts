@@ -196,24 +196,67 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
  * Get the spreadsheet for a specific user
  * @param user User object containing agency data source
  */
-export async function getSpreadsheetForUser(user?: User | null): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string }> {
+export async function getSpreadsheetForUser(user?: User | null, specificSource?: string): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sourceName: string }> {
   try {
-    // Xác định nguồn dữ liệu dựa trên vai trò người dùng
+    // Xác định nguồn dữ liệu dựa trên vai trò người dùng hoặc nguồn được chỉ định
     let customUrl: string | undefined = undefined;
+    let sourceName: string = 'default';
     
+    // Nếu có nguồn dữ liệu cụ thể được chỉ định (được sử dụng bởi admin)
+    if (specificSource) {
+      // Kiểm tra xem đây có phải là URL hoàn chỉnh hay chỉ là tên nguồn
+      if (specificSource.startsWith('http')) {
+        customUrl = specificSource;
+        sourceName = specificSource.includes('_') ? specificSource.split('_').pop() || 'Custom' : 'Custom';
+      } else {
+        // Xây dựng URL từ tên nguồn (ví dụ: 'NamA' -> URL với '_NamA')
+        if (process.env.GOOGLE_SPREADSHEET_URL) {
+          const baseUrl = process.env.GOOGLE_SPREADSHEET_URL;
+          // Tách URL cơ sở và ID
+          const urlParts = baseUrl.split('/');
+          const baseId = urlParts[5]; // ID thường ở vị trí thứ 5 trong URL
+          
+          // Thêm hậu tố vào ID nếu cần
+          if (specificSource !== 'default') {
+            // Tạo ID mới bằng cách thêm hậu tố (ví dụ: baseId + '_NamA')
+            const newId = baseId + '_' + specificSource;
+            // Thay thế ID cũ bằng ID mới trong URL
+            urlParts[5] = newId;
+            customUrl = urlParts.join('/');
+            sourceName = specificSource;
+          }
+        }
+      }
+      console.log(`Admin requested specific data source: ${sourceName}`);
+    }
     // Nếu là đại lý (agent) và có dataSource được cấu hình
-    if (user && user.role === 'agent' && user.dataSource) {
+    else if (user && user.role === 'agent' && user.dataSource) {
       customUrl = user.dataSource;
-      console.log(`Using agent-specific spreadsheet for ${user.username}: ${customUrl}`);
+      sourceName = user.agencyId || 'Agency';
+      console.log(`Using agent-specific spreadsheet for ${user.username}: ${sourceName}`);
     }
-    
-    // Nếu là khách hàng thông thường, sử dụng URL mặc định
-    if (user && user.role === 'user') {
-      console.log(`Using default spreadsheet for customer: ${user.username}`);
+    // Nếu là khách hàng thông thường, sử dụng URL mặc định hoặc URL khách hàng cụ thể
+    else if (user && user.role === 'user') {
+      // Khách hàng luôn sử dụng bảng tính "AsahiJapanTours"
+      if (process.env.GOOGLE_SPREADSHEET_URL) {
+        const baseUrl = process.env.GOOGLE_SPREADSHEET_URL;
+        // Tách URL cơ sở và ID
+        const urlParts = baseUrl.split('/');
+        const baseId = urlParts[5]; // ID thường ở vị trí thứ 5 trong URL
+        
+        // Đảm bảo sử dụng bảng tính gốc cho khách hàng (không có hậu tố)
+        if (baseId.includes('_')) {
+          // Nếu ID hiện tại có hậu tố, loại bỏ nó
+          const originalId = baseId.split('_')[0];
+          urlParts[5] = originalId;
+          customUrl = urlParts.join('/');
+        }
+      }
+      sourceName = 'Customer';
+      console.log(`Using customer spreadsheet for ${user.username}: AsahiJapanTours`);
     }
-    
-    // Nếu là admin, sử dụng URL mặc định
-    if (user && user.role === 'admin') {
+    // Nếu là admin và không chỉ định nguồn cụ thể, sử dụng URL mặc định
+    else if (user && user.role === 'admin') {
       console.log(`Using default spreadsheet for admin: ${user.username}`);
     }
     
@@ -224,7 +267,7 @@ export async function getSpreadsheetForUser(user?: User | null): Promise<{ sheet
     
     if (customUrl) {
       id = getSpreadsheetIdFromUrl(customUrl);
-      console.log(`Using custom spreadsheet ID: ${id}`);
+      console.log(`Using custom spreadsheet ID: ${id} (${sourceName})`);
     } else if (process.env.GOOGLE_SPREADSHEET_URL) {
       id = getSpreadsheetIdFromUrl(process.env.GOOGLE_SPREADSHEET_URL);
       console.log(`Using default spreadsheet ID: ${id}`);
@@ -243,7 +286,7 @@ export async function getSpreadsheetForUser(user?: User | null): Promise<{ sheet
       }
     }
     
-    return { sheetsApi, spreadsheetId: id };
+    return { sheetsApi, spreadsheetId: id, sourceName };
   } catch (error) {
     console.error('Failed to get spreadsheet:', error);
     throw error;
@@ -253,7 +296,7 @@ export async function getSpreadsheetForUser(user?: User | null): Promise<{ sheet
 /**
  * Get the default spreadsheet (legacy support)
  */
-export async function getSpreadsheet(): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string }> {
+export async function getSpreadsheet(): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sourceName: string }> {
   return getSpreadsheetForUser();
 }
 
@@ -506,7 +549,8 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
 export async function syncDataFromSheets(storage: any, user?: User | null) {
   try {
     // Sử dụng bảng tính theo người dùng (đại lý)
-    const { sheetsApi, spreadsheetId } = await getSpreadsheetForUser(user);
+    const { sheetsApi, spreadsheetId, sourceName } = await getSpreadsheetForUser(user);
+    console.log(`Syncing data FROM Google Sheets using source: ${sourceName}`);
     
     // Sync Tours
     const tours = await getSheetData('Tours', user);
@@ -629,7 +673,8 @@ function replaceWithLanguageContent(data: any, language: string) {
  */
 export async function syncDataToSheets(storage: any, language: string = 'en', user?: User | null) {
   try {
-    console.log(`Syncing data to Google Sheets using language: ${language}`);
+    const { sheetsApi, spreadsheetId, sourceName } = await getSpreadsheetForUser(user);
+    console.log(`Syncing data TO Google Sheets using source: ${sourceName} with language: ${language}`);
     
     // Sync Tours
     const tours = await storage.getAllTours();
