@@ -86,9 +86,10 @@ const Step5Summary = () => {
     enabled: !!formData.vehicleId,
   });
   
+  // Tìm khách sạn đầu tiên có số sao phù hợp (cho việc tính giá)
   const { data: hotel } = useQuery<Hotel>({
     queryKey: ['/api/hotels', formData.hotelId],
-    enabled: !!formData.hotelId,
+    enabled: !!formData.hotelId && !!formData.hotelStars,
   });
   
   const { data: guide } = useQuery<Guide>({
@@ -261,7 +262,7 @@ const Step5Summary = () => {
         Số ngày: ${calculateDuration()} ngày (${formatDate(formData.startDate)} - ${formatDate(formData.endDate)})
         Số người: ${formData.participants} người
         Phương tiện: ${vehicle?.name || 'Chưa chọn'}
-        Khách sạn: ${hotel?.name || 'Không'} ${hotel ? `(${getRoomTypeLabel()})` : ''}
+        Khách sạn: ${formData.hotelStars ? `${formData.hotelStars} sao (${getRoomTypeLabel()})` : 'Không'}
         Hướng dẫn viên: ${guide?.name || 'Không'}
         Bữa ăn: ${(formData.includeBreakfast ? 'Bữa sáng, ' : '') + (formData.includeLunch ? 'Bữa trưa, ' : '') + (formData.includeDinner ? 'Bữa tối' : '') || 'Không'}
         ${specialServicesText}
