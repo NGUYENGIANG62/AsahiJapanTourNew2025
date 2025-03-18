@@ -358,9 +358,9 @@ export async function getSheetData(sheetName: string, user?: User | null): Promi
 /**
  * Update or add an item to a sheet
  */
-export async function updateSheetItem(sheetName: string, item: any): Promise<void> {
+export async function updateSheetItem(sheetName: string, item: any, user?: User | null): Promise<void> {
   try {
-    const { sheetsApi, spreadsheetId } = await getSpreadsheet();
+    const { sheetsApi, spreadsheetId } = await getSpreadsheetForUser(user);
     
     // Kiểm tra và tạo sheet nếu cần thiết
     await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
@@ -426,9 +426,9 @@ export async function updateSheetItem(sheetName: string, item: any): Promise<voi
 /**
  * Delete an item from a sheet
  */
-export async function deleteSheetItem(sheetName: string, id: number): Promise<void> {
+export async function deleteSheetItem(sheetName: string, id: number, user?: User | null): Promise<void> {
   try {
-    const { sheetsApi, spreadsheetId } = await getSpreadsheet();
+    const { sheetsApi, spreadsheetId } = await getSpreadsheetForUser(user);
     
     // Kiểm tra và tạo sheet nếu cần thiết
     await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
@@ -531,7 +531,7 @@ export async function syncDataFromSheets(storage: any, user?: User | null) {
     
     // Sync Settings
     try {
-      const settingsData = await getSheetData('Settings');
+      const settingsData = await getSheetData('Settings', user);
       console.log('Settings data from Google Sheets:', JSON.stringify(settingsData));
 
       // Kiểm tra xem có dữ liệu Settings không
@@ -613,7 +613,7 @@ function replaceWithLanguageContent(data: any, language: string) {
  * @param storage Storage instance
  * @param language Language code ('en', 'ja', 'zh', 'ko', 'vi')
  */
-export async function syncDataToSheets(storage: any, language: string = 'en') {
+export async function syncDataToSheets(storage: any, language: string = 'en', user?: User | null) {
   try {
     console.log(`Syncing data to Google Sheets using language: ${language}`);
     
@@ -622,25 +622,25 @@ export async function syncDataToSheets(storage: any, language: string = 'en') {
     for (const tour of tours) {
       // Thay thế nội dung dựa vào ngôn ngữ được chọn
       const localizedTour = replaceWithLanguageContent(tour, language);
-      await updateSheetItem('Tours', localizedTour);
+      await updateSheetItem('Tours', localizedTour, user);
     }
     
     // Sync Vehicles
     const vehicles = await storage.getAllVehicles();
     for (const vehicle of vehicles) {
-      await updateSheetItem('Vehicles', vehicle);
+      await updateSheetItem('Vehicles', vehicle, user);
     }
     
     // Sync Hotels
     const hotels = await storage.getAllHotels();
     for (const hotel of hotels) {
-      await updateSheetItem('Hotels', hotel);
+      await updateSheetItem('Hotels', hotel, user);
     }
     
     // Sync Guides
     const guides = await storage.getAllGuides();
     for (const guide of guides) {
-      await updateSheetItem('Guides', guide);
+      await updateSheetItem('Guides', guide, user);
     }
     
     // Sync Seasons
@@ -648,7 +648,7 @@ export async function syncDataToSheets(storage: any, language: string = 'en') {
     for (const season of seasons) {
       // Thay thế nội dung dựa vào ngôn ngữ được chọn
       const localizedSeason = replaceWithLanguageContent(season, language);
-      await updateSheetItem('Seasons', localizedSeason);
+      await updateSheetItem('Seasons', localizedSeason, user);
     }
     
     // Sync Settings - đồng bộ các cài đặt quan trọng và giá bữa ăn từ Google Sheets
@@ -664,7 +664,7 @@ export async function syncDataToSheets(storage: any, language: string = 'en') {
             id: key, // Sử dụng key làm id để dễ tìm kiếm
             key: key,
             value: settingValue
-          });
+          }, user);
         }
       }
       console.log('Settings synchronized to Google Sheets');

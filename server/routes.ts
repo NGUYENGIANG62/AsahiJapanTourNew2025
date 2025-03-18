@@ -1028,11 +1028,14 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
 
   apiRouter.post("/sync/from-sheets", isAdminMiddleware, async (req, res) => {
     try {
-      await syncDataFromSheets(storage);
+      // Lấy thông tin người dùng từ session để đồng bộ đúng nguồn dữ liệu
+      const user = req.user;
+      await syncDataFromSheets(storage, user);
       await storage.updateLastSyncTimestamp();
       res.json({ 
         message: "Successfully synchronized data from Google Sheets",
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        dataSource: user && user.role === 'agent' ? user.dataSource : 'default'
       });
     } catch (error) {
       console.error("Error syncing from sheets:", error);
