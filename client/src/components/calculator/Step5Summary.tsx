@@ -89,7 +89,7 @@ const Step5Summary = () => {
   // Tìm khách sạn đầu tiên có số sao phù hợp (cho việc tính giá)
   const { data: hotel } = useQuery<Hotel>({
     queryKey: ['/api/hotels', formData.hotelId],
-    enabled: !!formData.hotelId && !!formData.hotelStars,
+    enabled: !!formData.hotelStars, // Chỉ cần hotelStars để xác định có dùng khách sạn hay không
   });
   
   const { data: guide } = useQuery<Guide>({

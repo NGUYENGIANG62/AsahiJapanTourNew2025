@@ -78,14 +78,12 @@ const Step4Accommodation = () => {
         includeBreakfast: false 
       });
     } else {
-      // Lưu hạng sao được chọn
-      updateFormData({ hotelStars: parseInt(value) as HotelStarRating });
-      
-      // Tìm khách sạn đầu tiên với số sao tương ứng để sử dụng giá của nó
-      const hotelWithSelectedStars = hotels.find(hotel => hotel.stars === parseInt(value));
-      if (hotelWithSelectedStars) {
-        updateFormData({ hotelId: hotelWithSelectedStars.id });
-      }
+      // Chỉ lưu hạng sao được chọn, không cần tìm khách sạn cụ thể
+      // Giá sẽ được tính trên server dựa theo cài đặt giá của từng hạng sao
+      updateFormData({ 
+        hotelStars: parseInt(value) as HotelStarRating,
+        hotelId: undefined // Xóa tham chiếu đến khách sạn cụ thể
+      });
     }
   };
 
