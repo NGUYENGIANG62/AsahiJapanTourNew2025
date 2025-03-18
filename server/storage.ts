@@ -387,18 +387,18 @@ export class MemStorage implements IStorage {
       descriptionVi: 'Đắm mình trong văn hóa cổ đại của Kyoto với các chuyến thăm đền chùa và trải nghiệm truyền thống.'
     });
     
-    // Initialize with sample hotels
+    // Initialize with sample hotels based on Google Sheets
     this.hotels.set(this.currentHotelId, {
       id: this.currentHotelId++,
       name: 'Tokyo Plaza Hotel',
       location: 'Tokyo',
       stars: 3,
-      singleRoomPrice: 15000, // 15,000 JPY per night
-      doubleRoomPrice: 22000, // 22,000 JPY per night
-      tripleRoomPrice: 30000, // 30,000 JPY per night
-      breakfastPrice: 2000,   // 2,000 JPY per person
-      lunchPrice: 2200,       // 2,200 JPY per person
-      dinnerPrice: 3500,      // 3,500 JPY per person
+      singleRoomPrice: 9500, // Based on Google Sheets
+      doubleRoomPrice: 16000, // Based on Google Sheets
+      tripleRoomPrice: 27000, // Based on Google Sheets
+      breakfastPrice: 2000,   // Based on Google Sheets
+      lunchPrice: 2500,       // Based on Google Sheets
+      dinnerPrice: 3500,      // Based on Google Sheets
       imageUrl: 'https://source.unsplash.com/featured/?hotel,tokyo'
     });
     
@@ -407,13 +407,27 @@ export class MemStorage implements IStorage {
       name: 'Kyoto Royal Resort',
       location: 'Kyoto',
       stars: 4,
-      singleRoomPrice: 25000, // 25,000 JPY per night
-      doubleRoomPrice: 35000, // 35,000 JPY per night
-      tripleRoomPrice: 48000, // 48,000 JPY per night
-      breakfastPrice: 2500,   // 2,500 JPY per person
-      lunchPrice: 2800,       // 2,800 JPY per person
-      dinnerPrice: 4500,      // 4,500 JPY per person
+      singleRoomPrice: 18000, // Based on Google Sheets
+      doubleRoomPrice: 30000, // Based on Google Sheets
+      tripleRoomPrice: 54000, // Based on Google Sheets
+      breakfastPrice: 2500,   // Based on Google Sheets
+      lunchPrice: 2500,       // Based on Google Sheets
+      dinnerPrice: 3500,      // Based on Google Sheets
       imageUrl: 'https://source.unsplash.com/featured/?hotel,kyoto'
+    });
+    
+    this.hotels.set(this.currentHotelId, {
+      id: this.currentHotelId++,
+      name: 'Tokyo Plaza Luxury',
+      location: 'Tokyo',
+      stars: 5,
+      singleRoomPrice: 35000, // Based on Google Sheets
+      doubleRoomPrice: 70000, // Based on Google Sheets
+      tripleRoomPrice: 110000, // Based on Google Sheets
+      breakfastPrice: 4000,   // Based on Google Sheets
+      lunchPrice: 2500,       // Based on Google Sheets
+      dinnerPrice: 3500,      // Based on Google Sheets
+      imageUrl: 'https://source.unsplash.com/featured/?hotel,tokyo,luxury'
     });
     
     // Initialize with sample guides

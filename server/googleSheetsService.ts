@@ -133,8 +133,8 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
       values: [['id', 'name', 'seats', 'luggageCapacity', 'pricePerDay', 'driverCostPerDay']],
     },
     {
-      range: 'Hotels!A1:I1',
-      values: [['id', 'name', 'location', 'stars', 'singleRoomPrice', 'doubleRoomPrice', 'tripleRoomPrice', 'breakfastPrice', 'imageUrl']],
+      range: 'Hotels!A1:K1',
+      values: [['id', 'name', 'location', 'stars', 'singleRoomPrice', 'doubleRoomPrice', 'tripleRoomPrice', 'breakfastPrice', 'imageUrl', 'lunchPrice', 'dinnerPrice']],
     },
     {
       range: 'Guides!A1:I1',
