@@ -586,47 +586,132 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       
       // Add hotel costs if selected
       let hotelCost = 0;
-      if (calculationData.hotelId && calculationData.roomType) {
-        const hotel = await storage.getHotel(calculationData.hotelId);
-        
-        if (hotel) {
+      if (calculationData.roomType) {
+        // Check if using star rating or specific hotel
+        if (calculationData.hotelStars) {
+          // Using star rating system (3-5 stars)
           const numNights = durationDays - 1;
           
           if (numNights > 0) {
+            // Get base prices for the selected star rating
+            let baseSingleRoomPrice = 0;
+            let baseDoubleRoomPrice = 0;
+            let baseTripleRoomPrice = 0;
+            let baseBreakfastPrice = 0;
+            
+            // Set base prices based on star rating
+            switch (calculationData.hotelStars) {
+              case 3:
+                baseSingleRoomPrice = parseFloat(await storage.getSetting('hotel_3star_single') || '12000');
+                baseDoubleRoomPrice = parseFloat(await storage.getSetting('hotel_3star_double') || '8000');
+                baseTripleRoomPrice = parseFloat(await storage.getSetting('hotel_3star_triple') || '7000');
+                baseBreakfastPrice = parseFloat(await storage.getSetting('hotel_3star_breakfast') || '1500');
+                break;
+              case 4:
+                baseSingleRoomPrice = parseFloat(await storage.getSetting('hotel_4star_single') || '18000');
+                baseDoubleRoomPrice = parseFloat(await storage.getSetting('hotel_4star_double') || '12000');
+                baseTripleRoomPrice = parseFloat(await storage.getSetting('hotel_4star_triple') || '10000');
+                baseBreakfastPrice = parseFloat(await storage.getSetting('hotel_4star_breakfast') || '2000');
+                break;
+              case 5:
+                baseSingleRoomPrice = parseFloat(await storage.getSetting('hotel_5star_single') || '25000');
+                baseDoubleRoomPrice = parseFloat(await storage.getSetting('hotel_5star_double') || '18000');
+                baseTripleRoomPrice = parseFloat(await storage.getSetting('hotel_5star_triple') || '15000');
+                baseBreakfastPrice = parseFloat(await storage.getSetting('hotel_5star_breakfast') || '3000');
+                break;
+            }
+            
             // Calculate room costs based on room type
             let roomRate = 0;
             switch (calculationData.roomType) {
               case 'single':
-                roomRate = hotel.singleRoomPrice;
+                roomRate = baseSingleRoomPrice;
                 break;
               case 'double':
-                roomRate = hotel.doubleRoomPrice;
+                roomRate = baseDoubleRoomPrice;
                 break;
               case 'triple':
-                roomRate = hotel.tripleRoomPrice;
+                roomRate = baseTripleRoomPrice;
                 break;
             }
             
             // Calculate number of rooms needed based on participants
             let numRooms = 0;
-            switch (calculationData.roomType) {
-              case 'single':
-                numRooms = calculationData.participants;
-                break;
-              case 'double':
-                numRooms = Math.ceil(calculationData.participants / 2);
-                break;
-              case 'triple':
-                numRooms = Math.ceil(calculationData.participants / 3);
-                break;
-            }
             
-            // Calculate hotel cost
-            hotelCost = roomRate * numRooms * numNights;
+            // Use explicit room counts if provided
+            if (calculationData.singleRoomCount || calculationData.doubleRoomCount || calculationData.tripleRoomCount) {
+              numRooms = (calculationData.singleRoomCount || 0) + (calculationData.doubleRoomCount || 0) + (calculationData.tripleRoomCount || 0);
+              
+              // Calculate total cost based on specific room counts
+              hotelCost = ((calculationData.singleRoomCount || 0) * baseSingleRoomPrice +
+                          (calculationData.doubleRoomCount || 0) * baseDoubleRoomPrice +
+                          (calculationData.tripleRoomCount || 0) * baseTripleRoomPrice) * numNights;
+            } else {
+              // Use the room type to calculate number of rooms
+              switch (calculationData.roomType) {
+                case 'single':
+                  numRooms = calculationData.participants;
+                  break;
+                case 'double':
+                  numRooms = Math.ceil(calculationData.participants / 2);
+                  break;
+                case 'triple':
+                  numRooms = Math.ceil(calculationData.participants / 3);
+                  break;
+              }
+              
+              // Calculate hotel cost
+              hotelCost = roomRate * numRooms * numNights;
+            }
             
             // Add breakfast if selected
             if (calculationData.includeBreakfast) {
-              hotelCost += hotel.breakfastPrice * calculationData.participants * numNights;
+              hotelCost += baseBreakfastPrice * calculationData.participants * numNights;
+            }
+          }
+        } else if (calculationData.hotelId) {
+          // Using specific hotel
+          const hotel = await storage.getHotel(calculationData.hotelId);
+          
+          if (hotel) {
+            const numNights = durationDays - 1;
+            
+            if (numNights > 0) {
+              // Calculate room costs based on room type
+              let roomRate = 0;
+              switch (calculationData.roomType) {
+                case 'single':
+                  roomRate = hotel.singleRoomPrice;
+                  break;
+                case 'double':
+                  roomRate = hotel.doubleRoomPrice;
+                  break;
+                case 'triple':
+                  roomRate = hotel.tripleRoomPrice;
+                  break;
+              }
+              
+              // Calculate number of rooms needed based on participants
+              let numRooms = 0;
+              switch (calculationData.roomType) {
+                case 'single':
+                  numRooms = calculationData.participants;
+                  break;
+                case 'double':
+                  numRooms = Math.ceil(calculationData.participants / 2);
+                  break;
+                case 'triple':
+                  numRooms = Math.ceil(calculationData.participants / 3);
+                  break;
+              }
+              
+              // Calculate hotel cost
+              hotelCost = roomRate * numRooms * numNights;
+              
+              // Add breakfast if selected
+              if (calculationData.includeBreakfast) {
+                hotelCost += hotel.breakfastPrice * calculationData.participants * numNights;
+              }
             }
           }
         }
@@ -650,13 +735,43 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
           guideCost = guide.pricePerDay * durationDays;
           
           // Add accommodation and meals for the guide as well
-          if (calculationData.hotelId && calculationData.roomType) {
-            const hotel = await storage.getHotel(calculationData.hotelId);
-            
-            if (hotel) {
-              const numNights = durationDays - 1;
+          const numNights = durationDays - 1;
+          
+          if (numNights > 0) {
+            // Check if using star rating or specific hotel
+            if (calculationData.hotelStars) {
+              // Using star rating system for guide accommodation
+              let guideSingleRoomPrice = 0;
+              let guideBreakfastPrice = 0;
               
-              if (numNights > 0) {
+              // Set prices based on star rating
+              switch (calculationData.hotelStars) {
+                case 3:
+                  guideSingleRoomPrice = parseFloat(await storage.getSetting('hotel_3star_single') || '12000');
+                  guideBreakfastPrice = parseFloat(await storage.getSetting('hotel_3star_breakfast') || '1500');
+                  break;
+                case 4:
+                  guideSingleRoomPrice = parseFloat(await storage.getSetting('hotel_4star_single') || '18000');
+                  guideBreakfastPrice = parseFloat(await storage.getSetting('hotel_4star_breakfast') || '2000');
+                  break;
+                case 5:
+                  guideSingleRoomPrice = parseFloat(await storage.getSetting('hotel_5star_single') || '25000');
+                  guideBreakfastPrice = parseFloat(await storage.getSetting('hotel_5star_breakfast') || '3000');
+                  break;
+              }
+              
+              // Guide gets a single room
+              hotelCost += guideSingleRoomPrice * numNights;
+              
+              // Guide gets breakfast if participants do
+              if (calculationData.includeBreakfast) {
+                hotelCost += guideBreakfastPrice * numNights;
+              }
+            } else if (calculationData.hotelId && calculationData.roomType) {
+              // Using specific hotel
+              const hotel = await storage.getHotel(calculationData.hotelId);
+              
+              if (hotel) {
                 // Guide gets a single room
                 hotelCost += hotel.singleRoomPrice * numNights;
                 
