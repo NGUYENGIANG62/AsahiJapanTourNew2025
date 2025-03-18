@@ -244,17 +244,16 @@ export async function getSpreadsheetForUser(user?: User | null, specificSource?:
     else if (user && user.role === 'user') {
       // Khách hàng luôn sử dụng bảng tính "AsahiJapanTours"
       if (process.env.GOOGLE_SPREADSHEET_URL) {
+        // Sử dụng URL chuẩn không thay đổi nếu khách hàng không có dataSource riêng
         const baseUrl = process.env.GOOGLE_SPREADSHEET_URL;
-        // Tách URL cơ sở và ID
-        const urlParts = baseUrl.split('/');
-        const baseId = urlParts[5]; // ID thường ở vị trí thứ 5 trong URL
         
-        // Đảm bảo sử dụng bảng tính gốc cho khách hàng (không có hậu tố)
-        if (baseId.includes('_')) {
-          // Nếu ID hiện tại có hậu tố, loại bỏ nó
-          const originalId = baseId.split('_')[0];
-          urlParts[5] = originalId;
-          customUrl = urlParts.join('/');
+        // Đảm bảo chúng ta sử dụng ID đầy đủ từ URL gốc
+        const spreadsheetId = getSpreadsheetIdFromUrl(baseUrl);
+        if (spreadsheetId) {
+          customUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
+          console.log(`Using complete spreadsheet ID for customer: ${spreadsheetId}`);
+        } else {
+          console.error("Could not extract valid spreadsheet ID from URL");
         }
       }
       sourceName = 'Customer';
