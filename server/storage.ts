@@ -273,6 +273,7 @@ export class MemStorage implements IStorage {
       id: this.currentTourId,
       name: 'Tokyo Highlights',
       code: 'AVF000', // Mã mới theo định dạng AVF
+      avfCode: 'AVF001', // Mã AVF mới
       location: 'Tokyo',
       description: 'Explore the best of Tokyo including Asakusa, Shibuya, and Tokyo Tower.',
       durationDays: 1,
@@ -293,6 +294,7 @@ export class MemStorage implements IStorage {
       id: this.currentTourId,
       name: 'Kyoto Cultural Tour',
       code: 'AVF001', // Mã mới theo định dạng AVF
+      avfCode: 'AVF002', // Mã AVF mới
       location: 'Kyoto',
       description: 'Immerse yourself in the ancient culture of Kyoto with visits to temples and traditional experiences.',
       durationDays: 2,
@@ -338,14 +340,24 @@ export class MemStorage implements IStorage {
       id: this.currentGuideId++,
       name: 'Tanaka Yuki',
       languages: ['english', 'japanese'],
-      pricePerDay: 20000 // 20,000 JPY per day
+      pricePerDay: 20000, // 20,000 JPY per day
+      experience: 5,
+      hasInternationalLicense: true,
+      personality: 'Thân thiện, kiên nhẫn',
+      gender: 'Nam',
+      age: 35
     });
     
     this.guides.set(this.currentGuideId, {
       id: this.currentGuideId++,
       name: 'Nguyen Minh',
       languages: ['english', 'vietnamese', 'japanese'],
-      pricePerDay: 22000 // 22,000 JPY per day
+      pricePerDay: 22000, // 22,000 JPY per day
+      experience: 7,
+      hasInternationalLicense: true,
+      personality: 'Vui vẻ, am hiểu văn hóa',
+      gender: 'Nam',
+      age: 40
     });
   }
 
@@ -400,6 +412,7 @@ export class MemStorage implements IStorage {
       ...insertTour, 
       id,
       code: avfCode, // Ghi đè mã đã cung cấp với mã AVF mới
+      avfCode: avfCode, // Đặt mã AVF giống với code
       nameJa: insertTour.nameJa || null,
       nameZh: insertTour.nameZh || null,
       nameKo: insertTour.nameKo || null,
@@ -504,7 +517,15 @@ export class MemStorage implements IStorage {
   
   async createGuide(insertGuide: InsertGuide): Promise<Guide> {
     const id = this.currentGuideId++;
-    const guide: Guide = { ...insertGuide, id };
+    const guide: Guide = { 
+      ...insertGuide, 
+      id,
+      experience: insertGuide.experience || null,
+      hasInternationalLicense: insertGuide.hasInternationalLicense || null,
+      personality: insertGuide.personality || null,
+      gender: insertGuide.gender || null,
+      age: insertGuide.age || null
+    };
     this.guides.set(id, guide);
     return guide;
   }
