@@ -50,7 +50,7 @@ const ContactInfo = ({ compact = false }: ContactInfoProps) => {
           <div className="flex items-start">
             <Mail className={`${compact ? 'h-4 w-4 mt-0.5' : 'h-5 w-5 mt-0.5'} mr-2 text-muted-foreground`} />
             <div>
-              <div>hoangtucuoirong@gmail.com</div>
+              <div>asahivietlifejapantours@gmail.com</div>
               <div>asahivietlife@outlook.com</div>
             </div>
           </div>

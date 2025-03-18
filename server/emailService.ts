@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true, // use SSL
   auth: {
-    user: process.env.EMAIL_USER || 'hoangtucuoirong@gmail.com',
+    user: process.env.EMAIL_USER || 'asahivietlifejapantours@gmail.com',
     pass: process.env.EMAIL_PASSWORD || 'rsto qnza iavp xeop' // App password
   },
   debug: true // Show debug output
@@ -25,8 +25,8 @@ export const sendEmail = async (request: EmailRequest): Promise<{ success: boole
 
   try {
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'hoangtucuoirong@gmail.com',
-      to: 'hoangtucuoirong@gmail.com, asahivietlife@outlook.com',
+      from: process.env.EMAIL_USER || 'asahivietlifejapantours@gmail.com',
+      to: 'asahivietlifejapantours@gmail.com, asahivietlife@outlook.com',
       subject: subject,
       html: `
         <h1>New Tour Request</h1>
