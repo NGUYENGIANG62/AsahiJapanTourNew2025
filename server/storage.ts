@@ -397,6 +397,8 @@ export class MemStorage implements IStorage {
       doubleRoomPrice: 22000, // 22,000 JPY per night
       tripleRoomPrice: 30000, // 30,000 JPY per night
       breakfastPrice: 2000,   // 2,000 JPY per person
+      lunchPrice: 2200,       // 2,200 JPY per person
+      dinnerPrice: 3500,      // 3,500 JPY per person
       imageUrl: 'https://source.unsplash.com/featured/?hotel,tokyo'
     });
     
@@ -409,6 +411,8 @@ export class MemStorage implements IStorage {
       doubleRoomPrice: 35000, // 35,000 JPY per night
       tripleRoomPrice: 48000, // 48,000 JPY per night
       breakfastPrice: 2500,   // 2,500 JPY per person
+      lunchPrice: 2800,       // 2,800 JPY per person
+      dinnerPrice: 4500,      // 4,500 JPY per person
       imageUrl: 'https://source.unsplash.com/featured/?hotel,kyoto'
     });
     
@@ -564,7 +568,9 @@ export class MemStorage implements IStorage {
     const hotel: Hotel = { 
       ...insertHotel, 
       id,
-      imageUrl: insertHotel.imageUrl || null
+      imageUrl: insertHotel.imageUrl || null,
+      lunchPrice: insertHotel.lunchPrice || 0,
+      dinnerPrice: insertHotel.dinnerPrice || 0
     };
     this.hotels.set(id, hotel);
     return hotel;
@@ -768,6 +774,8 @@ export class MemStorage implements IStorage {
         doubleRoomPrice: Number(hotel.doubleRoomPrice) || 0,
         tripleRoomPrice: Number(hotel.tripleRoomPrice) || 0,
         breakfastPrice: Number(hotel.breakfastPrice) || 0,
+        lunchPrice: Number(hotel.lunchPrice) || 0,
+        dinnerPrice: Number(hotel.dinnerPrice) || 0,
         imageUrl: hotel.imageUrl
       }) as Promise<Hotel>;
     } else {
@@ -780,6 +788,8 @@ export class MemStorage implements IStorage {
         doubleRoomPrice: Number(hotel.doubleRoomPrice) || 0,
         tripleRoomPrice: Number(hotel.tripleRoomPrice) || 0,
         breakfastPrice: Number(hotel.breakfastPrice) || 0,
+        lunchPrice: Number(hotel.lunchPrice) || 0,
+        dinnerPrice: Number(hotel.dinnerPrice) || 0,
         imageUrl: hotel.imageUrl
       });
     }

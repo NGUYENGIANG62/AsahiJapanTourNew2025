@@ -740,10 +740,25 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       // Add meals costs if selected
       let mealsCost = 0;
       if (calculationData.includeLunch || calculationData.includeDinner) {
-        const lunchCost = calculationData.includeLunch ? parseFloat(await storage.getSetting('meal_cost_lunch') || '2000') : 0;
-        const dinnerCost = calculationData.includeDinner ? parseFloat(await storage.getSetting('meal_cost_dinner') || '3000') : 0;
+        let lunchCost = parseFloat(await storage.getSetting('meal_cost_lunch') || '2000');
+        let dinnerCost = parseFloat(await storage.getSetting('meal_cost_dinner') || '3000');
         
-        mealsCost = (lunchCost + dinnerCost) * calculationData.participants * durationDays;
+        // Nếu đã chọn khách sạn cụ thể, ưu tiên sử dụng giá từ khách sạn (nếu có)
+        if (calculationData.hotelId) {
+          const hotel = await storage.getHotel(calculationData.hotelId);
+          if (hotel) {
+            lunchCost = hotel.lunchPrice ? hotel.lunchPrice : lunchCost;
+            dinnerCost = hotel.dinnerPrice ? hotel.dinnerPrice : dinnerCost;
+          }
+        } else if (calculationData.hotelStars) {
+          // Nếu chọn theo star rating, vẫn sử dụng giá chung từ settings
+        }
+        
+        // Chỉ tính chi phí cho những bữa ăn được chọn
+        const totalLunchCost = calculationData.includeLunch ? lunchCost : 0;
+        const totalDinnerCost = calculationData.includeDinner ? dinnerCost : 0;
+        
+        mealsCost = (totalLunchCost + totalDinnerCost) * calculationData.participants * durationDays;
       }
       
       // Add guide costs if selected
@@ -805,10 +820,23 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
           
           // Guide gets the same meals as participants
           if (calculationData.includeLunch || calculationData.includeDinner) {
-            const lunchCost = calculationData.includeLunch ? parseFloat(await storage.getSetting('meal_cost_lunch') || '2000') : 0;
-            const dinnerCost = calculationData.includeDinner ? parseFloat(await storage.getSetting('meal_cost_dinner') || '3000') : 0;
+            let lunchCost = parseFloat(await storage.getSetting('meal_cost_lunch') || '2000');
+            let dinnerCost = parseFloat(await storage.getSetting('meal_cost_dinner') || '3000');
             
-            mealsCost += (lunchCost + dinnerCost) * durationDays;
+            // Nếu đã chọn khách sạn cụ thể, ưu tiên sử dụng giá từ khách sạn (nếu có)
+            if (calculationData.hotelId) {
+              const hotel = await storage.getHotel(calculationData.hotelId);
+              if (hotel) {
+                lunchCost = hotel.lunchPrice ? hotel.lunchPrice : lunchCost;
+                dinnerCost = hotel.dinnerPrice ? hotel.dinnerPrice : dinnerCost;
+              }
+            }
+            
+            // Chỉ tính chi phí cho những bữa ăn được chọn
+            const totalLunchCost = calculationData.includeLunch ? lunchCost : 0;
+            const totalDinnerCost = calculationData.includeDinner ? dinnerCost : 0;
+            
+            mealsCost += (totalLunchCost + totalDinnerCost) * durationDays;
           }
         }
       }

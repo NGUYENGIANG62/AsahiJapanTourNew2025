@@ -32,21 +32,6 @@ const CompanySettings = () => {
     { key: 'tax_rate', value: '', label: t('admin.taxRate'), suffix: '%' },
     { key: 'meal_cost_lunch', value: '', label: t('admin.mealCostLunch'), suffix: 'JPY' },
     { key: 'meal_cost_dinner', value: '', label: t('admin.mealCostDinner'), suffix: 'JPY' },
-    // Khách sạn 3 sao
-    { key: 'hotel_3star_single', value: '', label: t('admin.hotel3StarSingle', 'Khách sạn 3 sao - Phòng đơn'), suffix: 'JPY' },
-    { key: 'hotel_3star_double', value: '', label: t('admin.hotel3StarDouble', 'Khách sạn 3 sao - Phòng đôi'), suffix: 'JPY' },
-    { key: 'hotel_3star_triple', value: '', label: t('admin.hotel3StarTriple', 'Khách sạn 3 sao - Phòng ba'), suffix: 'JPY' },
-    { key: 'hotel_3star_breakfast', value: '', label: t('admin.hotel3StarBreakfast', 'Khách sạn 3 sao - Bữa sáng'), suffix: 'JPY' },
-    // Khách sạn 4 sao
-    { key: 'hotel_4star_single', value: '', label: t('admin.hotel4StarSingle', 'Khách sạn 4 sao - Phòng đơn'), suffix: 'JPY' },
-    { key: 'hotel_4star_double', value: '', label: t('admin.hotel4StarDouble', 'Khách sạn 4 sao - Phòng đôi'), suffix: 'JPY' },
-    { key: 'hotel_4star_triple', value: '', label: t('admin.hotel4StarTriple', 'Khách sạn 4 sao - Phòng ba'), suffix: 'JPY' },
-    { key: 'hotel_4star_breakfast', value: '', label: t('admin.hotel4StarBreakfast', 'Khách sạn 4 sao - Bữa sáng'), suffix: 'JPY' },
-    // Khách sạn 5 sao
-    { key: 'hotel_5star_single', value: '', label: t('admin.hotel5StarSingle', 'Khách sạn 5 sao - Phòng đơn'), suffix: 'JPY' },
-    { key: 'hotel_5star_double', value: '', label: t('admin.hotel5StarDouble', 'Khách sạn 5 sao - Phòng đôi'), suffix: 'JPY' },
-    { key: 'hotel_5star_triple', value: '', label: t('admin.hotel5StarTriple', 'Khách sạn 5 sao - Phòng ba'), suffix: 'JPY' },
-    { key: 'hotel_5star_breakfast', value: '', label: t('admin.hotel5StarBreakfast', 'Khách sạn 5 sao - Bữa sáng'), suffix: 'JPY' },
   ]);
   
   // Fetch settings
