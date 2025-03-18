@@ -12,7 +12,8 @@ interface EmailRequest {
 // Email config - cấu hình cố định
 const EMAIL_CONFIG = {
   user: 'asahivietlifejapantours@gmail.com',
-  password: 'ifdcappsdrlrxmvi', // App password không có dấu cách
+  senderName: 'AsahiJapanTours',
+  password: 'xdppaohryuhknygk', // App password được cung cấp
   host: 'smtp.gmail.com',
   port: 465,
   secure: true
@@ -43,7 +44,7 @@ export const sendEmail = async (request: EmailRequest): Promise<{ success: boole
   try {
     // Cấu hình email gửi đi với thông tin liên hệ của khách hàng
     const mailOptions = {
-      from: `AsahiJapanTours <${EMAIL_CONFIG.user}>`,
+      from: `${EMAIL_CONFIG.senderName} <${EMAIL_CONFIG.user}>`,
       to: 'asahivietlifejapantours@gmail.com, asahivietlife@outlook.com',
       subject: subject,
       html: `
