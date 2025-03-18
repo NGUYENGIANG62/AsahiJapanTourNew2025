@@ -1024,22 +1024,37 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   // Google Sheets Sync Routes (Admin only)
   apiRouter.get("/sync/status", isAuthenticated, async (req, res) => {
     try {
-      const lastSyncTime = await storage.getLastSyncTimestamp();
+      // Lấy thông tin đồng bộ từ setting mới
+      const lastSyncTime = await storage.getSetting(SYNC_SETTINGS.LAST_SYNC_TIME);
+      const dataSourceId = await storage.getSetting(SYNC_SETTINGS.CURRENT_DATA_SOURCE);
+      const dataSourceName = await storage.getSetting(SYNC_SETTINGS.CURRENT_DATA_SOURCE_NAME);
+      
       // Get the current user to determine data source
       const user = req.user as unknown as User | undefined;
-      const dataSource = user && user.role === 'agent' && user.dataSource 
+      const userDataSource = user && user.role === 'agent' && user.dataSource 
                         ? user.dataSource 
                         : 'default';
+      
+      // Ưu tiên hiển thị nguồn dữ liệu của người dùng đại lý
+      const displayDataSource = user && user.role === 'agent' 
+                              ? userDataSource 
+                              : dataSourceName || 'default';
                         
       res.json({
-        lastSync: lastSyncTime ? new Date(lastSyncTime).toISOString() : null,
-        status: "ok",
-        dataSource: dataSource,
+        lastSync: lastSyncTime || null,
+        status: lastSyncTime ? "synced" : "not_synced",
+        dataSource: dataSourceId || 'default',
+        dataSourceName: displayDataSource,
         userRole: user ? user.role : 'guest'
       });
     } catch (error) {
       console.error("Error getting sync status:", error);
-      res.status(500).json({ message: "Failed to get sync status", error: String(error) });
+      res.status(500).json({ 
+        message: "Failed to get sync status", 
+        error: String(error),
+        lastSync: null,
+        status: "error" 
+      });
     }
   });
 
@@ -1047,12 +1062,19 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
     try {
       // Lấy thông tin người dùng từ session để đồng bộ đúng nguồn dữ liệu
       const user = req.user as unknown as User | undefined;
-      await syncDataFromSheets(storage, user);
-      await storage.updateLastSyncTimestamp();
+      
+      // Lấy nguồn dữ liệu tùy chỉnh nếu được chỉ định (chỉ dành cho admin)
+      const { dataSource } = req.body;
+      
+      // Chỉ admin mới được phép chỉ định nguồn dữ liệu
+      const specificSource = user && user.role === 'admin' && dataSource ? dataSource : undefined;
+      
+      await syncDataFromSheets(storage, user, specificSource);
       res.json({ 
         message: "Successfully synchronized data from Google Sheets",
         timestamp: new Date().toISOString(),
-        dataSource: user && user.role === 'agent' ? user.dataSource : 'default'
+        dataSource: user && user.role === 'agent' ? user.dataSource : 
+                   specificSource ? specificSource : 'default'
       });
     } catch (error) {
       console.error("Error syncing from sheets:", error);
