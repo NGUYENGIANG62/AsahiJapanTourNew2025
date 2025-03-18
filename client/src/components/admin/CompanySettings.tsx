@@ -30,8 +30,8 @@ const CompanySettings = () => {
   const [settings, setSettings] = useState<Setting[]>([
     { key: 'profit_margin', value: '', label: t('admin.profitMargin'), suffix: '%' },
     { key: 'tax_rate', value: '', label: t('admin.taxRate'), suffix: '%' },
-    { key: 'meal_cost_lunch', value: '', label: t('admin.mealCostLunch'), suffix: 'JPY' },
-    { key: 'meal_cost_dinner', value: '', label: t('admin.mealCostDinner'), suffix: 'JPY' },
+    { key: 'lunchPrice', value: '', label: t('admin.mealCostLunch'), suffix: 'JPY' },
+    { key: 'dinnerPrice', value: '', label: t('admin.mealCostDinner'), suffix: 'JPY' },
   ]);
   
   // Fetch settings
