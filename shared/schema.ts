@@ -156,6 +156,7 @@ export const specialServiceSchema = z.object({
   sumoShow: z.boolean().optional(),
   disneylandTickets: z.boolean().optional(),
   universalStudioTickets: z.boolean().optional(),
+  airportTransfer: z.boolean().optional(), // Dịch vụ đưa đón sân bay
   notes: z.string().optional(),
 });
 
