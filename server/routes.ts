@@ -22,6 +22,7 @@ import { syncDataFromSheets, syncDataToSheets } from "./googleSheetsService";
 import { SYNC_SETTINGS } from "../shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { getAiResponse } from "./aiAssistant";
 
 const MemoryStoreSession = MemoryStore(session);
 
@@ -1192,6 +1193,20 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating AVF codes:", error);
       res.status(500).json({ message: "Lỗi khi cập nhật mã AVF", error: String(error) });
+    }
+  });
+  
+  // AI Assistant Route
+  apiRouter.post("/ai-assistant", async (req, res) => {
+    try {
+      const response = await getAiResponse(req.body);
+      res.json(response);
+    } catch (error) {
+      console.error("AI Assistant error:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Lỗi khi xử lý yêu cầu AI Assistant" 
+      });
     }
   });
 

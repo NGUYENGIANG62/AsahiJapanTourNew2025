@@ -11,6 +11,7 @@ import AdminPanel from "@/pages/AdminPanel";
 import Calculator from "@/pages/Calculator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { AiAssistant } from "@/components/AiAssistant";
 import { useEffect } from "react";
 import i18n from "@/lib/i18n";
 
@@ -70,6 +71,7 @@ function App() {
       <AuthProvider>
         <CalculatorProvider>
           <Router />
+          <AiAssistant />
           <Toaster />
         </CalculatorProvider>
       </AuthProvider>
