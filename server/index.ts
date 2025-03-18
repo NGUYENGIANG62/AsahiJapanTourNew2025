@@ -16,7 +16,7 @@ console.log('GOOGLE_REFRESH_TOKEN:', process.env.GOOGLE_REFRESH_TOKEN ? 'set' : 
 
 // Kiểm tra cấu hình email
 console.log('Email ENV check:', {
-  EMAIL_USER: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.substring(0, 5)}...` : 'not set',
+  EMAIL_USER: process.env.EMAIL_USER ? process.env.EMAIL_USER : 'not set',
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD ? `Set (${process.env.EMAIL_PASSWORD.length} chars)` : 'not set'
 });
 
