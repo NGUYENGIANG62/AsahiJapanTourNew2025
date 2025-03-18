@@ -41,7 +41,7 @@ Phân tích chi tiết từng khoản chi phí và tại sao chúng quan trọng
 Trả lời bằng tiếng Việt, ngắn gọn, thân thiện và chuyên nghiệp, đặt mình vào vị trí tư vấn viên đáng tin cậy.`;
 };
 
-export type AiRequestType = 'tour_intro' | 'price_explanation' | 'custom_question';
+export type AiRequestType = 'tour_intro' | 'price_explanation' | 'custom_question' | 'tour_suggestion';
 
 export interface AiAssistantRequest {
   type: AiRequestType;
