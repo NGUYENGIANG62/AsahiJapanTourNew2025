@@ -290,15 +290,75 @@ const GuideManagement = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex justify-between mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder={`${t('common.search')} ${t('admin.guideManagement').toLowerCase()}...`}
-              className="pl-10 w-[300px]"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <div className="mb-6">
+          <div className="flex flex-wrap justify-between gap-4 mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder={`${t('common.search')} ${t('admin.guideManagement').toLowerCase()}...`}
+                className="pl-10 w-[300px]"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            
+            <div className="flex gap-2">
+              <Select
+                value={filterLanguage || ''}
+                onValueChange={(value) => setFilterLanguage(value || null)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <Languages className="mr-2 h-4 w-4" />
+                  <SelectValue placeholder="Filter by language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All languages</SelectItem>
+                  {availableLanguages.map(lang => (
+                    <SelectItem key={lang.id} value={lang.id}>{lang.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Select
+                value={filterExperience?.toString() || ''}
+                onValueChange={(value) => setFilterExperience(value ? parseInt(value) : null)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <Award className="mr-2 h-4 w-4" />
+                  <SelectValue placeholder="Min experience" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Any experience</SelectItem>
+                  <SelectItem value="1">1+ year</SelectItem>
+                  <SelectItem value="3">3+ years</SelectItem>
+                  <SelectItem value="5">5+ years</SelectItem>
+                  <SelectItem value="10">10+ years</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Select
+                value={filterLicense !== null ? filterLicense.toString() : ''}
+                onValueChange={(value) => {
+                  if (value === '') setFilterLicense(null);
+                  else setFilterLicense(value === 'true');
+                }}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <BadgeCheck className="mr-2 h-4 w-4" />
+                  <SelectValue placeholder="Int'l license" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Any license type</SelectItem>
+                  <SelectItem value="true">Has int'l license</SelectItem>
+                  <SelectItem value="false">No int'l license</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Button variant="ghost" onClick={resetFilters}>
+                <FilterX className="h-4 w-4 mr-2" />
+                Reset filters
+              </Button>
+            </div>
           </div>
         </div>
         
@@ -308,20 +368,23 @@ const GuideManagement = () => {
               <TableRow>
                 <TableHead>{t('admin.guideName')}</TableHead>
                 <TableHead>{t('admin.languages')}</TableHead>
+                <TableHead className="hidden md:table-cell">Experience</TableHead>
+                <TableHead className="hidden md:table-cell">License</TableHead>
                 <TableHead>{t('admin.pricePerDay')} (JPY)</TableHead>
+                <TableHead className="hidden lg:table-cell">Details</TableHead>
                 <TableHead>{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center">
+                  <TableCell colSpan={7} className="text-center">
                     {t('common.loading')}
                   </TableCell>
                 </TableRow>
               ) : filteredGuides.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center">
+                  <TableCell colSpan={7} className="text-center">
                     No guides found
                   </TableCell>
                 </TableRow>
@@ -342,7 +405,23 @@ const GuideManagement = () => {
                         ))}
                       </div>
                     </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {guide.experience ? `${guide.experience} years` : 'N/A'}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {guide.hasInternationalLicense ? 
+                        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 hover:bg-green-200">International</Badge> : 
+                        <Badge variant="outline" className="text-xs">Standard</Badge>
+                      }
+                    </TableCell>
                     <TableCell>{guide.pricePerDay.toLocaleString()}</TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      <div className="text-xs text-muted-foreground">
+                        {guide.gender && <span className="mr-2">{guide.gender}</span>}
+                        {guide.age && <span className="mr-2">{guide.age} years old</span>}
+                        {guide.personality && <span>{guide.personality}</span>}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
                         <Button variant="ghost" size="sm" onClick={() => handleEditGuide(guide)}>
@@ -439,6 +518,138 @@ const GuideManagement = () => {
                     </FormItem>
                   )}
                 />
+                
+                <Tabs defaultValue="qualifications" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="qualifications">Qualifications</TabsTrigger>
+                    <TabsTrigger value="personal">Personal Details</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="qualifications" className="space-y-4 mt-4">
+                    <FormField
+                      control={form.control}
+                      name="experience"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Years of Experience</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              min="0" 
+                              max="50"
+                              placeholder="e.g. 5" 
+                              {...field}
+                              value={field.value === undefined ? '' : field.value}
+                              onChange={(e) => {
+                                const value = e.target.value !== '' ? Number(e.target.value) : undefined;
+                                field.onChange(value);
+                              }} 
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Number of years working as a tour guide
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="hasInternationalLicense"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>
+                              International Tour Guide License
+                            </FormLabel>
+                            <FormDescription>
+                              Guide has certification for international tour groups
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </TabsContent>
+                  
+                  <TabsContent value="personal" className="space-y-4 mt-4">
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Gender</FormLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select gender" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Male">Male</SelectItem>
+                              <SelectItem value="Female">Female</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="age"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Age</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              min="18" 
+                              max="100"
+                              placeholder="e.g. 35" 
+                              {...field}
+                              value={field.value === undefined ? '' : field.value}
+                              onChange={(e) => {
+                                const value = e.target.value !== '' ? Number(e.target.value) : undefined;
+                                field.onChange(value);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="personality"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Personality Traits</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="e.g. Friendly, Patient, Energetic" 
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Describe the guide's personality traits and style
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </TabsContent>
+                </Tabs>
                 
                 <DialogFooter>
                   <Button 
