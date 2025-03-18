@@ -499,7 +499,7 @@ const Step5Summary = () => {
                       <li className="flex items-center">
                         <Car className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>
-                          {vehicle 
+                          {vehicle && vehicle.name && vehicle.seats && vehicle.luggageCapacity
                             ? `${formData.vehicleCount || 1}x ${vehicle.name} (${vehicle.seats} ${t('calculator.summary.seats', 'chỗ')}, ${t('calculator.summary.luggage', 'hành lý')}: ${vehicle.luggageCapacity} kg)` 
                             : t('calculator.summary.noVehicleSelected', 'No vehicle selected')}
                         </span>
@@ -509,7 +509,7 @@ const Step5Summary = () => {
                         <HotelIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>
                           {formData.hotelStars 
-                            ? `${formData.hotelStars} ${t('calculator.summary.stars', 'stars')} (${getRoomTypeLabel()}) - ${formData.stayingNights || calculateDuration() - 1} ${t('calculator.summary.nights', 'đêm')}` 
+                            ? `${formData.hotelStars} ${t('calculator.summary.stars', 'stars')} (${getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'Không có phòng')}) - ${formData.stayingNights || calculateDuration() - 1} ${t('calculator.summary.nights', 'đêm')}` 
                             : t('calculator.summary.noHotelSelected', 'No hotel selected')}
                         </span>
                       </li>
@@ -517,7 +517,7 @@ const Step5Summary = () => {
                       <li className="flex items-start">
                         <User className="mr-2 h-4 w-4 mt-1 text-muted-foreground" />
                         <div>
-                          {guide 
+                          {guide && guide.name
                             ? (<>
                               <div className="flex flex-wrap">
                                 <span className="mr-1">{guide.name}</span>
