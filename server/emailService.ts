@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true, // use SSL
   auth: {
-    user: process.env.EMAIL_USER || 'asahivietlifejapantours@gmail.com',
+    user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD // App password được tạo từ tài khoản Google
   },
   debug: true // Bật debug output để xem lỗi chi tiết
@@ -23,7 +23,7 @@ const transporter = nodemailer.createTransport({
 
 // Log cấu hình email để kiểm tra (chỉ hiển thị tên người dùng để bảo mật)
 console.log("Email configuration:", { 
-  user: process.env.EMAIL_USER || 'asahivietlifejapantours@gmail.com', 
+  user: process.env.EMAIL_USER, 
   passLength: process.env.EMAIL_PASSWORD ? process.env.EMAIL_PASSWORD.length : 0,
   configured: !!process.env.EMAIL_PASSWORD
 });
@@ -34,7 +34,7 @@ export const sendEmail = async (request: EmailRequest): Promise<{ success: boole
   try {
     // Cấu hình email gửi đi với thông tin liên hệ của khách hàng
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'asahivietlifejapantours@gmail.com',
+      from: process.env.EMAIL_USER,
       to: 'asahivietlifejapantours@gmail.com, asahivietlife@outlook.com',
       subject: subject,
       html: `
