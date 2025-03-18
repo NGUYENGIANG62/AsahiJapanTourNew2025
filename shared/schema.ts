@@ -180,6 +180,9 @@ export const calculationSchema = z.object({
   includeGuide: z.boolean().optional(),
   guideId: z.number().optional(),
   currency: z.enum(["JPY", "USD", "VND"]).default("JPY"),
+  // Thông tin về thời gian bay
+  arrivalTime: z.enum(["morning", "afternoon", "unknown"]).optional(),
+  departureTime: z.enum(["morning", "afternoon", "unknown"]).optional(),
   // Dịch vụ đặc biệt
   specialServices: specialServiceSchema.optional(),
 });
