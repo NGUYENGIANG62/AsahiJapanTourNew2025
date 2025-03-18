@@ -13,7 +13,8 @@ import {
   insertHotelSchema, 
   insertGuideSchema, 
   insertSeasonSchema,
-  calculationSchema 
+  calculationSchema,
+  User
 } from "@shared/schema";
 import { convertCurrency } from "./currencyConverter";
 import { sendEmail } from "./emailService";
@@ -1029,7 +1030,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   apiRouter.post("/sync/from-sheets", isAdminMiddleware, async (req, res) => {
     try {
       // Lấy thông tin người dùng từ session để đồng bộ đúng nguồn dữ liệu
-      const user = req.user;
+      const user = req.user as unknown as User | undefined;
       await syncDataFromSheets(storage, user);
       await storage.updateLastSyncTimestamp();
       res.json({ 
@@ -1060,13 +1061,17 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       // Lấy ngôn ngữ được chọn từ request body hoặc mặc định là 'en'
       const { language = 'en' } = req.body as { language?: 'en' | 'ja' | 'zh' | 'ko' | 'vi' };
       
+      // Lấy thông tin người dùng từ session để đồng bộ đúng nguồn dữ liệu
+      const user = req.user as User | undefined;
+      
       // Nếu có Service Account, tiến hành đồng bộ với ngôn ngữ chỉ định
-      await syncDataToSheets(storage, language);
+      await syncDataToSheets(storage, language, user);
       await storage.updateLastSyncTimestamp();
       res.json({ 
         message: "Successfully synchronized data to Google Sheets",
         language: language,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        dataSource: user && (user as any).role === 'agent' ? (user as any).dataSource : 'default'
       });
     } catch (error) {
       console.error("Error syncing to sheets:", error);
