@@ -18,7 +18,8 @@ type AuthContextType = {
   checkAuth: () => Promise<void>;
 };
 
-export const AuthContext = createContext<AuthContextType>({
+// Default context value
+const defaultContextValue: AuthContextType = {
   user: null,
   isAuthenticated: false,
   isAdmin: false,
@@ -26,8 +27,12 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => ({ success: false }),
   logout: async () => {},
   checkAuth: async () => {},
-});
+};
 
+// Create context
+export const AuthContext = createContext<AuthContextType>(defaultContextValue);
+
+// Auth provider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
