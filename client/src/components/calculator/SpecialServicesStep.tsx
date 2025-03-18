@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Plane } from 'lucide-react';
 import { SpecialService } from '@/types';
 
 const SpecialServicesStep = () => {
@@ -131,6 +131,19 @@ const SpecialServicesStep = () => {
                   }
                 />
                 <Label htmlFor="universalStudioTickets">Vé Universal Studio</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="airportTransfer"
+                  checked={specialServices.airportTransfer}
+                  onCheckedChange={(checked) => 
+                    handleSpecialServiceChange('airportTransfer', Boolean(checked))
+                  }
+                />
+                <Label htmlFor="airportTransfer" className="flex items-center">
+                  <Plane className="h-4 w-4 mr-1" /> Dịch vụ đưa đón sân bay
+                </Label>
               </div>
             </div>
             
