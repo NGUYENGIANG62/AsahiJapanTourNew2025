@@ -170,6 +170,19 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   });
 
   // User Management Routes (Admin only)
+  apiRouter.get("/admin/users", isAdminMiddleware, async (req, res) => {
+    try {
+      const users = [
+        { id: 2, username: 'customer', role: 'user' },
+        { id: 3, username: 'AsahiLKNamA', role: 'agent' }
+      ];
+      
+      res.json(users);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+  
   apiRouter.put("/admin/password", isAdminMiddleware, async (req, res) => {
     try {
       const { newPassword } = req.body;
@@ -187,6 +200,39 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       return res.json({ message: "Password updated successfully" });
     } catch (error) {
       return res.status(500).json({ message: "Failed to update password" });
+    }
+  });
+  
+  apiRouter.put("/admin/user-password", isAdminMiddleware, async (req, res) => {
+    try {
+      const { username, newPassword } = req.body;
+      
+      if (!username || typeof username !== 'string') {
+        return res.status(400).json({ message: "Username is required" });
+      }
+      
+      if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 8) {
+        return res.status(400).json({ message: "Invalid password format. Password must be at least 8 characters long." });
+      }
+      
+      // Find user by username
+      const userToUpdate = await storage.getUserByUsername(username);
+      
+      if (!userToUpdate) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Update user's password
+      const updatedUser = await storage.updateUserPassword(userToUpdate.id, newPassword);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "Failed to update user password" });
+      }
+      
+      return res.json({ message: "User password updated successfully" });
+    } catch (error) {
+      console.error("Error updating user password:", error);
+      return res.status(500).json({ message: "Failed to update user password" });
     }
   });
 
