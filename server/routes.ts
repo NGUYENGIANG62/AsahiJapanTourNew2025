@@ -601,8 +601,19 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       
       // Add vehicle costs based on number of vehicles
       const vehicleCount = calculationData.vehicleCount || 1; // Default to 1 if not specified
-      const vehicleCost = vehicle.pricePerDay * durationDays * vehicleCount;
-      const driverCost = vehicle.driverCostPerDay * durationDays * vehicleCount;
+      
+      // Tính toán số ngày sử dụng xe dựa trên thời gian đến và đi
+      let vehicleDays = durationDays;
+      
+      // Điều chỉnh ngày xe dựa trên thời gian bay đến/đi
+      if (calculationData.arrivalTime === 'afternoon') {
+        // Nếu đến buổi chiều, chỉ tính nửa ngày xe cho ngày đầu tiên (dịch vụ đưa đón sân bay)
+        vehicleDays -= 0.5;
+      }
+      
+      // Tính chi phí xe và tài xế dựa trên số ngày đã điều chỉnh
+      const vehicleCost = vehicle.pricePerDay * vehicleDays * vehicleCount;
+      const driverCost = vehicle.driverCostPerDay * vehicleDays * vehicleCount;
       
       // Add hotel costs if selected
       let hotelCost = 0;
@@ -741,14 +752,39 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       let mealsCost = 0;
       if (calculationData.includeLunch || calculationData.includeDinner) {
         // Lấy giá trị bữa ăn từ Google Sheets (đồng nhất cho tất cả tour và độc lập với khách sạn)
-        let lunchCost = parseFloat(await storage.getSetting('lunchPrice') || '2500');
-        let dinnerCost = parseFloat(await storage.getSetting('dinnerPrice') || '3500');
+        let lunchCost = parseFloat(await storage.getSetting('lunchPrice') || '2200');
+        let dinnerCost = parseFloat(await storage.getSetting('dinnerPrice') || '3000');
+        
+        // Tính toán số ngày cần cung cấp bữa trưa và bữa tối dựa trên thời gian bay
+        let lunchDays = durationDays;
+        let dinnerDays = durationDays;
+        
+        // Điều chỉnh bữa ăn dựa trên thời gian đến/đi
+        if (calculationData.arrivalTime) {
+          if (calculationData.arrivalTime === 'afternoon') {
+            // Đến buổi chiều: không tính bữa trưa ngày đầu tiên
+            lunchDays -= 1;
+          }
+          // Nếu "unknown" hoặc "morning", giữ nguyên tính toán mặc định
+        }
+        
+        if (calculationData.departureTime) {
+          if (calculationData.departureTime === 'morning') {
+            // Khởi hành buổi sáng: không tính bữa trưa ngày cuối
+            lunchDays -= 1;
+          }
+          // Nếu "unknown" hoặc "afternoon", giữ nguyên tính toán mặc định
+        }
+        
+        // Đảm bảo số ngày không bị âm
+        lunchDays = Math.max(0, lunchDays);
+        dinnerDays = Math.max(0, dinnerDays);
         
         // Chỉ tính chi phí cho những bữa ăn được chọn
-        const totalLunchCost = calculationData.includeLunch ? lunchCost : 0;
-        const totalDinnerCost = calculationData.includeDinner ? dinnerCost : 0;
+        const totalLunchCost = calculationData.includeLunch ? lunchCost * lunchDays : 0;
+        const totalDinnerCost = calculationData.includeDinner ? dinnerCost * dinnerDays : 0;
         
-        mealsCost = (totalLunchCost + totalDinnerCost) * calculationData.participants * durationDays;
+        mealsCost = (totalLunchCost + totalDinnerCost) * calculationData.participants;
       }
       
       // Add guide costs if selected
@@ -757,7 +793,15 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         const guide = await storage.getGuide(calculationData.guideId);
         
         if (guide) {
-          guideCost = guide.pricePerDay * durationDays;
+          // Điều chỉnh chi phí hướng dẫn viên dựa trên thời gian bay
+          let guideDays = durationDays;
+          
+          if (calculationData.arrivalTime === 'afternoon') {
+            // Nếu đến buổi chiều, hướng dẫn viên chỉ đón tại sân bay, không dẫn tour cả ngày
+            guideDays -= 0.5;
+          }
+          
+          guideCost = guide.pricePerDay * guideDays;
           
           // Add accommodation and meals for the guide as well
           const numNights = durationDays - 1;
@@ -811,14 +855,31 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
           // Guide gets the same meals as participants
           if (calculationData.includeLunch || calculationData.includeDinner) {
             // Lấy giá trị bữa ăn từ Google Sheets (đồng nhất cho tất cả tour và độc lập với khách sạn)
-            let lunchCost = parseFloat(await storage.getSetting('lunchPrice') || '2500');
-            let dinnerCost = parseFloat(await storage.getSetting('dinnerPrice') || '3500');
+            let lunchCost = parseFloat(await storage.getSetting('lunchPrice') || '2200');
+            let dinnerCost = parseFloat(await storage.getSetting('dinnerPrice') || '3000');
+            
+            // Sử dụng cùng logic tính toán số ngày bữa ăn như với khách
+            let lunchDays = durationDays;
+            let dinnerDays = durationDays;
+            
+            // Điều chỉnh bữa ăn dựa trên thời gian đến/đi
+            if (calculationData.arrivalTime === 'afternoon') {
+              lunchDays -= 1;
+            }
+            
+            if (calculationData.departureTime === 'morning') {
+              lunchDays -= 1;
+            }
+            
+            // Đảm bảo số ngày không bị âm
+            lunchDays = Math.max(0, lunchDays);
+            dinnerDays = Math.max(0, dinnerDays);
             
             // Chỉ tính chi phí cho những bữa ăn được chọn
-            const totalLunchCost = calculationData.includeLunch ? lunchCost : 0;
-            const totalDinnerCost = calculationData.includeDinner ? dinnerCost : 0;
+            const totalLunchCost = calculationData.includeLunch ? lunchCost * lunchDays : 0;
+            const totalDinnerCost = calculationData.includeDinner ? dinnerCost * dinnerDays : 0;
             
-            mealsCost += (totalLunchCost + totalDinnerCost) * durationDays;
+            mealsCost += (totalLunchCost + totalDinnerCost);
           }
         }
       }
