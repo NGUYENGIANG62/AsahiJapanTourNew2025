@@ -983,13 +983,13 @@ const Step5Summary = () => {
                           <Facebook className="h-5 w-5" />
                         </a>
                         <a 
-                          href="mailto:hoangtucuoirong@gmail.com" 
+                          href="mailto:asahivietlifejapantours@gmail.com" 
                           className="text-primary hover:text-primary/80 transition-colors"
                         >
                           <Mail className="h-5 w-5" />
                         </a>
                         <a 
-                          href="tel:0366754977" 
+                          href="tel:03-6675-4977" 
                           className="text-primary hover:text-primary/80 transition-colors"
                         >
                           <Phone className="h-5 w-5" />
