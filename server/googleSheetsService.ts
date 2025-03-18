@@ -111,7 +111,7 @@ async function createSpreadsheet(sheetsApi: sheets_v4.Sheets): Promise<string> {
     '\n   - Tours: id, name, code, location, description, durationDays, basePrice, imageUrl, nameJa, nameZh' +
     '\n   - Vehicles: id, name, seats, luggageCapacity, pricePerDay, driverCostPerDay' +
     '\n   - Hotels: id, name, location, stars, singleRoomPrice, doubleRoomPrice, tripleRoomPrice, breakfastPrice, imageUrl' +
-    '\n   - Guides: id, name, languages, pricePerDay' +
+    '\n   - Guides: id, name, languages, pricePerDay, experience, hasInternationalLicense, personality, gender, age' +
     '\n   - Seasons: id, name, startMonth, endMonth, description, priceMultiplier, nameJa, nameZh' +
     '\n5. Chia sẻ bảng tính với quyền "Bất kỳ ai có liên kết" có thể xem' +
     '\n6. Sao chép URL và cập nhật vào biến môi trường GOOGLE_SPREADSHEET_URL'
@@ -136,8 +136,8 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
       values: [['id', 'name', 'location', 'stars', 'singleRoomPrice', 'doubleRoomPrice', 'tripleRoomPrice', 'breakfastPrice', 'imageUrl']],
     },
     {
-      range: 'Guides!A1:D1',
-      values: [['id', 'name', 'languages', 'pricePerDay']],
+      range: 'Guides!A1:I1',
+      values: [['id', 'name', 'languages', 'pricePerDay', 'experience', 'hasInternationalLicense', 'personality', 'gender', 'age']],
     },
     {
       range: 'Seasons!A1:H1',
@@ -216,6 +216,23 @@ export async function getSheetData(sheetName: string): Promise<any[]> {
         if (header === 'languages' && typeof value === 'string' && value.includes(',')) {
           // Convert comma-separated string back to array
           value = value.split(',').map(v => v.trim());
+        }
+        
+        // Convert boolean strings to actual boolean values
+        if (header === 'hasInternationalLicense') {
+          if (value === 'true' || value === 'TRUE' || value === '1' || value === 'Yes' || value === 'yes') {
+            value = true;
+          } else if (value === 'false' || value === 'FALSE' || value === '0' || value === 'No' || value === 'no') {
+            value = false;
+          }
+        }
+        
+        // Convert numeric strings to numbers
+        if (['experience', 'age'].includes(header) && value !== undefined && value !== '') {
+          const num = Number(value);
+          if (!isNaN(num)) {
+            value = num;
+          }
         }
         
         item[header] = value;
