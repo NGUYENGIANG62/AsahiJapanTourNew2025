@@ -34,7 +34,7 @@ export const sendEmail = async (request: EmailRequest): Promise<{ success: boole
   try {
     // Cấu hình email gửi đi với thông tin liên hệ của khách hàng
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `AsahiJapanTours <${process.env.EMAIL_USER}>`,
       to: 'asahivietlifejapantours@gmail.com, asahivietlife@outlook.com',
       subject: subject,
       html: `
