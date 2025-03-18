@@ -100,6 +100,8 @@ export type SpecialService = {
 
 export type HotelStarRating = 3 | 4 | 5;
 
+export type FlightTimeOption = 'morning' | 'afternoon' | 'unknown';
+
 export type CalculatorFormData = {
   tourId: number;
   startDate: string;
@@ -120,6 +122,9 @@ export type CalculatorFormData = {
   includeGuide?: boolean;
   guideId?: number;
   currency: Currency;
+  // Thông tin về thời gian bay
+  arrivalTime?: FlightTimeOption; // Thời gian đến (sáng/chiều)
+  departureTime?: FlightTimeOption; // Thời gian đi (sáng/chiều)
   // Dịch vụ đặc biệt thêm ngoài tour
   specialServices?: SpecialService;
 };

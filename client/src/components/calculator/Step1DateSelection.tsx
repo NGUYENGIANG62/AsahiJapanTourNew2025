@@ -17,6 +17,7 @@ import { Facebook, Mail, Phone } from 'lucide-react';
 import i18n from '@/lib/i18n';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import FlightDetails from './FlightDetails';
 
 const Step1DateSelection = () => {
   const { t } = useTranslation();
