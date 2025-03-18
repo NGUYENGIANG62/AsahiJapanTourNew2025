@@ -208,6 +208,11 @@ export async function getSpreadsheetForUser(user?: User | null, specificSource?:
       if (specificSource.startsWith('http')) {
         customUrl = specificSource;
         sourceName = specificSource.includes('_') ? specificSource.split('_').pop() || 'Custom' : 'Custom';
+      } else if (specificSource.includes('-')) {
+        // Đây là ID Google Sheet đầy đủ (chứa dấu gạch ngang)
+        // Xây dựng URL từ ID
+        customUrl = `https://docs.google.com/spreadsheets/d/${specificSource}/edit`;
+        sourceName = 'AsahiJapanTours_NamA'; // Tên nguồn cho đại lý Nam A
       } else {
         // Xây dựng URL từ tên nguồn (ví dụ: 'NamA' -> URL với '_NamA')
         if (process.env.GOOGLE_SPREADSHEET_URL) {
@@ -227,7 +232,7 @@ export async function getSpreadsheetForUser(user?: User | null, specificSource?:
           }
         }
       }
-      console.log(`Admin requested specific data source: ${sourceName}`);
+      console.log(`Admin requested specific data source: ${sourceName} (URL: ${customUrl})`);
     }
     // Nếu là đại lý (agent) và có dataSource được cấu hình
     else if (user && user.role === 'agent' && user.dataSource) {
