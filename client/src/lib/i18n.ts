@@ -379,6 +379,18 @@ const jaTranslations = {
     guideSelection: 'ガイド選択',
     includeGuide: 'ガイドを含む',
     selectGuide: 'ガイドを選択',
+    guide: {
+      experience: '経験',
+      years: '年',
+      license: '国際ライセンス',
+      hasLicense: 'あり',
+      noLicense: 'なし',
+      personality: '性格',
+      gender: '性別',
+      age: '年齢',
+      yearsOld: '歳',
+      description: 'ガイドはツアー中、翻訳、文化的背景、地域情報の提供などでグループをサポートします。'
+    },
     summary: {
       yourTour: 'ツアー概要',
       tourDetails: 'ツアー詳細',
@@ -607,6 +619,18 @@ const zhTranslations = {
     guideSelection: '导游选择',
     includeGuide: '包含导游',
     selectGuide: '选择导游',
+    guide: {
+      experience: '经验',
+      years: '年',
+      license: '国际执照',
+      hasLicense: '有',
+      noLicense: '无',
+      personality: '性格',
+      gender: '性别',
+      age: '年龄',
+      yearsOld: '岁',
+      description: '导游将在整个行程中陪伴您的团队，提供翻译、文化背景和当地信息方面的帮助。'
+    },
     summary: {
       yourTour: '您的行程摘要',
       tourDetails: '行程详情',
@@ -835,6 +859,18 @@ const koTranslations = {
     guideSelection: '가이드 선택',
     includeGuide: '가이드 포함',
     selectGuide: '가이드 선택',
+    guide: {
+      experience: '경험',
+      years: '년',
+      license: '국제 면허증',
+      hasLicense: '있음',
+      noLicense: '없음',
+      personality: '성격',
+      gender: '성별',
+      age: '나이',
+      yearsOld: '세',
+      description: '가이드는 여행 내내 그룹과 동행하며 통역, 문화적 맥락, 지역 정보 제공 등을 도와드립니다.'
+    },
     summary: {
       yourTour: '투어 요약',
       tourDetails: '투어 세부 정보',
@@ -1063,6 +1099,18 @@ const viTranslations = {
     guideSelection: 'Lựa chọn hướng dẫn viên',
     includeGuide: 'Bao gồm hướng dẫn viên',
     selectGuide: 'Chọn hướng dẫn viên',
+    guide: {
+      experience: 'Kinh nghiệm',
+      years: 'năm',
+      license: 'Giấy phép quốc tế',
+      hasLicense: 'Có',
+      noLicense: 'Không',
+      personality: 'Tính cách',
+      gender: 'Giới tính',
+      age: 'Tuổi',
+      yearsOld: 'tuổi',
+      description: 'Hướng dẫn viên sẽ đồng hành cùng nhóm của bạn trong suốt chuyến đi, hỗ trợ dịch thuật, giới thiệu văn hóa và cung cấp thông tin địa phương.'
+    },
     summary: {
       yourTour: 'Tóm tắt tour của bạn',
       tourDetails: 'Chi tiết tour',
