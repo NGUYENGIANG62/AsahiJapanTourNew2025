@@ -1,11 +1,11 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import session from "express-session";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import MemoryStore from "memorystore";
 import { storage } from "./storage";
-import { validateCredentials, isAuthenticated, isAdminUser } from "./auth";
+import { validateCredentials, isAuthenticated, isAdminUser, isAdminOrAgentUser } from "./auth";
 import { 
   insertUserSchema, 
   insertTourSchema, 
@@ -1052,7 +1052,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
     }
   });
 
-  apiRouter.post("/sync/to-sheets", isAdminMiddleware, async (req, res) => {
+  apiRouter.post("/sync/to-sheets", isAdminOrAgentUser, async (req, res) => {
     try {
       // Kiểm tra xem có Service Account không
       const hasServiceAccount = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && 
