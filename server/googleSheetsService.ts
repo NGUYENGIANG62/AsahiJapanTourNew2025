@@ -1,5 +1,6 @@
 import { google, sheets_v4 } from 'googleapis';
 import { JWT } from 'google-auth-library';
+import { User } from '@shared/schema';
 
 // Google Sheets configuration
 const SCOPES = [
@@ -8,30 +9,54 @@ const SCOPES = [
 ];
 const SPREADSHEET_NAME = 'AsahiJapanTours';
 
-// This will store our cached spreadsheet ID
+// Cấu trúc lưu trữ thông tin spreadsheet
+interface SpreadsheetInfo {
+  id: string;
+  auth: JWT | null;
+  sheetsApi: sheets_v4.Sheets | null;
+}
+
+// Map lưu trữ các spreadsheet theo userID hoặc agencyID
+const spreadsheets = new Map<string, SpreadsheetInfo>();
+
+// Spreadsheet mặc định cho người dùng thông thường
+const DEFAULT_SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1DQ1e6k4I65O5NxmX8loJ_SKUI7aoIj3WCu5BMLUCznw/edit?usp=sharing";
+
+// Biến này chỉ giữ lại để tương thích với code cũ cho đến khi cập nhật hoàn toàn
 let spreadsheetId: string | null = null;
+
+/**
+ * Lấy spreadsheet ID từ URL hoặc môi trường
+ */
+function getSpreadsheetIdFromUrl(url: string): string | null {
+  const urlMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  if (urlMatch && urlMatch[1]) {
+    return urlMatch[1];
+  }
+  return null;
+}
 
 /**
  * Authorize with Google using Service Account or API Key
  * Service Account allows both read and write access
  * API Key allows only read access
+ * 
+ * @param customSpreadsheetUrl URL tùy chỉnh cho các đại lý
  */
-async function authorize() {
+async function authorize(customSpreadsheetUrl?: string) {
   try {
     // Kiểm tra và ghi log các biến môi trường
     console.log('ENV variables check:');
     console.log('GOOGLE_SPREADSHEET_URL:', process.env.GOOGLE_SPREADSHEET_URL);
     
-    // Lấy đường dẫn tới Google Sheets từ biến môi trường hoặc sử dụng mặc định
-    const defaultSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/1DQ1e6k4I65O5NxmX8loJ_SKUI7aoIj3WCu5BMLUCznw/edit?usp=sharing";
-    const spreadsheetUrl = process.env.GOOGLE_SPREADSHEET_URL || defaultSpreadsheetUrl;
+    // Lấy đường dẫn tới Google Sheets từ tham số, biến môi trường hoặc mặc định
+    const spreadsheetUrl = customSpreadsheetUrl || process.env.GOOGLE_SPREADSHEET_URL || DEFAULT_SPREADSHEET_URL;
     
     console.log('Using spreadsheet URL:', spreadsheetUrl);
     
     // Trích xuất ID từ URL
-    const urlMatch = spreadsheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
-    if (urlMatch && urlMatch[1]) {
-      spreadsheetId = urlMatch[1];
+    const spreadsheetId = getSpreadsheetIdFromUrl(spreadsheetUrl);
+    if (spreadsheetId) {
       console.log('Using spreadsheet ID:', spreadsheetId);
     } else {
       console.warn('Could not extract spreadsheet ID from URL. Will attempt to find by name.');
@@ -86,10 +111,15 @@ async function authorize() {
  * Thay vào đó, chúng ta đã trích xuất ID từ URL
  */
 async function findSpreadsheetId(sheetsApi: sheets_v4.Sheets): Promise<string> {
-  // If we already have the ID cached, return it
-  if (spreadsheetId) {
-    return spreadsheetId;
+  // Sử dụng URL mặc định từ biến môi trường hoặc hằng số
+  if (process.env.GOOGLE_SPREADSHEET_URL) {
+    const id = getSpreadsheetIdFromUrl(process.env.GOOGLE_SPREADSHEET_URL);
+    if (id) return id;
   }
+
+  // Sử dụng URL mặc định
+  const id = getSpreadsheetIdFromUrl(DEFAULT_SPREADSHEET_URL);
+  if (id) return id;
 
   // Vì chúng ta không có xác thực, không thể tìm kiếm spreadsheet theo tên
   throw new Error(`Spreadsheet ID không được xác định. Vui lòng cung cấp ID trong GOOGLE_SPREADSHEET_URL.`);
@@ -163,31 +193,54 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
 }
 
 /**
- * Get the spreadsheet
+ * Get the spreadsheet for a specific user
+ * @param user User object containing agency data source
  */
-export async function getSpreadsheet(): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string }> {
+export async function getSpreadsheetForUser(user?: User | null): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string }> {
   try {
-    const sheetsApi = await authorize();
+    // Xác định nguồn dữ liệu dựa trên vai trò người dùng
+    let customUrl: string | undefined = undefined;
     
-    // If spreadsheetId is already set from the direct URL, use it
-    if (spreadsheetId) {
-      return { sheetsApi, spreadsheetId };
+    // Nếu là đại lý và có dataSource được cấu hình
+    if (user && user.role === 'agent' && user.dataSource) {
+      customUrl = user.dataSource;
+      console.log(`Using agent-specific spreadsheet: ${customUrl}`);
     }
     
-    try {
-      // Try to find existing spreadsheet by name
-      const id = await findSpreadsheetId(sheetsApi);
-      return { sheetsApi, spreadsheetId: id };
-    } catch (error) {
-      // If not found, create a new one
-      console.log('Spreadsheet not found, creating new one...');
-      const id = await createSpreadsheet(sheetsApi);
-      return { sheetsApi, spreadsheetId: id };
+    const sheetsApi = await authorize(customUrl);
+    
+    // Trích xuất spreadsheetId từ URL
+    let id: string | null = null;
+    
+    if (customUrl) {
+      id = getSpreadsheetIdFromUrl(customUrl);
+    } else if (process.env.GOOGLE_SPREADSHEET_URL) {
+      id = getSpreadsheetIdFromUrl(process.env.GOOGLE_SPREADSHEET_URL);
     }
+    
+    if (!id) {
+      try {
+        // Cố gắng tìm bảng tính hiện có theo tên
+        id = await findSpreadsheetId(sheetsApi);
+      } catch (error) {
+        // Nếu không tìm thấy, tạo một bảng tính mới
+        console.log('Spreadsheet not found, creating new one...');
+        id = await createSpreadsheet(sheetsApi);
+      }
+    }
+    
+    return { sheetsApi, spreadsheetId: id };
   } catch (error) {
     console.error('Failed to get spreadsheet:', error);
     throw error;
   }
+}
+
+/**
+ * Get the default spreadsheet (legacy support)
+ */
+export async function getSpreadsheet(): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string }> {
+  return getSpreadsheetForUser();
 }
 
 /**
@@ -242,9 +295,9 @@ async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId:
   }
 }
 
-export async function getSheetData(sheetName: string): Promise<any[]> {
+export async function getSheetData(sheetName: string, user?: User | null): Promise<any[]> {
   try {
-    const { sheetsApi, spreadsheetId } = await getSpreadsheet();
+    const { sheetsApi, spreadsheetId } = await getSpreadsheetForUser(user);
     
     // Kiểm tra và tạo sheet nếu cần thiết
     await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
@@ -436,22 +489,25 @@ export async function deleteSheetItem(sheetName: string, id: number): Promise<vo
 /**
  * Sync data from Google Sheets to local storage
  */
-export async function syncDataFromSheets(storage: any) {
+export async function syncDataFromSheets(storage: any, user?: User | null) {
   try {
+    // Sử dụng bảng tính theo người dùng (đại lý)
+    const { sheetsApi, spreadsheetId } = await getSpreadsheetForUser(user);
+    
     // Sync Tours
-    const tours = await getSheetData('Tours');
+    const tours = await getSheetData('Tours', user);
     for (const tour of tours) {
       await storage.createOrUpdateTour(tour);
     }
     
     // Sync Vehicles
-    const vehicles = await getSheetData('Vehicles');
+    const vehicles = await getSheetData('Vehicles', user);
     for (const vehicle of vehicles) {
       await storage.createOrUpdateVehicle(vehicle);
     }
     
     // Sync Hotels
-    const hotels = await getSheetData('Hotels');
+    const hotels = await getSheetData('Hotels', user);
     for (const hotel of hotels) {
       // Khách sạn không còn cung cấp bữa ăn trưa và tối, vì đó là các dịch vụ độc lập
       // Xóa các giá trị lunchPrice và dinnerPrice nếu có
@@ -462,13 +518,13 @@ export async function syncDataFromSheets(storage: any) {
     }
     
     // Sync Guides
-    const guides = await getSheetData('Guides');
+    const guides = await getSheetData('Guides', user);
     for (const guide of guides) {
       await storage.createOrUpdateGuide(guide);
     }
     
     // Sync Seasons
-    const seasons = await getSheetData('Seasons');
+    const seasons = await getSheetData('Seasons', user);
     for (const season of seasons) {
       await storage.createOrUpdateSeason(season);
     }
