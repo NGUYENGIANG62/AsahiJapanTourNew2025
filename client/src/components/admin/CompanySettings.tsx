@@ -62,32 +62,35 @@ const CompanySettings = () => {
     return await response.json();
   };
   
-  // Use a single query key but fetch individual settings
+  // Sử dụng API endpoint mới để lấy tất cả settings trong một lần gọi
   const { data: allSettingsData, isLoading: isSettingsLoading } = useQuery({
     queryKey: ['/api/settings'],
     queryFn: async () => {
-      // Fetch each setting individually and handle not found errors gracefully
-      const results = await Promise.all(
-        settings.map(async (setting) => {
-          try {
-            const response = await fetch(`/api/settings/${setting.key}`, {
-              credentials: 'include',
-            });
-            
-            if (!response.ok) {
-              // If setting doesn't exist yet, return a default of '0'
-              return { key: setting.key, value: '0' };
-            }
-            
-            const data = await response.json();
-            return { key: setting.key, value: data.value };
-          } catch (error) {
-            console.log(`Setting ${setting.key} not found, using default value`);
-            return { key: setting.key, value: '0' };
-          }
-        })
-      );
-      return results;
+      try {
+        const response = await fetch('/api/settings', {
+          credentials: 'include',
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch settings');
+        }
+        
+        const data = await response.json();
+        
+        // Chuyển đổi từ đối tượng key-value thành mảng { key, value }
+        return Object.entries(data).map(([key, value]) => ({
+          key,
+          value: value as string
+        }));
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+        
+        // Nếu có lỗi, trả về giá trị mặc định cho tất cả settings
+        return settings.map(setting => ({
+          key: setting.key,
+          value: '0'
+        }));
+      }
     },
     // Giảm thiểu số lần gọi API khi component re-render
     staleTime: 30000 // 30 seconds
