@@ -1,5 +1,13 @@
 import axios from 'axios';
 import type { CalculationResult } from '../client/src/types';
+import { 
+  comprehensiveSearch,
+  isKnowledgeBaseAvailable,
+  searchFAQ,
+  searchTours,
+  searchLocalInsights
+} from './leoKnowledgeBase';
+import { User } from '@shared/schema';
 
 // Kiểm tra xem API key có tồn tại không
 const hasValidApiKey = () => {

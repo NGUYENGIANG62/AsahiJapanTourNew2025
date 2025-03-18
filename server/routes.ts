@@ -23,6 +23,7 @@ import { SYNC_SETTINGS } from "../shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { getAiResponse } from "./aiAssistant";
+import { uploadSampleDataToLeoKnowledgeBase, isKnowledgeBaseAvailable } from "./leoKnowledgeBase";
 
 const MemoryStoreSession = MemoryStore(session);
 
@@ -1206,6 +1207,61 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       res.status(500).json({ 
         success: false, 
         message: "Lỗi khi xử lý yêu cầu AI Assistant" 
+      });
+    }
+  });
+
+  // Leo Knowledge Base Management Routes
+  apiRouter.post("/leo/upload-sample-data", isAdminMiddleware, async (req, res) => {
+    try {
+      console.log("Starting upload of sample data to Leo knowledge base...");
+      const success = await uploadSampleDataToLeoKnowledgeBase();
+      
+      if (success) {
+        return res.json({ 
+          success: true, 
+          message: "Dữ liệu mẫu đã được tải lên thành công vào cơ sở kiến thức Leo" 
+        });
+      } else {
+        return res.status(500).json({ 
+          success: false, 
+          message: "Không thể tải dữ liệu mẫu lên cơ sở kiến thức Leo" 
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading sample data to Leo knowledge base:", error);
+      return res.status(500).json({ 
+        success: false, 
+        message: "Lỗi khi tải dữ liệu mẫu lên cơ sở kiến thức Leo",
+        error: error.message 
+      });
+    }
+  });
+
+  apiRouter.get("/leo/status", async (req, res) => {
+    try {
+      const available = await isKnowledgeBaseAvailable();
+      
+      if (available) {
+        return res.json({ 
+          success: true, 
+          available: true,
+          message: "Cơ sở kiến thức Leo đã sẵn sàng" 
+        });
+      } else {
+        return res.json({ 
+          success: true, 
+          available: false,
+          message: "Cơ sở kiến thức Leo chưa được thiết lập hoặc không thể truy cập" 
+        });
+      }
+    } catch (error) {
+      console.error("Error checking Leo knowledge base status:", error);
+      return res.status(500).json({ 
+        success: false, 
+        available: false,
+        message: "Lỗi khi kiểm tra trạng thái cơ sở kiến thức Leo",
+        error: error.message 
       });
     }
   });

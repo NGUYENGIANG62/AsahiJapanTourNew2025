@@ -8,6 +8,7 @@ import UserManagement from './UserManagement';
 import CompanySettings from './CompanySettings';
 import SyncManagement from './SyncManagement';
 import QRCodeGenerator from './QRCodeGenerator';
+import LeoKnowledgeManagement from './LeoKnowledgeManagement';
 import { Button } from '@/components/ui/button';
 import { 
   Map, 
@@ -18,9 +19,10 @@ import {
   Settings,
   CloudCog,
   QrCode,
+  BookOpen,
 } from 'lucide-react';
 
-type Tab = 'tours' | 'vehicles' | 'hotels' | 'guides' | 'users' | 'settings' | 'sync' | 'qrcode';
+type Tab = 'tours' | 'vehicles' | 'hotels' | 'guides' | 'users' | 'settings' | 'sync' | 'qrcode' | 'leo';
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
@@ -34,7 +36,8 @@ const AdminDashboard = () => {
     { id: 'users', label: t('admin.userManagement'), icon: <UserCog className="mr-2 h-5 w-5" /> },
     { id: 'settings', label: t('admin.companySettings'), icon: <Settings className="mr-2 h-5 w-5" /> },
     { id: 'sync', label: t('admin.googleSheetsSync'), icon: <CloudCog className="mr-2 h-5 w-5" /> },
-    { id: 'qrcode', label: 'QR Code', icon: <QrCode className="mr-2 h-5 w-5" /> }
+    { id: 'qrcode', label: 'QR Code', icon: <QrCode className="mr-2 h-5 w-5" /> },
+    { id: 'leo', label: 'Leo Knowledge Base', icon: <BookOpen className="mr-2 h-5 w-5" /> }
   ];
 
   const renderContent = () => {
@@ -55,6 +58,8 @@ const AdminDashboard = () => {
         return <SyncManagement />;
       case 'qrcode':
         return <QRCodeGenerator />;
+      case 'leo':
+        return <LeoKnowledgeManagement />;
       default:
         return <TourManagement />;
     }
