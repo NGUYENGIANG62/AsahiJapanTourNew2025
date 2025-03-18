@@ -368,6 +368,7 @@ const Step5Summary = () => {
         const savedTourRequest = {
           customerName,
           customerEmail,
+          customerPhone,
           tourDetails: `${tour?.name || 'Tour'} (${formatDate(formData.startDate)})`,
           timestamp: new Date().toISOString()
         };

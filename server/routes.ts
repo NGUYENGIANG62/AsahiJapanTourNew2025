@@ -1044,7 +1044,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   // Email service route
   apiRouter.post("/send-tour-inquiry", async (req, res) => {
     try {
-      const { name, email, subject, message } = req.body;
+      const { name, email, phone, subject, message } = req.body;
       
       if (!email || !message) {
         return res.status(400).json({ message: "Email and message are required" });
@@ -1053,6 +1053,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       const result = await sendEmail({
         name,
         email,
+        phone,
         subject: subject || "Tour Inquiry",
         message
       });
