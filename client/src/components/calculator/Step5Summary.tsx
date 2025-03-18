@@ -578,6 +578,18 @@ const Step5Summary = () => {
                                 <span className="text-sm">Xem đấu Sumo</span>
                               </li>
                             )}
+                            {formData.specialServices.disneylandTickets && (
+                              <li className="flex items-center">
+                                <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
+                                <span className="text-sm">Vé Disneyland</span>
+                              </li>
+                            )}
+                            {formData.specialServices.universalStudioTickets && (
+                              <li className="flex items-center">
+                                <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
+                                <span className="text-sm">Vé Universal Studio</span>
+                              </li>
+                            )}
                             {formData.specialServices.notes && (
                               <li className="text-sm text-muted-foreground mt-1">
                                 <strong>Ghi chú:</strong> {formData.specialServices.notes}
@@ -587,7 +599,9 @@ const Step5Summary = () => {
                                formData.specialServices.kimonoExperience || 
                                formData.specialServices.teaCeremony || 
                                formData.specialServices.wagyuDinner || 
-                               formData.specialServices.sumoShow) && (
+                               formData.specialServices.sumoShow ||
+                               formData.specialServices.disneylandTickets ||
+                               formData.specialServices.universalStudioTickets) && (
                               <li className="text-sm text-muted-foreground">
                                 Không có dịch vụ đặc biệt
                               </li>
