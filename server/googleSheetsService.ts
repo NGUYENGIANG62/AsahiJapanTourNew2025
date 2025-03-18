@@ -143,6 +143,10 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
       range: 'Seasons!A1:H1',
       values: [['id', 'name', 'startMonth', 'endMonth', 'description', 'priceMultiplier', 'nameJa', 'nameZh']],
     },
+    {
+      range: 'Settings!A1:C1',
+      values: [['id', 'key', 'value']],
+    },
   ];
 
   for (const update of updates) {
@@ -405,6 +409,19 @@ export async function syncDataFromSheets(storage: any) {
       await storage.createOrUpdateSeason(season);
     }
     
+    // Sync Settings
+    try {
+      const settings = await getSheetData('Settings');
+      for (const setting of settings) {
+        if (setting.key && setting.value) {
+          await storage.updateSetting(setting.key, setting.value);
+        }
+      }
+      console.log('Settings synchronized from Google Sheets');
+    } catch (settingsError: any) {
+      console.warn('Could not sync settings from Google Sheets:', settingsError.message || settingsError);
+    }
+    
     console.log('Data sync from Google Sheets completed successfully');
     return true;
   } catch (error) {
@@ -484,6 +501,30 @@ export async function syncDataToSheets(storage: any, language: string = 'en') {
       // Thay thế nội dung dựa vào ngôn ngữ được chọn
       const localizedSeason = replaceWithLanguageContent(season, language);
       await updateSheetItem('Seasons', localizedSeason);
+    }
+    
+    // Sync Settings - đồng bộ các cài đặt của khách sạn theo hạng sao và các cài đặt khác
+    try {
+      const settingKeys = [
+        'profit_margin', 'tax_rate', 'meal_cost_lunch', 'meal_cost_dinner',
+        'hotel_3star_single', 'hotel_3star_double', 'hotel_3star_triple', 'hotel_3star_breakfast',
+        'hotel_4star_single', 'hotel_4star_double', 'hotel_4star_triple', 'hotel_4star_breakfast',
+        'hotel_5star_single', 'hotel_5star_double', 'hotel_5star_triple', 'hotel_5star_breakfast'
+      ];
+      
+      for (const key of settingKeys) {
+        const settingValue = await storage.getSetting(key);
+        if (settingValue) {
+          await updateSheetItem('Settings', {
+            id: key, // Sử dụng key làm id để dễ tìm kiếm
+            key: key,
+            value: settingValue
+          });
+        }
+      }
+      console.log('Settings synchronized to Google Sheets');
+    } catch (settingsError: any) {
+      console.warn('Could not sync settings to Google Sheets:', settingsError.message || settingsError);
     }
     
     console.log(`Data sync to Google Sheets completed successfully using language: ${language}`);
