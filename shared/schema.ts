@@ -160,6 +160,8 @@ export const calculationSchema = z.object({
   vehicleCount: z.number().optional().default(1),
   participants: z.number().min(1),
   hotelId: z.number().optional(),
+  // Hạng sao khách sạn (3-5 sao)
+  hotelStars: z.number().min(3).max(5).optional(),
   singleRoomCount: z.number().optional().default(0),
   doubleRoomCount: z.number().optional().default(0),
   tripleRoomCount: z.number().optional().default(0),
