@@ -68,14 +68,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(userData);
         return { success: true };
       } else {
-        const errorData = await response.json();
-        const errorMessage = errorData.message || 'Invalid credentials';
+        let errorMessage: string;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || 'Invalid credentials';
+        } catch (e) {
+          // If the response is not valid JSON
+          errorMessage = response.status === 401 
+            ? 'Invalid ID or password'
+            : `Server error (${response.status})`;
+        }
         
-        toast({
-          title: 'Login Error',
-          description: errorMessage,
-          variant: 'destructive',
-        });
+        // Don't show toast here - let LoginForm handle error display
         
         return { 
           success: false, 
@@ -86,11 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error('Login error:', error);
       const errorMessage = 'A network error occurred. Please try again later.';
       
-      toast({
-        title: 'Connection Error',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      // Don't show toast here - let LoginForm handle error display
       
       return { 
         success: false, 

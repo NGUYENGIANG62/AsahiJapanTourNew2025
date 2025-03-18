@@ -57,7 +57,12 @@ const enTranslations = {
     password: 'Password',
     enterCredentials: 'Enter your credentials to access the system',
     enterId: 'Enter your ID',
-    enterPassword: 'Enter your password'
+    enterPassword: 'Enter your password',
+    fieldRequired: 'ID and password are required.',
+    loginHelpText: 'Having trouble? Please check your ID and password carefully.',
+    serverError: 'Unable to connect to the server. Please try again later.',
+    adminCredentials: 'Admin ID',
+    customerCredentials: 'Customer ID'
   },
   admin: {
     dashboard: 'Admin Dashboard',
@@ -321,7 +326,12 @@ const jaTranslations = {
     password: 'パスワード',
     enterCredentials: 'システムにアクセスするための認証情報を入力してください',
     enterId: 'IDを入力してください',
-    enterPassword: 'パスワードを入力してください'
+    enterPassword: 'パスワードを入力してください',
+    fieldRequired: 'IDとパスワードは必須項目です。',
+    loginHelpText: 'お困りですか？IDとパスワードを慎重に確認してください。',
+    serverError: 'サーバーに接続できません。後でもう一度お試しください。',
+    adminCredentials: '管理者ID',
+    customerCredentials: 'お客様ID'
   },
   admin: {
     dashboard: '管理者ダッシュボード',
@@ -580,7 +590,12 @@ const zhTranslations = {
     password: '密码',
     enterCredentials: '输入您的凭据以访问系统',
     enterId: '输入您的ID',
-    enterPassword: '输入您的密码'
+    enterPassword: '输入您的密码',
+    fieldRequired: 'ID和密码为必填项。',
+    loginHelpText: '遇到问题？请仔细检查您的ID和密码。',
+    serverError: '无法连接到服务器。请稍后再试。',
+    adminCredentials: '管理员ID',
+    customerCredentials: '客户ID'
   },
   admin: {
     dashboard: '管理仪表板',
@@ -839,7 +854,12 @@ const koTranslations = {
     password: '비밀번호',
     enterCredentials: '시스템에 접근하기 위한 자격 증명을 입력하세요',
     enterId: 'ID를 입력하세요',
-    enterPassword: '비밀번호를 입력하세요'
+    enterPassword: '비밀번호를 입력하세요',
+    fieldRequired: 'ID와 비밀번호는 필수 입력 사항입니다.',
+    loginHelpText: '문제가 있으신가요? ID와 비밀번호를 신중하게 확인해주세요.',
+    serverError: '서버에 연결할 수 없습니다. 나중에 다시 시도해주세요.',
+    adminCredentials: '관리자 ID',
+    customerCredentials: '고객 ID'
   },
   admin: {
     dashboard: '관리자 대시보드',
@@ -1098,7 +1118,12 @@ const viTranslations = {
     password: 'Mật khẩu',
     enterCredentials: 'Nhập thông tin đăng nhập để truy cập hệ thống',
     enterId: 'Nhập ID của bạn',
-    enterPassword: 'Nhập mật khẩu của bạn'
+    enterPassword: 'Nhập mật khẩu của bạn',
+    fieldRequired: 'ID và mật khẩu là thông tin bắt buộc.',
+    loginHelpText: 'Gặp vấn đề? Vui lòng kiểm tra kỹ ID và mật khẩu của bạn.',
+    serverError: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.',
+    adminCredentials: 'ID Quản trị viên',
+    customerCredentials: 'ID Khách hàng'
   },
   admin: {
     dashboard: 'Bảng điều khiển quản trị',
