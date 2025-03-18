@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { CalculatorContext } from '@/context/CalculatorContext';
-import { Hotel, Guide, RoomType } from '@/types';
+import { Hotel, Guide, RoomType, HotelStarRating } from '@/types';
 import { 
   Card, 
   CardContent, 
@@ -64,12 +64,13 @@ const Step4Accommodation = () => {
     ? guides.find(guide => guide.id === formData.guideId) 
     : null;
 
-  // Handle hotel change
-  const handleHotelChange = (value: string) => {
+  // Handle hotel stars change
+  const handleHotelStarsChange = (value: string) => {
     if (value === "none") {
       // If no hotel is selected, reset hotel-related fields
       updateFormData({ 
-        hotelId: undefined, 
+        hotelId: undefined,
+        hotelStars: undefined,
         roomType: undefined, 
         singleRoomCount: 0,
         doubleRoomCount: 0,
@@ -77,7 +78,14 @@ const Step4Accommodation = () => {
         includeBreakfast: false 
       });
     } else {
-      updateFormData({ hotelId: parseInt(value) });
+      // Lưu hạng sao được chọn
+      updateFormData({ hotelStars: parseInt(value) as HotelStarRating });
+      
+      // Tìm khách sạn đầu tiên với số sao tương ứng để sử dụng giá của nó
+      const hotelWithSelectedStars = hotels.find(hotel => hotel.stars === parseInt(value));
+      if (hotelWithSelectedStars) {
+        updateFormData({ hotelId: hotelWithSelectedStars.id });
+      }
     }
   };
 
@@ -173,31 +181,29 @@ const Step4Accommodation = () => {
                   <Skeleton className="w-full h-10" />
                 ) : (
                   <Select 
-                    value={formData.hotelId ? formData.hotelId.toString() : "none"}
-                    onValueChange={handleHotelChange}
+                    value={formData.hotelStars ? formData.hotelStars.toString() : "none"}
+                    onValueChange={handleHotelStarsChange}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a hotel" />
+                      <SelectValue placeholder={t('calculator.selectHotelStars')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">No hotel required</SelectItem>
-                      {hotels.map((hotel) => (
-                        <SelectItem key={hotel.id} value={hotel.id.toString()}>
-                          {hotel.name} ({renderStars(hotel.stars)})
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="none">{t('calculator.noHotelRequired')}</SelectItem>
+                      <SelectItem value="3">3 {t('calculator.stars')} {renderStars(3)}</SelectItem>
+                      <SelectItem value="4">4 {t('calculator.stars')} {renderStars(4)}</SelectItem>
+                      <SelectItem value="5">5 {t('calculator.stars')} {renderStars(5)}</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
                 
-                {selectedHotel && (
+                {formData.hotelStars && (
                   <div className="mt-4 rounded-md border p-4">
                     <div className="flex items-center">
                       <div className="flex-1">
-                        <h3 className="font-medium">{selectedHotel.name}</h3>
+                        <h3 className="font-medium">{formData.hotelStars}-{t('calculator.starHotel')}</h3>
                         <div className="text-sm text-muted-foreground mt-1">
-                          <div>{selectedHotel.location}</div>
-                          <div className="mt-1">{renderStars(selectedHotel.stars)}</div>
+                          <div className="mt-1">{renderStars(formData.hotelStars)}</div>
+                          <p className="mt-2">{t('calculator.hotelPrivacyNotice')}</p>
                         </div>
                       </div>
                     </div>
@@ -205,7 +211,7 @@ const Step4Accommodation = () => {
                 )}
               </div>
               
-              {formData.hotelId && (
+              {formData.hotelStars && (
                 <>
                   <div>
                     <Label className="block text-sm font-medium text-neutral mb-2">

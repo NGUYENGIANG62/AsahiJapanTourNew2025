@@ -501,8 +501,8 @@ const Step5Summary = () => {
                       <li className="flex items-center">
                         <HotelIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>
-                          {hotel 
-                            ? `${hotel.name} (${getRoomTypeLabel()})` 
+                          {formData.hotelStars 
+                            ? `${formData.hotelStars}-${t('calculator.starHotel')} (${getRoomTypeLabel()})` 
                             : t('calculator.summary.noHotelSelected', 'No hotel selected')}
                         </span>
                       </li>
