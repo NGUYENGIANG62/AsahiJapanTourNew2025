@@ -159,12 +159,12 @@ const Step2ServiceSelection = () => {
                       id="vehicleCount"
                       type="number"
                       min="1"
-                      max="20"
+                      max="100"
                       className="w-20"
                       value={(formData.vehicleCount || 1).toString()}
                       onChange={(e) => {
                         const value = parseInt(e.target.value);
-                        if (!isNaN(value) && value > 0 && value <= 20) {
+                        if (!isNaN(value) && value > 0 && value <= 100) {
                           updateFormData({ vehicleCount: value });
                         }
                       }}
