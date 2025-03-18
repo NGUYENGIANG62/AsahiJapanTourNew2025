@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
   secure: true, // use SSL
   auth: {
     user: process.env.EMAIL_USER || 'asahivietlifejapantours@gmail.com',
-    pass: process.env.EMAIL_PASSWORD || 'rsto qnza iavp xeop' // App password
+    pass: process.env.EMAIL_PASSWORD // Chỉ sử dụng mật khẩu ứng dụng trong biến môi trường
   },
   debug: true // Show debug output
 });
