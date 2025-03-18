@@ -38,7 +38,7 @@ const Footer = () => {
                 <Facebook className="h-5 w-5" />
               </a>
               <a 
-                href="mailto:hoangtucuoirong@gmail.com" 
+                href="mailto:asahivietlifejapantours@gmail.com" 
                 className="text-primary hover:text-primary/80 transition-colors"
               >
                 <Mail className="h-5 w-5" />
@@ -70,7 +70,7 @@ const Footer = () => {
               <li className="flex items-start">
                 <Mail className="h-4 w-4 mt-0.5 mr-2 text-muted-foreground" />
                 <div>
-                  <div>hoangtucuoirong@gmail.com</div>
+                  <div>asahivietlifejapantours@gmail.com</div>
                   <div>asahivietlife@outlook.com</div>
                 </div>
               </li>
