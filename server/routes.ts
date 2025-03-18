@@ -499,6 +499,25 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   });
 
   // Settings Management Routes
+  // Lấy tất cả settings
+  apiRouter.get("/settings", async (req, res) => {
+    try {
+      const settings = await storage.getAllSettings();
+      
+      // Chuyển đổi từ mảng sang đối tượng key-value để dễ sử dụng ở client
+      const settingsMap = settings.reduce((acc, setting) => {
+        acc[setting.key] = setting.value;
+        return acc;
+      }, {} as Record<string, string>);
+      
+      res.json(settingsMap);
+    } catch (error) {
+      console.error('Error fetching all settings:', error);
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+  
+  // Lấy setting theo key
   apiRouter.get("/settings/:key", async (req, res) => {
     try {
       const key = req.params.key;
@@ -510,6 +529,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       
       res.json({ key, value });
     } catch (error) {
+      console.error(`Error fetching setting ${req.params.key}:`, error);
       res.status(500).json({ message: "Failed to fetch setting" });
     }
   });
