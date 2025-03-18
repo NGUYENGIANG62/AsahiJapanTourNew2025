@@ -304,15 +304,15 @@ const GuideManagement = () => {
             
             <div className="flex gap-2">
               <Select
-                value={filterLanguage || ''}
-                onValueChange={(value) => setFilterLanguage(value || null)}
+                value={filterLanguage || 'all'}
+                onValueChange={(value) => setFilterLanguage(value === 'all' ? null : value)}
               >
                 <SelectTrigger className="w-[180px]">
                   <Languages className="mr-2 h-4 w-4" />
                   <SelectValue placeholder="Filter by language" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All languages</SelectItem>
+                  <SelectItem value="all">All languages</SelectItem>
                   {availableLanguages.map(lang => (
                     <SelectItem key={lang.id} value={lang.id}>{lang.label}</SelectItem>
                   ))}
@@ -320,15 +320,15 @@ const GuideManagement = () => {
               </Select>
               
               <Select
-                value={filterExperience?.toString() || ''}
-                onValueChange={(value) => setFilterExperience(value ? parseInt(value) : null)}
+                value={filterExperience?.toString() || 'any'}
+                onValueChange={(value) => setFilterExperience(value === 'any' ? null : parseInt(value))}
               >
                 <SelectTrigger className="w-[180px]">
                   <Award className="mr-2 h-4 w-4" />
                   <SelectValue placeholder="Min experience" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Any experience</SelectItem>
+                  <SelectItem value="any">Any experience</SelectItem>
                   <SelectItem value="1">1+ year</SelectItem>
                   <SelectItem value="3">3+ years</SelectItem>
                   <SelectItem value="5">5+ years</SelectItem>
@@ -337,9 +337,9 @@ const GuideManagement = () => {
               </Select>
               
               <Select
-                value={filterLicense !== null ? filterLicense.toString() : ''}
+                value={filterLicense !== null ? filterLicense.toString() : 'any'}
                 onValueChange={(value) => {
-                  if (value === '') setFilterLicense(null);
+                  if (value === 'any') setFilterLicense(null);
                   else setFilterLicense(value === 'true');
                 }}
               >
@@ -348,7 +348,7 @@ const GuideManagement = () => {
                   <SelectValue placeholder="Int'l license" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Any license type</SelectItem>
+                  <SelectItem value="any">Any license type</SelectItem>
                   <SelectItem value="true">Has int'l license</SelectItem>
                   <SelectItem value="false">No int'l license</SelectItem>
                 </SelectContent>
