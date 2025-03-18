@@ -476,11 +476,21 @@ export async function syncDataFromSheets(storage: any) {
     // Sync Settings
     try {
       const settings = await getSheetData('Settings');
+      // Log để debug
+      console.log('Settings data from Google Sheets:', JSON.stringify(settings));
+      
       for (const setting of settings) {
-        if (setting.key && setting.value) {
+        if (setting.key && setting.value !== undefined) {
+          console.log(`Updating setting: ${setting.key} = ${setting.value}`);
           await storage.createOrUpdateSetting(setting);
+        } else {
+          console.log(`Skipping invalid setting:`, JSON.stringify(setting));
         }
       }
+      
+      // Đảm bảo cập nhật lại các giá trị quan trọng
+      const updatedSettings = await storage.getAllSettings();
+      console.log('Updated settings after sync:', JSON.stringify(updatedSettings));
       console.log('Settings synchronized from Google Sheets');
     } catch (settingsError: any) {
       console.warn('Could not sync settings from Google Sheets:', settingsError.message || settingsError);
