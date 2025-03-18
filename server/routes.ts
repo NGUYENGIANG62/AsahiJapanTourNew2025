@@ -1067,6 +1067,8 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       // Lấy nguồn dữ liệu tùy chỉnh nếu được chỉ định (chỉ dành cho admin)
       const { dataSource } = req.body;
       
+      console.log(`Sync from sheets requested with data source: ${dataSource || 'default'}`);
+      
       // Chỉ admin mới được phép chỉ định nguồn dữ liệu
       const specificSource = user && user.role === 'admin' && dataSource ? dataSource : undefined;
       
