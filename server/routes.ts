@@ -154,6 +154,11 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   apiRouter.get("/auth/session", (req, res) => {
     if (req.isAuthenticated()) {
       const user = req.user as any;
+      
+      // Trigger auto-sync if user is authenticated and the session is valid
+      // This ensures data is synchronized when application refreshes
+      syncOnLogin(user as User);
+      
       return res.json({
         id: user.id,
         username: user.username,
