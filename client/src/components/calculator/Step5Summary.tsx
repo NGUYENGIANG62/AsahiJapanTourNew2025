@@ -266,9 +266,9 @@ const Step5Summary = () => {
         Địa điểm: ${tour?.location || 'Chưa chọn'}
         Số ngày: ${calculateDuration()} ngày (${formatDate(formData.startDate)} - ${formatDate(formData.endDate)})
         Số người: ${formData.participants} người
-        Phương tiện: ${vehicle ? `${formData.vehicleCount || 1}x ${vehicle.name} (${vehicle.seats} chỗ)` : 'Chưa chọn'}
+        Phương tiện: ${vehicle ? `${formData.vehicleCount || 1}x ${vehicle.name} (${vehicle.seats} chỗ ngồi, hành lý: ${vehicle.luggageCapacity}kg)` : 'Chưa chọn'}
         Khách sạn: ${formData.hotelStars ? `${formData.hotelStars} sao (${getRoomTypeLabel()}) - ${calculateDuration() - 1} đêm` : 'Không'}
-        Hướng dẫn viên: ${guide ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}` : 'Không'}
+        Hướng dẫn viên: ${guide ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}${guide.experience ? `, ${guide.experience} năm kinh nghiệm` : ''}${guide.hasInternationalLicense ? ', có giấy phép HDV quốc tế' : ''}` : 'Không'}
         Bữa ăn: ${(formData.includeBreakfast ? 'Bữa sáng, ' : '') + (formData.includeLunch ? 'Bữa trưa, ' : '') + (formData.includeDinner ? 'Bữa tối' : '') || 'Không'}
         ${specialServicesText}
         Tổng chi phí: ${formatCurrency(calculation?.totalInRequestedCurrency || 0)}
@@ -513,13 +513,34 @@ const Step5Summary = () => {
                         </span>
                       </li>
                       
-                      <li className="flex items-center">
-                        <User className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <span>
+                      <li className="flex items-start">
+                        <User className="mr-2 h-4 w-4 mt-1 text-muted-foreground" />
+                        <div>
                           {guide 
-                            ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}` 
-                            : t('calculator.summary.noGuideSelected', 'No guide selected')}
-                        </span>
+                            ? (<>
+                              <div className="flex flex-wrap">
+                                <span className="mr-1">{guide.name}</span>
+                                {guide.languages && guide.languages.length > 0 && 
+                                  <span className="text-muted-foreground">({guide.languages.join(', ')})</span>
+                                }
+                              </div>
+                              {(guide.experience || guide.hasInternationalLicense || guide.gender || guide.age) && (
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  {guide.experience && <span className="mr-2">{guide.experience} năm kinh nghiệm</span>}
+                                  {guide.hasInternationalLicense && <span className="mr-2">Có giấy phép HDV quốc tế</span>}
+                                  {guide.gender && <span className="mr-2">{guide.gender}</span>}
+                                  {guide.age && <span>{guide.age} tuổi</span>}
+                                </div>
+                              )}
+                              {guide.personality && (
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  Tính cách: {guide.personality}
+                                </div>
+                              )}
+                            </>)
+                            : <span>{t('calculator.summary.noGuideSelected', 'No guide selected')}</span>
+                          }
+                        </div>
                       </li>
                     </ul>
                   </div>
@@ -738,7 +759,7 @@ const Step5Summary = () => {
                       </div>
                       {vehicle && (
                         <div className="text-xs text-muted-foreground text-left mt-1">
-                          {t('calculator.summary.transport', 'Phương tiện')}: {formData.vehicleCount || 1}x {vehicle.name}
+                          {t('calculator.summary.transport', 'Phương tiện')}: {formData.vehicleCount || 1}x {vehicle.name} ({vehicle.seats} {t('calculator.summary.seats', 'chỗ')}, {t('calculator.summary.luggage', 'hành lý')}: {vehicle.luggageCapacity} kg)
                         </div>
                       )}
                     </div>
