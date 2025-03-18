@@ -1066,11 +1066,20 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         });
       }
       
-      // Lấy ngôn ngữ được chọn từ request body hoặc mặc định là 'en'
-      const { language = 'en' } = req.body as { language?: 'en' | 'ja' | 'zh' | 'ko' | 'vi' };
+      // Lấy ngôn ngữ và nguồn dữ liệu từ request body
+      const { language = 'en', dataSource } = req.body as { 
+        language?: 'en' | 'ja' | 'zh' | 'ko' | 'vi',
+        dataSource?: string 
+      };
       
       // Lấy thông tin người dùng từ session để đồng bộ đúng nguồn dữ liệu
       const user = req.user as unknown as User | undefined;
+      
+      // Nếu là admin và có chỉ định nguồn dữ liệu cụ thể, sử dụng nguồn đó
+      const specificSource = (user?.role === 'admin' && dataSource) ? dataSource : undefined;
+      
+      // Hiển thị thông tin nguồn dữ liệu
+      console.log(`Exporting to sheets: User: ${user?.username}, Role: ${user?.role}, DataSource: ${specificSource || (user?.dataSource || 'default')}`);
       
       // Nếu có Service Account, tiến hành đồng bộ với ngôn ngữ chỉ định
       await syncDataToSheets(storage, language, user);
