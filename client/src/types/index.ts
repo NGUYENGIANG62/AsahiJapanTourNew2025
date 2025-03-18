@@ -50,6 +50,11 @@ export type Guide = {
   name: string;
   languages: string[];
   pricePerDay: number;
+  experience?: number; // Số năm kinh nghiệm
+  hasInternationalLicense?: boolean; // Có giấy phép HDV quốc tế
+  personality?: string; // Tính tình
+  gender?: string; // Giới tính
+  age?: number; // Độ tuổi
 };
 
 export type Season = {
