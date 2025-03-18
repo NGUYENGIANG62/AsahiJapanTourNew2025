@@ -16,10 +16,22 @@ export function isAdmin(user: User): boolean {
   return user.role === 'admin';
 }
 
-export function isAuthenticated(req: any): boolean {
-  return req.isAuthenticated && req.isAuthenticated();
+// Middleware function version of isAuthenticated
+export function isAuthenticated(req: any, res: any, next: any): void {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Not authenticated" });
 }
 
-export function isAdminUser(req: any): boolean {
-  return isAuthenticated(req) && req.user && req.user.role === 'admin';
+export function isAdminUser(req: any, res: any, next: any): void {
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+  
+  if (req.user && req.user.role === 'admin') {
+    return next();
+  }
+  
+  res.status(403).json({ message: "Not authorized" });
 }

@@ -1014,7 +1014,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   });
 
   // Google Sheets Sync Routes (Admin only)
-  apiRouter.get("/sync/status", isAdminMiddleware, async (req, res) => {
+  apiRouter.get("/sync/status", isAuthenticated, async (req, res) => {
     try {
       const lastSyncTime = await storage.getLastSyncTimestamp();
       // Get the current user to determine data source
@@ -1035,7 +1035,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
     }
   });
 
-  apiRouter.post("/sync/from-sheets", isAdminMiddleware, async (req, res) => {
+  apiRouter.post("/sync/from-sheets", isAuthenticated, async (req, res) => {
     try {
       // Lấy thông tin người dùng từ session để đồng bộ đúng nguồn dữ liệu
       const user = req.user as unknown as User | undefined;

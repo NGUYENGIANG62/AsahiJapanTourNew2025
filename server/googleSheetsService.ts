@@ -201,10 +201,20 @@ export async function getSpreadsheetForUser(user?: User | null): Promise<{ sheet
     // Xác định nguồn dữ liệu dựa trên vai trò người dùng
     let customUrl: string | undefined = undefined;
     
-    // Nếu là đại lý và có dataSource được cấu hình
+    // Nếu là đại lý (agent) và có dataSource được cấu hình
     if (user && user.role === 'agent' && user.dataSource) {
       customUrl = user.dataSource;
-      console.log(`Using agent-specific spreadsheet: ${customUrl}`);
+      console.log(`Using agent-specific spreadsheet for ${user.username}: ${customUrl}`);
+    }
+    
+    // Nếu là khách hàng thông thường, sử dụng URL mặc định
+    if (user && user.role === 'user') {
+      console.log(`Using default spreadsheet for customer: ${user.username}`);
+    }
+    
+    // Nếu là admin, sử dụng URL mặc định
+    if (user && user.role === 'admin') {
+      console.log(`Using default spreadsheet for admin: ${user.username}`);
     }
     
     const sheetsApi = await authorize(customUrl);
@@ -214,18 +224,22 @@ export async function getSpreadsheetForUser(user?: User | null): Promise<{ sheet
     
     if (customUrl) {
       id = getSpreadsheetIdFromUrl(customUrl);
+      console.log(`Using custom spreadsheet ID: ${id}`);
     } else if (process.env.GOOGLE_SPREADSHEET_URL) {
       id = getSpreadsheetIdFromUrl(process.env.GOOGLE_SPREADSHEET_URL);
+      console.log(`Using default spreadsheet ID: ${id}`);
     }
     
     if (!id) {
       try {
         // Cố gắng tìm bảng tính hiện có theo tên
         id = await findSpreadsheetId(sheetsApi);
+        console.log(`Found spreadsheet ID by name: ${id}`);
       } catch (error) {
         // Nếu không tìm thấy, tạo một bảng tính mới
         console.log('Spreadsheet not found, creating new one...');
         id = await createSpreadsheet(sheetsApi);
+        console.log(`Created new spreadsheet with ID: ${id}`);
       }
     }
     
