@@ -35,8 +35,7 @@ const SyncManagement = () => {
   // Predefined data sources
   const dataSources: DataSourceOption[] = [
     { id: 'default', name: 'AsahiJapanTours', description: 'Default data source for regular customers' },
-    { id: 'NamA', name: 'AsahiJapanTours_NamA', description: 'Data source for Nam A Travel Agency' },
-    { id: 'Reika', name: 'AsahiJapanTours_Reika', description: 'Data source for Reika Travel Agency' }
+    { id: '1Z7o-i4dfVlXKp599OGDOZCgxwSS3epxgMLi57-t3r6A', name: 'AsahiJapanTours_NamA', description: 'Data source for Nam A Travel Agency' }
   ];
 
   // Fetch last sync timestamp
