@@ -570,7 +570,7 @@ export async function syncDataToSheets(storage: any, language: string = 'en') {
     // Sync Settings - đồng bộ các cài đặt quan trọng và giá bữa ăn từ Google Sheets
     try {
       const settingKeys = [
-        'profit_margin', 'tax_rate', 'meal_cost_lunch', 'meal_cost_dinner'
+        'profit_margin', 'tax_rate', 'lunchPrice', 'dinnerPrice'
       ];
       
       for (const key of settingKeys) {

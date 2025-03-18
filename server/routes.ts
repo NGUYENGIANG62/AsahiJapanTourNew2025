@@ -741,8 +741,8 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       let mealsCost = 0;
       if (calculationData.includeLunch || calculationData.includeDinner) {
         // Lấy giá trị bữa ăn từ Google Sheets (đồng nhất cho tất cả tour và độc lập với khách sạn)
-        let lunchCost = parseFloat(await storage.getSetting('meal_cost_lunch') || '2500');
-        let dinnerCost = parseFloat(await storage.getSetting('meal_cost_dinner') || '3500');
+        let lunchCost = parseFloat(await storage.getSetting('lunchPrice') || '2500');
+        let dinnerCost = parseFloat(await storage.getSetting('dinnerPrice') || '3500');
         
         // Chỉ tính chi phí cho những bữa ăn được chọn
         const totalLunchCost = calculationData.includeLunch ? lunchCost : 0;
@@ -811,8 +811,8 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
           // Guide gets the same meals as participants
           if (calculationData.includeLunch || calculationData.includeDinner) {
             // Lấy giá trị bữa ăn từ Google Sheets (đồng nhất cho tất cả tour và độc lập với khách sạn)
-            let lunchCost = parseFloat(await storage.getSetting('meal_cost_lunch') || '2500');
-            let dinnerCost = parseFloat(await storage.getSetting('meal_cost_dinner') || '3500');
+            let lunchCost = parseFloat(await storage.getSetting('lunchPrice') || '2500');
+            let dinnerCost = parseFloat(await storage.getSetting('dinnerPrice') || '3500');
             
             // Chỉ tính chi phí cho những bữa ăn được chọn
             const totalLunchCost = calculationData.includeLunch ? lunchCost : 0;
