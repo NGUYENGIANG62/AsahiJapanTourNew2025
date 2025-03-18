@@ -33,6 +33,9 @@ const initialFormData: CalculatorFormData = {
     teaCeremony: false,
     wagyuDinner: false,
     sumoShow: false,
+    disneylandTickets: false,
+    universalStudioTickets: false,
+    airportTransfer: false,
     notes: '',
   },
 };
