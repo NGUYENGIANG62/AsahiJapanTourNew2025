@@ -35,10 +35,27 @@ export function stopScheduledTasks() {
 async function syncFromSheets() {
   try {
     console.log('Scheduled sync: Starting automatic sync from Google Sheets...');
-    await syncDataFromSheets(storage);
-    await storage.updateLastSyncTimestamp();
-    console.log('Scheduled sync: Automatic sync completed successfully');
+    
+    try {
+      await syncDataFromSheets(storage);
+      await storage.updateLastSyncTimestamp();
+      console.log('Scheduled sync: Automatic sync completed successfully');
+    } catch (syncError) {
+      console.error('Scheduled sync: Error during Google Sheets sync:', syncError);
+      console.log('Scheduled sync: Sẽ tiếp tục sử dụng dữ liệu cục bộ');
+      
+      // Vẫn cập nhật timestamp để không sync liên tục khi gặp lỗi
+      await storage.updateLastSyncTimestamp();
+    }
+    
+    // Tạo mã AVF cho tour nếu chưa có
+    try {
+      const toursWithUpdatedCodes = await storage.updateAllTourAVFCodes();
+      console.log(`Scheduled sync: Đã cập nhật mã AVF cho ${toursWithUpdatedCodes.length} tours`);
+    } catch (avfError) {
+      console.error('Scheduled sync: Error updating tour AVF codes:', avfError);
+    }
   } catch (error) {
-    console.error('Scheduled sync: Error during automatic sync:', error);
+    console.error('Scheduled sync: Error during automatic sync process:', error);
   }
 }
