@@ -32,11 +32,15 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       saveUninitialized: false,
       store: new MemoryStoreSession({
         checkPeriod: 86400000, // 24 hours
+        stale: false, // Prevent expired sessions from being returned
       }),
       cookie: {
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
         secure: process.env.NODE_ENV === "production",
+        httpOnly: true,
+        sameSite: 'lax' // Helps prevent CSRF attacks
       },
+      name: 'asahi.sid', // Custom name to avoid default (connect.sid)
     })
   );
 
@@ -78,27 +82,68 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   apiRouter.post("/auth/login", (req, res, next) => {
     passport.authenticate("local", (err: Error | null, user: any, info: { message: string }) => {
       if (err) {
+        console.error("Authentication error:", err);
         return next(err);
       }
       if (!user) {
+        console.log("Login failed for user:", req.body.username);
         return res.status(401).json({ message: info.message || "Invalid credentials" });
       }
       req.logIn(user, (err: Error | null) => {
         if (err) {
+          console.error("Session login error:", err);
           return next(err);
         }
-        return res.json({
-          id: user.id,
-          username: user.username,
-          role: user.role,
+        console.log(`User logged in: ${user.username} (${user.role})`);
+        
+        // Regenerate session ID after login to prevent session fixation attacks
+        req.session.regenerate((err) => {
+          if (err) {
+            console.error("Session regeneration error:", err);
+            return next(err);
+          }
+          
+          // Save the user data in the new session
+          (req.session as any).passport = { user: user.id };
+          req.session.save((err) => {
+            if (err) {
+              console.error("Session save error:", err);
+              return next(err);
+            }
+            
+            return res.json({
+              id: user.id,
+              username: user.username,
+              role: user.role,
+            });
+          });
         });
       });
     })(req, res, next);
   });
 
   apiRouter.post("/auth/logout", (req, res) => {
+    const username = (req.user as any)?.username || 'unknown';
+    console.log(`Logging out user: ${username}`);
+    
+    // First, invalidate the session
     req.logout((err: Error | null) => {
-      res.json({ message: "Logged out successfully" });
+      if (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ message: "Error during logout" });
+      }
+      
+      // Then destroy the session completely
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Session destruction error:", err);
+          return res.status(500).json({ message: "Error destroying session" });
+        }
+        
+        console.log(`User logged out: ${username}`);
+        res.clearCookie("asahi.sid"); // Clear the session cookie
+        res.json({ message: "Logged out successfully" });
+      });
     });
   });
 
