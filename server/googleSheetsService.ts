@@ -475,16 +475,34 @@ export async function syncDataFromSheets(storage: any) {
     
     // Sync Settings
     try {
-      const settings = await getSheetData('Settings');
-      // Log để debug
-      console.log('Settings data from Google Sheets:', JSON.stringify(settings));
-      
-      for (const setting of settings) {
-        if (setting.key && setting.value !== undefined) {
-          console.log(`Updating setting: ${setting.key} = ${setting.value}`);
-          await storage.createOrUpdateSetting(setting);
+      const settingsData = await getSheetData('Settings');
+      console.log('Settings data from Google Sheets:', JSON.stringify(settingsData));
+
+      // Kiểm tra xem có dữ liệu Settings không
+      if (settingsData && settingsData.length > 0) {
+        // Xử lý trường hợp cả bảng là một object duy nhất với nhiều key-value
+        if (settingsData.length === 1 && typeof settingsData[0] === 'object') {
+          const settingsObj = settingsData[0];
+          for (const key in settingsObj) {
+            if (key !== 'id' && settingsObj[key] !== undefined) {
+              const value = String(settingsObj[key]);
+              console.log(`Updating setting from object: ${key} = ${value}`);
+              await storage.createOrUpdateSetting({
+                key: key,
+                value: value
+              });
+            }
+          }
         } else {
-          console.log(`Skipping invalid setting:`, JSON.stringify(setting));
+          // Xử lý trường hợp mỗi setting là một object riêng biệt có key và value
+          for (const setting of settingsData) {
+            if (setting.key && setting.value !== undefined) {
+              console.log(`Updating setting: ${setting.key} = ${setting.value}`);
+              await storage.createOrUpdateSetting(setting);
+            } else {
+              console.log(`Skipping invalid setting:`, JSON.stringify(setting));
+            }
+          }
         }
       }
       
