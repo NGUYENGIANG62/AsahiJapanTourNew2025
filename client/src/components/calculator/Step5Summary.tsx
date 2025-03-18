@@ -341,6 +341,7 @@ const Step5Summary = () => {
         body: JSON.stringify({
           name: customerName || customerEmail.split('@')[0], // Use provided name or part of email
           email: customerEmail,
+          phone: customerPhone,
           subject: emailSubject,
           message: fullMessage
         }),
