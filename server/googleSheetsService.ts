@@ -1,6 +1,6 @@
 import { google, sheets_v4 } from 'googleapis';
 import { JWT } from 'google-auth-library';
-import { User } from '@shared/schema';
+import { User, SYNC_SETTINGS } from '@shared/schema';
 
 // Google Sheets configuration
 const SCOPES = [
@@ -352,9 +352,9 @@ async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId:
   }
 }
 
-export async function getSheetData(sheetName: string, user?: User | null): Promise<any[]> {
+export async function getSheetData(sheetName: string, user?: User | null, specificSource?: string): Promise<any[]> {
   try {
-    const { sheetsApi, spreadsheetId } = await getSpreadsheetForUser(user);
+    const { sheetsApi, spreadsheetId } = await getSpreadsheetForUser(user, specificSource);
     
     // Kiểm tra và tạo sheet nếu cần thiết
     await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
@@ -548,24 +548,30 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
  */
 export async function syncDataFromSheets(storage: any, user?: User | null, specificSource?: string) {
   try {
-    // Sử dụng bảng tính theo người dùng (đại lý)
-    const { sheetsApi, spreadsheetId, sourceName } = await getSpreadsheetForUser(user);
+    // Sử dụng bảng tính theo người dùng (đại lý) hoặc nguồn chỉ định
+    const { sheetsApi, spreadsheetId, sourceName } = await getSpreadsheetForUser(user, specificSource);
     console.log(`Syncing data FROM Google Sheets using source: ${sourceName}`);
     
+    // Lưu thông tin về nguồn dữ liệu và thời gian đồng bộ
+    const now = new Date();
+    await storage.updateSetting(SYNC_SETTINGS.LAST_SYNC_TIME, now.toISOString());
+    await storage.updateSetting(SYNC_SETTINGS.CURRENT_DATA_SOURCE, spreadsheetId);
+    await storage.updateSetting(SYNC_SETTINGS.CURRENT_DATA_SOURCE_NAME, sourceName);
+    
     // Sync Tours
-    const tours = await getSheetData('Tours', user);
+    const tours = await getSheetData('Tours', user, specificSource);
     for (const tour of tours) {
       await storage.createOrUpdateTour(tour);
     }
     
     // Sync Vehicles
-    const vehicles = await getSheetData('Vehicles', user);
+    const vehicles = await getSheetData('Vehicles', user, specificSource);
     for (const vehicle of vehicles) {
       await storage.createOrUpdateVehicle(vehicle);
     }
     
     // Sync Hotels
-    const hotels = await getSheetData('Hotels', user);
+    const hotels = await getSheetData('Hotels', user, specificSource);
     for (const hotel of hotels) {
       // Khách sạn không còn cung cấp bữa ăn trưa và tối, vì đó là các dịch vụ độc lập
       // Xóa các giá trị lunchPrice và dinnerPrice nếu có
@@ -576,20 +582,20 @@ export async function syncDataFromSheets(storage: any, user?: User | null, speci
     }
     
     // Sync Guides
-    const guides = await getSheetData('Guides', user);
+    const guides = await getSheetData('Guides', user, specificSource);
     for (const guide of guides) {
       await storage.createOrUpdateGuide(guide);
     }
     
     // Sync Seasons
-    const seasons = await getSheetData('Seasons', user);
+    const seasons = await getSheetData('Seasons', user, specificSource);
     for (const season of seasons) {
       await storage.createOrUpdateSeason(season);
     }
     
     // Sync Settings
     try {
-      const settingsData = await getSheetData('Settings', user);
+      const settingsData = await getSheetData('Settings', user, specificSource);
       console.log('Settings data from Google Sheets:', JSON.stringify(settingsData));
 
       // Kiểm tra xem có dữ liệu Settings không
