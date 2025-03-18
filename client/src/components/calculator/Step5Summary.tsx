@@ -263,9 +263,9 @@ const Step5Summary = () => {
         Địa điểm: ${tour?.location || 'Chưa chọn'}
         Số ngày: ${calculateDuration()} ngày (${formatDate(formData.startDate)} - ${formatDate(formData.endDate)})
         Số người: ${formData.participants} người
-        Phương tiện: ${vehicle?.name || 'Chưa chọn'}
+        Phương tiện: ${vehicle ? `${formData.vehicleCount || 1}x ${vehicle.name}` : 'Chưa chọn'}
         Khách sạn: ${formData.hotelStars ? `${formData.hotelStars} sao (${getRoomTypeLabel()})` : 'Không'}
-        Hướng dẫn viên: ${guide?.name || 'Không'}
+        Hướng dẫn viên: ${guide ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}` : 'Không'}
         Bữa ăn: ${(formData.includeBreakfast ? 'Bữa sáng, ' : '') + (formData.includeLunch ? 'Bữa trưa, ' : '') + (formData.includeDinner ? 'Bữa tối' : '') || 'Không'}
         ${specialServicesText}
         Tổng chi phí: ${formatCurrency(calculation?.totalInRequestedCurrency || 0)}
@@ -505,7 +505,7 @@ const Step5Summary = () => {
                         <HotelIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>
                           {formData.hotelStars 
-                            ? `${formData.hotelStars}-${t('calculator.starHotel')} (${getRoomTypeLabel()})` 
+                            ? `${formData.hotelStars} ${t('calculator.summary.stars', 'stars')} (${getRoomTypeLabel()})` 
                             : t('calculator.summary.noHotelSelected', 'No hotel selected')}
                         </span>
                       </li>
