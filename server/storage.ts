@@ -56,6 +56,7 @@ export interface IStorage {
   // Settings Management
   getSetting(key: string): Promise<string | undefined>;
   updateSetting(key: string, value: string): Promise<Setting>;
+  getAllSettings(): Promise<Setting[]>;
   
   // Google Sheets Sync Methods
   createOrUpdateTour(tour: any): Promise<Tour>;
@@ -63,6 +64,7 @@ export interface IStorage {
   createOrUpdateHotel(hotel: any): Promise<Hotel>;
   createOrUpdateGuide(guide: any): Promise<Guide>;
   createOrUpdateSeason(season: any): Promise<Season>;
+  createOrUpdateSetting(setting: any): Promise<Setting>;
   getLastSyncTimestamp(): Promise<number>;
   updateLastSyncTimestamp(): Promise<void>;
 }
@@ -861,6 +863,42 @@ export class MemStorage implements IStorage {
         descriptionKo: season.descriptionKo,
         descriptionVi: season.descriptionVi
       });
+    }
+  }
+
+  // Lấy tất cả settings
+  async getAllSettings(): Promise<Setting[]> {
+    return Array.from(this.settings.values());
+  }
+  
+  // Đồng bộ hóa setting từ Google Sheets
+  async createOrUpdateSetting(setting: any): Promise<Setting> {
+    // Skip if no key
+    if (!setting.key) {
+      throw new Error('Setting key is required');
+    }
+    
+    // Chuyển đổi value nếu cần
+    const value = setting.value !== undefined ? String(setting.value) : '';
+    
+    try {
+      // Cập nhật setting nếu đã tồn tại
+      if (this.settings.has(setting.key)) {
+        return this.updateSetting(setting.key, value);
+      }
+      
+      // Nếu không tồn tại, tạo mới
+      const newSetting: Setting = {
+        id: this.currentSettingId++,
+        key: setting.key,
+        value: value
+      };
+      
+      this.settings.set(setting.key, newSetting);
+      return newSetting;
+    } catch (error) {
+      console.error(`Error in createOrUpdateSetting: ${error}`);
+      throw error;
     }
   }
 

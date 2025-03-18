@@ -473,7 +473,7 @@ export async function syncDataFromSheets(storage: any) {
       const settings = await getSheetData('Settings');
       for (const setting of settings) {
         if (setting.key && setting.value) {
-          await storage.updateSetting(setting.key, setting.value);
+          await storage.createOrUpdateSetting(setting);
         }
       }
       console.log('Settings synchronized from Google Sheets');
