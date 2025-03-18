@@ -213,7 +213,7 @@ const Step4Accommodation = () => {
                 <>
                   <div>
                     <Label className="block text-sm font-medium text-neutral mb-2">
-                      {t('calculator.roomType')}
+                      {t('calculator.preferredRoomType', 'Loại phòng ưu tiên')}
                     </Label>
                     <Select 
                       value={formData.roomType || ""}
