@@ -585,7 +585,7 @@ const GuideManagement = () => {
                         <FormItem>
                           <FormLabel>Gender</FormLabel>
                           <Select
-                            value={field.value}
+                            value={field.value || undefined}
                             onValueChange={field.onChange}
                           >
                             <FormControl>
