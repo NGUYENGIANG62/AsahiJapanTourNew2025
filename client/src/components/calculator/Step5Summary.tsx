@@ -543,6 +543,41 @@ const Step5Summary = () => {
                   </div>
                 </div>
                 
+                {/* Thêm thông tin chuyến bay */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div className="space-y-1">
+                    <div className="text-sm text-muted-foreground flex items-center">
+                      <PlaneLanding className="mr-2 h-4 w-4" />
+                      Thời gian đáp máy bay
+                    </div>
+                    <p className="flex items-center text-sm">
+                      {(() => {
+                        switch(formData.arrivalTime) {
+                          case 'morning': return 'Sáng (trước 12h)';
+                          case 'afternoon': return 'Chiều (sau 12h)';
+                          default: return 'Chưa xác định';
+                        }
+                      })()}
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="text-sm text-muted-foreground flex items-center">
+                      <PlaneTakeoff className="mr-2 h-4 w-4" />
+                      Thời gian khởi hành
+                    </div>
+                    <p className="flex items-center text-sm">
+                      {(() => {
+                        switch(formData.departureTime) {
+                          case 'morning': return 'Sáng (trước 12h)';
+                          case 'afternoon': return 'Chiều (sau 12h)';
+                          default: return 'Chưa xác định';
+                        }
+                      })()}
+                    </p>
+                  </div>
+                </div>
+                
                 <Separator />
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
