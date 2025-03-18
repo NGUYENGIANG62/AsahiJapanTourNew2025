@@ -1050,6 +1050,8 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         return res.status(400).json({ message: "Email and message are required" });
       }
       
+      console.log("Sending tour inquiry email:", { name, email, phone });
+      
       const result = await sendEmail({
         name,
         email,
@@ -1058,6 +1060,8 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         message
       });
       
+      console.log("Email send result:", result);
+      
       if (result.success) {
         return res.status(200).json({ message: "Email sent successfully" });
       } else {
@@ -1065,7 +1069,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       }
     } catch (error) {
       console.error('Error sending email:', error);
-      res.status(500).json({ message: "Failed to send email" });
+      res.status(500).json({ message: "Failed to send email", error: error instanceof Error ? error.message : String(error) });
     }
   });
 
