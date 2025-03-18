@@ -287,6 +287,29 @@ const Step5Summary = () => {
         }
       }
 
+      // Thêm phần thông tin bay
+      const getFlightTimeInfo = () => {
+        const arrivalInfo = (() => {
+          switch(formData.arrivalTime) {
+            case 'morning': return 'Sáng (trước 12h)';
+            case 'afternoon': return 'Chiều (sau 12h)';
+            default: return 'Chưa xác định';
+          }
+        })();
+
+        const departureInfo = (() => {
+          switch(formData.departureTime) {
+            case 'morning': return 'Sáng (trước 12h)';
+            case 'afternoon': return 'Chiều (sau 12h)';
+            default: return 'Chưa xác định';
+          }
+        })();
+
+        return `Thông tin chuyến bay:\n` +
+          `Giờ đáp: ${arrivalInfo}\n` + 
+          `Giờ khởi hành: ${departureInfo}`;
+      };
+
       const tourDetails = `
         Tour: ${tour?.name || 'Chưa chọn'}
         Địa điểm: ${tour?.location || 'Chưa chọn'}
@@ -297,6 +320,9 @@ const Step5Summary = () => {
         Hướng dẫn viên: ${guide ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}${guide.experience ? `, ${guide.experience} năm kinh nghiệm` : ''}${guide.hasInternationalLicense ? ', có giấy phép HDV quốc tế' : ''}` : 'Không'}
         Bữa ăn: ${(formData.includeBreakfast ? 'Bữa sáng, ' : '') + (formData.includeLunch ? 'Bữa trưa, ' : '') + (formData.includeDinner ? 'Bữa tối' : '') || 'Không'}
         ${specialServicesText}
+        
+        ${getFlightTimeInfo()}
+        
         Tổng chi phí: ${formatCurrency(calculation?.totalInRequestedCurrency || 0)}
         ${formData.participants > 1 ? `Chi phí mỗi người: ${formatCurrency((calculation?.totalInRequestedCurrency || 0) / formData.participants)}` : ''}
         ${preferredLocations ? `Địa điểm mong muốn: ${preferredLocations}` : ''}
@@ -450,7 +476,7 @@ const Step5Summary = () => {
                 <li className="flex items-start">
                   <Mail className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
                   <div>
-                    <div>hoangtucuoirong@gmail.com</div>
+                    <div>asahivietlifejapantours@gmail.com</div>
                   </div>
                 </li>
                 <li className="flex items-start">
@@ -644,6 +670,33 @@ const Step5Summary = () => {
                         <span>{t('calculator.meals.dinner', 'Dinner')}</span>
                       </li>
 
+                      {/* Thông tin chuyến bay */}
+                      <li className="mt-4">
+                        <h4 className="font-medium mb-2">Thông tin chuyến bay</h4>
+                        <ul className="space-y-1 pl-4">
+                          <li className="flex items-center">
+                            <PlaneLanding className="mr-2 h-3 w-3 text-muted-foreground" />
+                            <span className="text-sm">Giờ đáp: {(() => {
+                              switch(formData.arrivalTime) {
+                                case 'morning': return 'Sáng (trước 12h)';
+                                case 'afternoon': return 'Chiều (sau 12h)';
+                                default: return 'Chưa xác định';
+                              }
+                            })()}</span>
+                          </li>
+                          <li className="flex items-center">
+                            <PlaneTakeoff className="mr-2 h-3 w-3 text-muted-foreground" />
+                            <span className="text-sm">Giờ khởi hành: {(() => {
+                              switch(formData.departureTime) {
+                                case 'morning': return 'Sáng (trước 12h)';
+                                case 'afternoon': return 'Chiều (sau 12h)';
+                                default: return 'Chưa xác định';
+                              }
+                            })()}</span>
+                          </li>
+                        </ul>
+                      </li>
+                      
                       {/* Special Services section */}
                       {formData.specialServices && (
                         <li className="mt-4">
