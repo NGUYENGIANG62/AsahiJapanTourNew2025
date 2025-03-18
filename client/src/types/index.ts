@@ -87,6 +87,8 @@ export type SpecialService = {
   teaCeremony?: boolean;
   wagyuDinner?: boolean;
   sumoShow?: boolean;
+  disneylandTickets?: boolean;
+  universalStudioTickets?: boolean;
   notes?: string;
 };
 
