@@ -27,8 +27,11 @@ import {
   Clock, 
   Car, 
   User, 
-  Banknote 
+  Banknote,
+  Plane,
+  CheckSquare
 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const Step2ServiceSelection = () => {
   const { t } = useTranslation();
@@ -170,6 +173,32 @@ const Step2ServiceSelection = () => {
                       }}
                     />
                   </div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="airportTransfer" 
+                      checked={formData.specialServices?.airportTransfer || false}
+                      onCheckedChange={(checked) => {
+                        const specialServices = { 
+                          ...(formData.specialServices || {}), 
+                          airportTransfer: !!checked 
+                        };
+                        updateFormData({ specialServices });
+                      }}
+                    />
+                    <Label 
+                      htmlFor="airportTransfer" 
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                    >
+                      <Plane className="h-4 w-4 mr-1" /> 
+                      {t('calculator.airportTransfer', 'Airport Transfer Service')}
+                    </Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1 ml-6">
+                    {t('calculator.airportTransferDescription', 'Includes pick-up and drop-off at the airport')}
+                  </p>
                 </div>
                 
                 {isAdmin ? (
