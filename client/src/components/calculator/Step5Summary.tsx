@@ -82,6 +82,13 @@ const Step5Summary = () => {
   // Fetch data for the summary
   const { data: tour } = useQuery<Tour>({
     queryKey: ['/api/tours', formData.tourId],
+    queryFn: async () => {
+      const response = await fetch(`/api/tours/${formData.tourId}`, {
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error('Failed to fetch tour');
+      return response.json();
+    },
     enabled: !!formData.tourId,
   });
   
