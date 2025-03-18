@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, CloudCog, CloudOff, CheckCircle, AlertCircle, RefreshCw, Cloud, Languages } from 'lucide-react';
+import { Loader2, CloudCog, CloudOff, CheckCircle, AlertCircle, RefreshCw, Cloud, Languages, Database } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, getQueryFn } from '@/lib/queryClient';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,6 +13,8 @@ import { Language } from '@/types';
 type SyncStatus = {
   lastSync: string | null;
   status: string;
+  dataSource?: string;
+  userRole?: string;
 };
 
 const SyncManagement = () => {
@@ -34,10 +36,13 @@ const SyncManagement = () => {
       const res = await apiRequest('POST', '/api/sync/from-sheets');
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: t('common.success'),
-        description: t('sync.fromSheetsSuccess'),
+        description: t('sync.fromSheetsSuccess') + 
+          (data.dataSource && data.dataSource !== 'default' 
+            ? ` (Agency: ${data.dataSource})` 
+            : ''),
         variant: 'default',
       });
       refetch();
@@ -71,6 +76,9 @@ const SyncManagement = () => {
         description: t('sync.toSheetsSuccess') + 
           (data.language && data.language !== 'en' 
             ? ` (${t(`languages.${data.language}`)})` 
+            : '') +
+          (data.dataSource && data.dataSource !== 'default' 
+            ? ` [Agency: ${data.dataSource}]` 
             : ''),
         variant: 'default',
       });
@@ -182,6 +190,26 @@ const SyncManagement = () => {
                     )}
                   </div>
                 </div>
+                
+                {/* Data Source Information */}
+                {syncStatus?.dataSource && (
+                  <div className="p-3 bg-blue-50 rounded-md border border-blue-200">
+                    <p className="text-sm font-medium text-blue-800">Current Data Source</p>
+                    <div className="mt-1 flex items-center">
+                      <Cloud className="h-4 w-4 text-blue-600 mr-2" />
+                      <span className="font-semibold text-blue-700">
+                        {syncStatus.dataSource === 'default' 
+                          ? 'Default Spreadsheet' 
+                          : `Agency Spreadsheet: ${syncStatus.dataSource}`}
+                      </span>
+                    </div>
+                    {syncStatus.userRole && (
+                      <p className="mt-1 text-xs text-blue-600">
+                        User role: {syncStatus.userRole}
+                      </p>
+                    )}
+                  </div>
+                )}
                 <div>
                   <p className="text-sm font-medium">{t('sync.exportLanguage')}</p>
                   <div className="mt-2">
@@ -255,6 +283,24 @@ const SyncManagement = () => {
             <div className="mt-4 p-4 bg-amber-50 rounded-md border border-amber-200">
               <h3 className="font-semibold text-amber-800 mb-1">{t('sync.note')}</h3>
               <p className="text-sm text-amber-700">{t('sync.noteDescription')}</p>
+            </div>
+            
+            {/* Agency Data Source Information */}
+            <div className="mt-4 p-4 bg-blue-50 rounded-md border border-blue-200">
+              <h3 className="flex items-center font-semibold text-blue-800 mb-1">
+                <Database className="h-4 w-4 mr-1" />
+                Multi-Source Data Handling
+              </h3>
+              <p className="text-sm text-blue-700">
+                The system now supports multiple data sources for different user roles. 
+                Admins can view and sync data from the default spreadsheet, while agency users 
+                work with their own dedicated spreadsheets.
+              </p>
+              {syncStatus?.dataSource && syncStatus.dataSource !== 'default' && (
+                <p className="mt-2 text-sm text-blue-800 font-medium">
+                  You are currently working with an agency-specific data source: <span className="font-bold">{syncStatus.dataSource}</span>
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

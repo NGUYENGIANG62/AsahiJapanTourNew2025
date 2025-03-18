@@ -1017,9 +1017,17 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   apiRouter.get("/sync/status", isAdminMiddleware, async (req, res) => {
     try {
       const lastSyncTime = await storage.getLastSyncTimestamp();
+      // Get the current user to determine data source
+      const user = req.user as unknown as User | undefined;
+      const dataSource = user && user.role === 'agent' && user.dataSource 
+                        ? user.dataSource 
+                        : 'default';
+                        
       res.json({
         lastSync: lastSyncTime ? new Date(lastSyncTime).toISOString() : null,
-        status: "ok"
+        status: "ok",
+        dataSource: dataSource,
+        userRole: user ? user.role : 'guest'
       });
     } catch (error) {
       console.error("Error getting sync status:", error);
@@ -1062,7 +1070,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       const { language = 'en' } = req.body as { language?: 'en' | 'ja' | 'zh' | 'ko' | 'vi' };
       
       // Lấy thông tin người dùng từ session để đồng bộ đúng nguồn dữ liệu
-      const user = req.user as User | undefined;
+      const user = req.user as unknown as User | undefined;
       
       // Nếu có Service Account, tiến hành đồng bộ với ngôn ngữ chỉ định
       await syncDataToSheets(storage, language, user);
@@ -1071,7 +1079,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         message: "Successfully synchronized data to Google Sheets",
         language: language,
         timestamp: new Date().toISOString(),
-        dataSource: user && (user as any).role === 'agent' ? (user as any).dataSource : 'default'
+        dataSource: user && user.role === 'agent' ? user.dataSource : 'default'
       });
     } catch (error) {
       console.error("Error syncing to sheets:", error);
