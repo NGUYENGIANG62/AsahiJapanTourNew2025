@@ -509,7 +509,7 @@ const Step5Summary = () => {
                         <HotelIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>
                           {formData.hotelStars 
-                            ? `${formData.hotelStars} ${t('calculator.summary.stars', 'stars')} (${getRoomTypeLabel()}) - ${calculateDuration() - 1} ${t('calculator.summary.nights', 'đêm')}` 
+                            ? `${formData.hotelStars} ${t('calculator.summary.stars', 'stars')} (${getRoomTypeLabel()}) - ${formData.stayingNights || calculateDuration() - 1} ${t('calculator.summary.nights', 'đêm')}` 
                             : t('calculator.summary.noHotelSelected', 'No hotel selected')}
                         </span>
                       </li>
