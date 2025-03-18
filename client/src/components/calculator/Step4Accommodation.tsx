@@ -44,6 +44,7 @@ const Step4Accommodation = () => {
   const singleRoomCount = formData.singleRoomCount ?? 0;
   const doubleRoomCount = formData.doubleRoomCount ?? 0;
   const tripleRoomCount = formData.tripleRoomCount ?? 0;
+  const stayingNights = formData.stayingNights ?? 0;
 
   // Fetch hotels
   const { data: hotels = [], isLoading: isLoadingHotels } = useQuery<Hotel[]>({
@@ -75,6 +76,7 @@ const Step4Accommodation = () => {
         singleRoomCount: 0,
         doubleRoomCount: 0,
         tripleRoomCount: 0,
+        stayingNights: 0,
         includeBreakfast: false 
       });
     } else {
@@ -216,8 +218,43 @@ const Step4Accommodation = () => {
               
               {formData.hotelStars && (
                 <>
+                  {/* Number of nights stay */}
                   <div>
                     <Label className="block text-sm font-medium text-neutral mb-2">
+                      {t('calculator.stayingNights', 'Số đêm nghỉ tại khách sạn')}
+                    </Label>
+                    <div className="flex items-center space-x-2 border rounded-md p-3">
+                      <div className="flex-1">
+                        <h4 className="font-medium">{t('calculator.nights', 'Đêm')}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {t('calculator.stayingNightsDescription', 'Số đêm lưu trú tại khách sạn')}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="h-8 w-8"
+                          onClick={() => handleStayingNightsChange(stayingNights - 1)}
+                          disabled={stayingNights === 0}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="w-8 text-center">{stayingNights}</span>
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="h-8 w-8"
+                          onClick={() => handleStayingNightsChange(stayingNights + 1)}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="block text-sm font-medium text-neutral mb-2 mt-4">
                       {t('calculator.preferredRoomType', 'Loại phòng ưu tiên')}
                     </Label>
                     <Select 
