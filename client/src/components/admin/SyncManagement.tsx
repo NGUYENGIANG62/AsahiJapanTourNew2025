@@ -17,12 +17,26 @@ type SyncStatus = {
   userRole?: string;
 };
 
+type DataSourceOption = {
+  id: string;
+  name: string;
+  description: string;
+};
+
 const SyncManagement = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [syncInProgress, setSyncInProgress] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<Language>('en');
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('default');
+  
+  // Predefined data sources
+  const dataSources: DataSourceOption[] = [
+    { id: 'default', name: 'AsahiJapanTours', description: 'Default data source for regular customers' },
+    { id: 'NamA', name: 'AsahiJapanTours_NamA', description: 'Data source for Nam A Travel Agency' },
+    { id: 'Reika', name: 'AsahiJapanTours_Reika', description: 'Data source for Reika Travel Agency' }
+  ];
 
   // Fetch last sync timestamp
   const { data: syncStatus, isLoading, error, refetch } = useQuery<SyncStatus>({
@@ -66,8 +80,8 @@ const SyncManagement = () => {
 
   // Mutation to sync data from local storage to Google Sheets
   const syncToSheetsMutation = useMutation({
-    mutationFn: async (language: Language = 'en') => {
-      const res = await apiRequest('POST', '/api/sync/to-sheets', { language });
+    mutationFn: async (params: { language: Language, dataSource?: string }) => {
+      const res = await apiRequest('POST', '/api/sync/to-sheets', params);
       return await res.json();
     },
     onSuccess: (data) => {
@@ -103,7 +117,10 @@ const SyncManagement = () => {
 
   const handleSyncToSheets = () => {
     setSyncInProgress(true);
-    syncToSheetsMutation.mutate(selectedLanguage);
+    syncToSheetsMutation.mutate({
+      language: selectedLanguage,
+      dataSource: syncStatus?.userRole === 'admin' ? selectedDataSource : undefined
+    });
   };
 
   const formatDate = (dateString: string | null) => {
@@ -210,6 +227,34 @@ const SyncManagement = () => {
                     )}
                   </div>
                 )}
+                
+                {/* Admin-only data source selector */}
+                {syncStatus?.userRole === 'admin' && (
+                  <div>
+                    <p className="text-sm font-medium">Select Data Source</p>
+                    <div className="mt-2">
+                      <Select value={selectedDataSource} onValueChange={(value: string) => setSelectedDataSource(value)}>
+                        <SelectTrigger className="w-full md:w-[240px]">
+                          <SelectValue placeholder="Select data source" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Available Data Sources</SelectLabel>
+                            {dataSources.map(source => (
+                              <SelectItem key={source.id} value={source.id}>
+                                {source.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        As an admin, you can select which data source to sync with.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
                 <div>
                   <p className="text-sm font-medium">{t('sync.exportLanguage')}</p>
                   <div className="mt-2">
