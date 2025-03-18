@@ -21,10 +21,11 @@ const transporter = nodemailer.createTransport({
   debug: true // Bật debug output để xem lỗi chi tiết
 });
 
-// Log cấu hình email để kiểm tra
+// Log cấu hình email để kiểm tra (chỉ hiển thị tên người dùng để bảo mật)
 console.log("Email configuration:", { 
   user: process.env.EMAIL_USER || 'asahivietlifejapantours@gmail.com', 
-  passLength: process.env.EMAIL_PASSWORD ? process.env.EMAIL_PASSWORD.length : 0 
+  passLength: process.env.EMAIL_PASSWORD ? process.env.EMAIL_PASSWORD.length : 0,
+  configured: !!process.env.EMAIL_PASSWORD
 });
 
 export const sendEmail = async (request: EmailRequest): Promise<{ success: boolean; message: string }> => {
