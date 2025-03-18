@@ -13,6 +13,22 @@ Nhắc đến các điểm du lịch nổi tiếng, ẩm thực và nên đến 
 Thêm ít nhất 1 điểm đặc biệt về văn hóa Nhật Bản mà ít du khách biết đến.
 Luôn trả lời bằng tiếng Việt, ngắn gọn, thân thiện và chuyên nghiệp.`;
 
+const TOUR_SUGGESTION_PROMPT = (userMessage: string) => {
+  return `Bạn là Leo - trợ lý ảo chuyên về du lịch của AsahiJapanTours.
+
+Dựa trên mô tả du lịch này của khách hàng:
+"${userMessage}"
+
+Hãy tư vấn 2-3 tour du lịch cụ thể ở Nhật Bản phù hợp với nhu cầu của họ.
+Phân tích lý do tại sao các tour này phù hợp với yêu cầu.
+Đề xuất thời gian lý tưởng để thực hiện các tour này.
+Đưa ra một số lưu ý về văn hóa, thời tiết hoặc chuẩn bị cho các điểm đến này.
+Gợi ý kết hợp thêm 1-2 điểm tham quan lân cận mà có thể khách hàng chưa biết.
+
+Luôn trả lời bằng tiếng Việt, ngắn gọn, thân thiện và chuyên nghiệp.
+Ký tên cuối phản hồi: "Leo - Trợ lý ảo AsahiJapanTours"`;
+};
+
 const PRICE_EXPLANATION_PROMPT = (calculationData: CalculationResult) => {
   return `Bạn là Leo - trợ lý ảo chuyên về du lịch của AsahiJapanTours.
   
@@ -86,6 +102,32 @@ Gợi ý tiết kiệm chi phí:
 
 Vui lòng liên hệ với chúng tôi nếu bạn có bất kỳ câu hỏi nào về chi tiết giá hoặc muốn điều chỉnh dịch vụ.`,
     };
+  } else if (request.type === 'tour_suggestion' && request.message) {
+    return {
+      success: true,
+      message: `Xin chào! Tôi là Leo - trợ lý ảo của AsahiJapanTours.
+
+Dựa trên mô tả của bạn, tôi xin giới thiệu một số tour du lịch phù hợp:
+
+1. Tour Khám Phá Tokyo & Vùng Phụ Cận (5 ngày)
+   - Điểm nổi bật: Tham quan Tokyo, Núi Phú Sĩ, Hakone
+   - Thời điểm lý tưởng: Mùa xuân (tháng 3-4) hoặc mùa thu (tháng 10-11)
+   - Lý do phù hợp: Kết hợp được cả trải nghiệm đô thị hiện đại và thiên nhiên tươi đẹp
+
+2. Tour Di Sản Văn Hóa Kyoto & Osaka (6 ngày)
+   - Điểm nổi bật: Tham quan các đền chùa cổ ở Kyoto, khu phố mua sắm Osaka
+   - Thời điểm lý tưởng: Quanh năm, đặc biệt là mùa thu khi lá đỏ
+   - Lý do phù hợp: Trải nghiệm văn hóa Nhật Bản truyền thống sâu sắc
+
+Lưu ý:
+- Nên đặt vé trước 2-3 tháng, đặc biệt trong mùa cao điểm
+- Thời tiết thay đổi theo mùa, nên chuẩn bị trang phục phù hợp
+- Có thể bổ sung thêm các trải nghiệm như: học làm sushi, mặc kimono, tham quan làng cổ
+
+Đừng ngần ngại liên hệ với chúng tôi để được tư vấn chi tiết và tạo lịch trình phù hợp nhất với nhu cầu của bạn!
+
+Leo - Trợ lý ảo AsahiJapanTours`,
+    };
   } else {
     return {
       success: true,
@@ -121,6 +163,8 @@ export async function getAiResponse(request: AiAssistantRequest): Promise<{
       prompt = TOUR_INTRO_PROMPT;
     } else if (request.type === 'price_explanation' && request.calculationData) {
       prompt = PRICE_EXPLANATION_PROMPT(request.calculationData);
+    } else if (request.type === 'tour_suggestion' && request.message) {
+      prompt = TOUR_SUGGESTION_PROMPT(request.message);
     } else if (request.type === 'custom_question' && request.message) {
       prompt = `Bạn là Leo - trợ lý ảo chuyên về du lịch của AsahiJapanTours.
       Hãy trả lời câu hỏi này của khách hàng một cách chuyên nghiệp, thân thiện:
