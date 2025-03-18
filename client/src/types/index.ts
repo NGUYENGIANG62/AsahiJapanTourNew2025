@@ -90,6 +90,8 @@ export type SpecialService = {
   notes?: string;
 };
 
+export type HotelStarRating = 3 | 4 | 5;
+
 export type CalculatorFormData = {
   tourId: number;
   startDate: string;
@@ -98,6 +100,7 @@ export type CalculatorFormData = {
   vehicleCount?: number;
   participants: number;
   hotelId?: number;
+  hotelStars?: HotelStarRating; // Mới: Hạng sao của khách sạn (3-5 sao)
   roomType?: RoomType;
   singleRoomCount?: number;
   doubleRoomCount?: number;
