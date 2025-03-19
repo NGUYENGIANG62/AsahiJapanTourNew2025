@@ -71,7 +71,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({ showQR = true }) => {
                 <Facebook className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
-                <p className="font-medium">facebook.com/AsahiJapanTours</p>
+                <p className="font-medium">Du Lịch Asahi VietLife - Japan Travel</p>
                 <p className="text-xs text-muted-foreground">
                   {t('contact.socialMedia', 'Cập nhật tin tức và ưu đãi')}
                 </p>
