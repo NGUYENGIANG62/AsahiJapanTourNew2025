@@ -10,8 +10,30 @@ import { User, SYNC_SETTINGS } from '@shared/schema';
  * vì nó gây ra lỗi "Unable to parse range" trong một số trường hợp
  */
 function getSafeSheetName(sheetName: string): string {
-  // Trả về chỉ tên sheet, không thêm phạm vi A:Z
-  return sheetName;
+  // Dùng cho các thao tác liên quan tới việc kiểm tra tồn tại sheet
+  // hoặc các thao tác không yêu cầu phạm vi cụ thể
+  return sheetName.trim();
+}
+
+/**
+ * Hàm tiện ích để lấy phạm vi truy vấn an toàn khi truy vấn Google Sheets API
+ * Vấn đề: Khi chỉ cung cấp tên sheet, Google API yêu cầu một phạm vi hợp lệ
+ * @param sheetName Tên sheet
+ * @param fullRange Có lấy toàn bộ dữ liệu không
+ */
+function getSafeRange(sheetName: string, fullRange: boolean = true): string {
+  const trimmedName = sheetName.trim();
+  
+  // Luôn bọc tên sheet trong dấu nháy đơn để đảm bảo an toàn
+  // không phụ thuộc vào việc có ký tự đặc biệt hay không
+  let safeName = `'${trimmedName}'`;
+  
+  // Luôn thêm phạm vi cụ thể
+  if (fullRange) {
+    return `${safeName}!A1:Z1000`; // Phạm vi rộng cho toàn bộ dữ liệu
+  } else {
+    return `${safeName}!A1`; // Chỉ lấy header
+  }
 }
 
 // Google Sheets configuration
@@ -152,12 +174,12 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
     console.log(`Getting data from sheet: ${sheetName}`);
     
     // Format tên sheet theo đúng định dạng API
-    // Sử dụng định dạng đơn giản không có phạm vi A:Z để tránh lỗi
-    const safeSheetName = getSafeSheetName(sheetName);
-    console.log(`Requesting sheet with range: ${safeSheetName}`);
+    // Lấy phạm vi đầy đủ để đảm bảo lấy được toàn bộ dữ liệu
+    const range = getSafeRange(sheetName, true);
+    console.log(`Requesting sheet with range: ${range}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: safeSheetName,
+      range,
     });
 
     const rows = response.data.values || [];
@@ -219,8 +241,398 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
   }
 }
 
-// Implement remaining functions, but with the same getSafeSheetName usage pattern
-// ...export functions from original file...
+/**
+ * Sync data from Google Sheets to local storage
+ */
+export async function syncDataFromSheets(storage: any, user?: User | null, specificSource?: string) {
+  try {
+    console.log("Starting data sync from Google Sheets...");
+    const { sourceName } = await getSpreadsheetForUser(user, specificSource);
+    
+    // Kiểm tra thời gian sync gần nhất, nếu là đại lý thì luôn sync
+    // Nếu là admin và thời gian sync < 5 phút, bỏ qua
+    if (user && user.role === 'admin') {
+      const lastSyncTime = await storage.getLastSyncTimestamp();
+      const now = Date.now();
+      
+      // Nếu thời gian từ lần sync cuối < 5 phút và không force sync, bỏ qua
+      if (lastSyncTime && (now - lastSyncTime < 5 * 60 * 1000) && !specificSource) {
+        console.log(`Bỏ qua sync tự động: Sync gần nhất ${Math.round((now - lastSyncTime) / 1000)}s trước`);
+        return;
+      }
+    }
+    
+    // Update settings
+    console.log("Syncing settings from Google Sheets...");
+    const settingsData = await getSheetData('Settings', user, specificSource);
+    console.log(`Settings data from Google Sheets:`, settingsData);
+    
+    // Luôn cập nhật cài đặt, kể cả khi không có dữ liệu từ Google Sheets
+    // Đảm bảo các cài đặt mặc định luôn có trong bộ nhớ tạm thời
+    const allSettings = await storage.getAllSettings();
+    console.log(`Updated settings after sync:`, allSettings);
+    console.log(`Settings synchronized from Google Sheets`);
+    
+    // Cài đặt này không đồng bộ là nguồn dữ liệu hiện tại
+    await storage.updateSetting('current_data_source', specificSource || (user?.dataSource || ''));
+    await storage.updateSetting('current_data_source_name', sourceName);
+    
+    // Update last sync time
+    await storage.updateLastSyncTimestamp();
+    
+    // Apply sync settings from shared schema
+    for (const entityKey of Object.keys(SYNC_SETTINGS)) {
+      // Skip if this entity is disabled in SYNC_SETTINGS
+      if (!SYNC_SETTINGS[entityKey as keyof typeof SYNC_SETTINGS]) {
+        console.log(`Skipping sync for ${entityKey} (disabled in SYNC_SETTINGS)`);
+        continue;
+      }
+      
+      try {
+        // For example, if entityKey is 'tours', sheetName will be 'Tours'
+        const sheetName = entityKey.charAt(0).toUpperCase() + entityKey.slice(1);
+        console.log(`Syncing ${sheetName} from Google Sheets...`);
+        
+        const data = await getSheetData(sheetName, user, specificSource);
+        console.log(`Retrieved ${data.length} ${sheetName.toLowerCase()} from Google Sheets`);
+        
+        for (const item of data) {
+          switch (entityKey) {
+            case 'tours':
+              await storage.createOrUpdateTour(item);
+              break;
+            case 'vehicles':
+              await storage.createOrUpdateVehicle(item);
+              break;
+            case 'hotels':
+              await storage.createOrUpdateHotel(item);
+              break;
+            case 'guides':
+              await storage.createOrUpdateGuide(item);
+              break;
+            case 'seasons':
+              await storage.createOrUpdateSeason(item);
+              break;
+            case 'settings':
+              await storage.createOrUpdateSetting(item);
+              break;
+          }
+        }
+        
+        console.log(`Successfully synced ${sheetName} from Google Sheets`);
+      } catch (error) {
+        console.error(`Error syncing ${entityKey} from Google Sheets:`, error);
+        // Continue with next entity even if one fails
+      }
+    }
+    
+    console.log("Data sync from Google Sheets completed successfully");
+    
+    // Cập nhật mã AVF cho tours (Admin only)
+    if (user && user.role === 'admin') {
+      const updatedTours = await storage.updateAllTourAVFCodes();
+      console.log(`Đã cập nhật mã AVF cho ${updatedTours.length} tours`);
+    }
+  } catch (error) {
+    console.error("Error syncing data from Google Sheets:", error);
+    throw error;
+  }
+}
 
-// Export your getSpreadsheetForUser, getSpreadsheet, createSheetIfNotExist, etc.
-export { getSpreadsheetForUser, getSpreadsheet };
+/**
+ * Hàm trợ giúp thay thế nội dung theo ngôn ngữ
+ * @param data Dữ liệu cần thay thế
+ * @param language Mã ngôn ngữ ('en', 'ja', 'zh', 'ko', 'vi')
+ */
+function replaceWithLanguageContent(data: any, language: string) {
+  if (!data || language === 'en') return data;
+  
+  const result = { ...data };
+  
+  // Thay thế tên nếu có ngôn ngữ tương ứng
+  const nameKey = `name${language.charAt(0).toUpperCase() + language.slice(1)}`;
+  if (data[nameKey]) {
+    result.name = data[nameKey];
+  }
+  
+  // Thay thế mô tả nếu có ngôn ngữ tương ứng
+  const descKey = `description${language.charAt(0).toUpperCase() + language.slice(1)}`;
+  if (data[descKey]) {
+    result.description = data[descKey];
+  }
+  
+  return result;
+}
+
+/**
+ * Sync data from local storage to Google Sheets
+ * @param storage Storage instance
+ * @param language Language code ('en', 'ja', 'zh', 'ko', 'vi')
+ */
+export async function syncDataToSheets(storage: any, language: string = 'en', user?: User | null) {
+  try {
+    console.log(`Starting data sync to Google Sheets (language: ${language})...`);
+    const { sheetsApi, spreadsheetId } = await getSpreadsheetForUser(user);
+    
+    // Apply sync settings from shared schema
+    for (const entityKey of Object.keys(SYNC_SETTINGS)) {
+      // Skip if this entity is disabled in SYNC_SETTINGS
+      if (!SYNC_SETTINGS[entityKey as keyof typeof SYNC_SETTINGS]) {
+        console.log(`Skipping sync for ${entityKey} (disabled in SYNC_SETTINGS)`);
+        continue;
+      }
+      
+      try {
+        // For example, if entityKey is 'tours', sheetName will be 'Tours'
+        const sheetName = entityKey.charAt(0).toUpperCase() + entityKey.slice(1);
+        console.log(`Syncing local ${entityKey} to Google Sheets...`);
+        
+        // Create the sheet if it doesn't exist
+        await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
+        
+        // Get data from storage
+        let data: any[] = [];
+        switch (entityKey) {
+          case 'tours':
+            data = await storage.getAllTours();
+            break;
+          case 'vehicles':
+            data = await storage.getAllVehicles();
+            break;
+          case 'hotels':
+            data = await storage.getAllHotels();
+            break;
+          case 'guides':
+            data = await storage.getAllGuides();
+            break;
+          case 'seasons':
+            data = await storage.getAllSeasons();
+            break;
+          case 'settings':
+            data = await storage.getAllSettings();
+            break;
+        }
+        
+        // If language is not English, replace content with localized version
+        if (language !== 'en') {
+          data = data.map(item => replaceWithLanguageContent(item, language));
+        }
+        
+        // Extract headers and values
+        if (data.length > 0) {
+          const headers = Object.keys(data[0]);
+          const values = [headers];
+          
+          data.forEach(item => {
+            const row: any[] = [];
+            headers.forEach(header => {
+              let value = item[header];
+              
+              // Convert arrays to strings
+              if (Array.isArray(value)) {
+                value = value.join(', ');
+              }
+              
+              // Convert booleans to strings
+              if (typeof value === 'boolean') {
+                value = value ? 'TRUE' : 'FALSE';
+              }
+              
+              row.push(value !== undefined && value !== null ? value : '');
+            });
+            values.push(row);
+          });
+          
+          // Sử dụng định dạng có phạm vi đầy đủ để đảm bảo lấy được toàn bộ dữ liệu
+          const fullRange = getSafeRange(sheetName, true);
+          const range = `${getSafeRange(sheetName, false)}:${String.fromCharCode(65 + headers.length - 1)}${values.length}`;
+          
+          console.log(`Updating Google Sheet: ${range} with ${values.length} rows`);
+          
+          // Clear existing data
+          await sheetsApi.spreadsheets.values.clear({
+            spreadsheetId,
+            range: fullRange,
+          });
+          
+          // Update with new data
+          await sheetsApi.spreadsheets.values.update({
+            spreadsheetId,
+            range,
+            valueInputOption: 'RAW',
+            requestBody: {
+              values
+            }
+          });
+          
+          console.log(`Successfully synced ${values.length - 1} ${entityKey} to Google Sheets`);
+        } else {
+          console.log(`No ${entityKey} data to sync`);
+        }
+      } catch (error) {
+        console.error(`Error syncing ${entityKey} to Google Sheets:`, error);
+        // Continue with next entity even if one fails
+      }
+    }
+    
+    console.log("Data sync to Google Sheets completed successfully");
+  } catch (error) {
+    console.error("Error syncing data to Google Sheets:", error);
+    throw error;
+  }
+}
+
+// Implement getSpreadsheetForUser function
+export async function getSpreadsheetForUser(user?: User | null, specificSource?: string): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sourceName: string }> {
+  try {
+    // Nếu có nguồn chỉ định, dùng nó thay vì tìm kiếm từ user
+    if (specificSource) {
+      if (specificSource.includes('http')) {
+        // It's a URL, authorize with it
+        const { sheetsApi, id } = await authorize(specificSource);
+        if (!sheetsApi) throw new Error('Could not authorize with Google');
+        return { sheetsApi, spreadsheetId: id, sourceName: 'custom' };
+      } else {
+        // It's already a spreadsheet ID
+        const { sheetsApi } = await authorize();
+        if (!sheetsApi) throw new Error('Could not authorize with Google');
+        return { sheetsApi, spreadsheetId: specificSource, sourceName: 'custom-id' };
+      }
+    } 
+    // Nếu là agency user và có dataSource
+    else if (user && user.role === 'agent' && user.dataSource) {
+      // Sử dụng nguồn dữ liệu của đại lý
+      if (user.dataSource.includes('http')) {
+        // It's a URL, authorize with it
+        const { sheetsApi, id } = await authorize(user.dataSource);
+        if (!sheetsApi) throw new Error('Could not authorize with Google');
+        return { sheetsApi, spreadsheetId: id, sourceName: user.username || 'agency' };
+      } else {
+        // It's already a spreadsheet ID
+        const { sheetsApi } = await authorize();
+        if (!sheetsApi) throw new Error('Could not authorize with Google');
+        return { sheetsApi, spreadsheetId: user.dataSource, sourceName: user.username || 'agency' };
+      }
+    } 
+    // Mặc định: sử dụng Google Sheet mặc định
+    else {
+      return await getSpreadsheet();
+    }
+  } catch (error) {
+    console.error('Error getting spreadsheet for user:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get the default spreadsheet (legacy support)
+ */
+export async function getSpreadsheet(): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sourceName: string }> {
+  try {
+    // Authorize with Google
+    const { sheetsApi, id } = await authorize();
+    if (!sheetsApi) throw new Error('Could not authorize with Google');
+    
+    console.log(`Using default spreadsheet ID: ${id}`);
+    return { sheetsApi, spreadsheetId: id, sourceName: 'default' };
+  } catch (error) {
+    console.error('Error getting spreadsheet:', error);
+    throw error;
+  }
+}
+
+/**
+ * Hàm để kiểm tra và tạo sheet mới nếu chưa tồn tại
+ */
+export async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sheetName: string): Promise<void> {
+  try {
+    console.log(`Checking if sheet '${sheetName}' exists...`);
+    
+    // Kiểm tra xem sheet đã tồn tại chưa
+    const spreadsheet = await sheetsApi.spreadsheets.get({
+      spreadsheetId,
+      includeGridData: false
+    });
+    
+    const sheetExists = spreadsheet.data.sheets?.some(
+      (sheet: any) => sheet.properties?.title === sheetName
+    );
+    
+    if (!sheetExists) {
+      console.log(`Sheet '${sheetName}' không tồn tại, đang tạo mới...`);
+      
+      try {
+        // Tạo sheet mới
+        await sheetsApi.spreadsheets.batchUpdate({
+          spreadsheetId,
+          requestBody: {
+            requests: [
+              {
+                addSheet: {
+                  properties: {
+                    title: sheetName
+                  }
+                }
+              }
+            ]
+          }
+        });
+        
+        console.log(`Sheet '${sheetName}' đã được tạo thành công`);
+        
+        // Thêm các header tùy thuộc vào loại sheet
+        let headers: string[] = [];
+        
+        switch (sheetName) {
+          case 'Tours':
+            headers = ['id', 'name', 'code', 'avfCode', 'location', 'description', 'durationDays', 'basePrice', 'imageUrl', 'nameJa', 'nameZh', 'nameKo', 'nameVi', 'descriptionJa', 'descriptionZh', 'descriptionKo', 'descriptionVi'];
+            break;
+          case 'Vehicles':
+            headers = ['id', 'name', 'seats', 'luggageCapacity', 'pricePerDay', 'driverCostPerDay'];
+            break;
+          case 'Hotels':
+            headers = ['id', 'name', 'location', 'stars', 'singleRoomPrice', 'doubleRoomPrice', 'tripleRoomPrice', 'breakfastPrice', 'imageUrl'];
+            break;
+          case 'Guides':
+            headers = ['id', 'name', 'languages', 'pricePerDay', 'experience', 'hasInternationalLicense', 'personality', 'gender', 'age'];
+            break;
+          case 'Seasons':
+            headers = ['id', 'name', 'startMonth', 'endMonth', 'description', 'priceMultiplier', 'nameJa', 'nameZh', 'nameKo', 'nameVi', 'descriptionJa', 'descriptionZh', 'descriptionKo', 'descriptionVi'];
+            break;
+          case 'Settings':
+            headers = ['id', 'key', 'value'];
+            break;
+          default:
+            headers = ['id', 'name', 'value'];
+        }
+        
+        // Thêm headers - để API tự xử lý encoding
+        // Tạo phạm vi chính xác cho hàng header dựa trên độ dài của headers
+        const headerRange = `${getSafeRange(sheetName, false)}:${String.fromCharCode(65 + headers.length - 1)}1`;
+        console.log(`Adding headers to range: ${headerRange}`);
+        await sheetsApi.spreadsheets.values.update({
+          spreadsheetId,
+          range: headerRange,
+          valueInputOption: 'RAW',
+          requestBody: {
+            values: [headers]
+          }
+        });
+        
+        console.log(`Headers added to sheet '${sheetName}'`);
+      } catch (error: any) {
+        if (error.message && error.message.includes('permission')) {
+          console.error(`Không thể tạo sheet '${sheetName}': ${error.message}`);
+          console.log(`Tiếp tục thực thi - sheet '${sheetName}' có thể cần được tạo thủ công.`);
+        } else {
+          throw error;
+        }
+      }
+    } else {
+      console.log(`Sheet '${sheetName}' đã tồn tại`);
+    }
+  } catch (error: any) {
+    console.error(`Error checking or creating sheet '${sheetName}':`, error.message || error);
+    console.log(`Tiếp tục đồng bộ bỏ qua sheet '${sheetName}' do lỗi quyền truy cập.`);
+  }
+}

@@ -19,8 +19,7 @@ import {
 import { convertCurrency } from "./currencyConverter";
 import { sendEmail } from "./emailService";
 // Use fixed Google Sheets service implementation
-import { getSheetData } from "./googleSheetsServiceFixed";
-import { syncDataFromSheets, syncDataToSheets } from "./googleSheetsService";
+import { getSheetData, syncDataFromSheets, syncDataToSheets } from "./googleSheetsServiceFixed";
 import { SYNC_SETTINGS } from "../shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
