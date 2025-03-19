@@ -71,13 +71,17 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   );
 
   passport.serializeUser((user: any, done) => {
+    console.log(`Serializing user: ${user.username} (${user.role}), ID: ${user.id}`);
     done(null, user.id);
   });
 
   passport.deserializeUser(async (id: any, done) => {
     try {
+      console.log(`Deserializing user with ID: ${id}`);
+      
       // Nếu không có id hoặc id không đúng định dạng, trả về null (người dùng không tồn tại)
       if (!id || isNaN(parseInt(id))) {
+        console.warn(`Invalid user ID format: ${id}`);
         return done(null, null);
       }
       
@@ -88,9 +92,11 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       
       // Nếu không tìm thấy user, trả về null thay vì lỗi
       if (!user) {
+        console.warn(`User with ID ${userId} not found in storage`);
         return done(null, null);
       }
       
+      console.log(`Successfully deserialized user: ${user.username} (${user.role}), ID: ${user.id}`);
       done(null, user);
     } catch (error) {
       console.error("Error deserializing user:", error);
