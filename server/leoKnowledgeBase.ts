@@ -409,13 +409,13 @@ async function uploadCsvToSheet(sheetsApi: sheets_v4.Sheets, spreadsheetId: stri
     // Xóa dữ liệu hiện tại (nếu có)
     await sheetsApi.spreadsheets.values.clear({
       spreadsheetId,
-      range: `'${sheetName}'!A1:Z`,
+      range: `${sheetName}!A1:Z`,
     });
     
     // Tải dữ liệu mới
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId,
-      range: `'${sheetName}'!A1`,
+      range: `${sheetName}!A1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: csvData,
