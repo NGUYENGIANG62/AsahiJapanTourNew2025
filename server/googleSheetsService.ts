@@ -2,6 +2,15 @@ import { google, sheets_v4 } from 'googleapis';
 import { JWT } from 'google-auth-library';
 import { User, SYNC_SETTINGS } from '@shared/schema';
 
+/**
+ * Hàm tiện ích để lấy tên sheet an toàn khi truy vấn Google Sheets API
+ * Tránh lỗi "Unable to parse range" bằng cách chỉ sử dụng tên sheet
+ */
+function getSafeSheetName(sheetName: string): string {
+  // Trả về chỉ tên sheet, không thêm phạm vi A:Z
+  return sheetName;
+}
+
 // Google Sheets configuration
 const SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets',
