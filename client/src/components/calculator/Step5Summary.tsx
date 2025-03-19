@@ -926,7 +926,7 @@ const Step5Summary = () => {
                   
                   {calculation.calculationDetails.participants > 1 && (
                     <div className="mt-3 text-lg font-semibold">
-                      <span className="mr-2">{t('calculator.summary.pricePerPerson', 'Giá cho mỗi người:')}</span>
+                      <span className="mr-2">{t('calculator.summary.pricePerPerson', 'Price per person:')}</span>
                       {formatCurrency(calculation.costs.totalAmount / calculation.calculationDetails.participants)}
                     </div>
                   )}
@@ -934,27 +934,27 @@ const Step5Summary = () => {
                   <div className="mt-4 flex flex-col gap-3">
                     <div className="p-3 border rounded-md bg-muted/20">
                       <div className="flex justify-between items-center">
-                        <span className="font-medium">{t('calculator.summary.tourForPeople', 'Tour cho')} {calculation.calculationDetails.participants} {t('calculator.summary.people', 'người')}</span>
+                        <span className="font-medium">{t('calculator.summary.tourForPeople', 'Tour for')} {calculation.calculationDetails.participants} {t('calculator.summary.people', 'people')}</span>
                         <span className="font-semibold">{formatCurrency(calculation.costs.totalAmount)}</span>
                       </div>
                       <div className="text-xs text-muted-foreground text-left mt-1">
-                        {calculation.tourDetails.durationDays} {t('calculator.summary.days', 'ngày')}, {calculation.tourDetails.name}, {calculation.tourDetails.location}
+                        {calculation.tourDetails.durationDays} {t('calculator.summary.days', 'days')}, {calculation.tourDetails.name}, {calculation.tourDetails.location}
                       </div>
                       <div className="text-xs text-muted-foreground text-left mt-1">
-                        {t('calculator.summary.from', 'Từ')} {formatDate(formData.startDate)} {t('calculator.summary.to', 'đến')} {formatDate(formData.endDate)}
+                        {t('calculator.summary.from', 'From')} {formatDate(formData.startDate)} {t('calculator.summary.to', 'to')} {formatDate(formData.endDate)}
                       </div>
                       {vehicle && (
                         <div className="text-xs text-muted-foreground text-left mt-1">
-                          {t('calculator.summary.transport', 'Phương tiện')}: {formData.vehicleCount || 1}x {vehicle.name} ({vehicle.seats} {t('calculator.summary.seats', 'chỗ')}, {t('calculator.summary.luggage', 'hành lý')}: {vehicle.luggageCapacity} cái)
+                          {t('calculator.summary.transport', 'Transport')}: {formData.vehicleCount || 1}x {vehicle.name} ({vehicle.seats} {t('calculator.summary.seats', 'seats')}, {t('calculator.summary.luggage', 'luggage')}: {vehicle.luggageCapacity} {t('calculator.summary.pieces', 'pieces')})
                         </div>
                       )}
                     </div>
                     
                     <div className="border rounded-md p-3">
-                      <h4 className="font-medium text-left mb-2">{t('calculator.summary.preferredLocations', 'Địa điểm mong muốn')}</h4>
+                      <h4 className="font-medium text-left mb-2">{t('calculator.summary.preferredLocations', 'Preferred Locations')}</h4>
                       <textarea 
                         className="w-full border rounded-md h-20 p-2 text-sm"
-                        placeholder={t('calculator.summary.preferredLocationsPlaceholder', 'Vui lòng nhập các địa điểm bạn muốn đến thăm trong chuyến tour này...')}
+                        placeholder={t('calculator.summary.preferredLocationsPlaceholder', 'Please enter the locations you would like to visit during this tour...')}
                         id="preferred-locations"
                         ref={preferredLocationsRef}
                         onChange={(e) => setPreferredLocations(e.target.value)}
@@ -967,8 +967,8 @@ const Step5Summary = () => {
                       <Alert className="mb-2">
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription>
-                          {t('calculator.summary.daysExceeded', 'Số ngày bạn chọn')} ({calculateDuration()} {t('calculator.summary.days', 'ngày')}) {t('calculator.summary.exceedsTourDays', 'vượt quá số ngày tiêu chuẩn của tour')} ({tour?.durationDays} {t('calculator.summary.days', 'ngày')}). 
-                          {t('calculator.summary.pleaseEnterLocations', 'Vui lòng nhập địa điểm bạn muốn đến trong phần "Địa điểm mong muốn".')}
+                          {t('calculator.summary.daysExceeded', 'The number of days you selected')} ({calculateDuration()} {t('calculator.summary.days', 'days')}) {t('calculator.summary.exceedsTourDays', 'exceeds the standard duration of the tour')} ({tour?.durationDays} {t('calculator.summary.days', 'days')}). 
+                          {t('calculator.summary.pleaseEnterLocations', 'Please enter the locations you would like to visit in the "Preferred Locations" section.')}
                         </AlertDescription>
                       </Alert>
                     )}
@@ -1022,17 +1022,17 @@ const Step5Summary = () => {
                   )}
                   <Alert className="mt-3 bg-amber-50 border-amber-200">
                     <AlertTitle className="text-amber-800 font-medium">
-                      Thông báo thanh toán
+                      {t('calculator.payment.paymentNotice', 'Payment Notice')}
                     </AlertTitle>
                     <AlertDescription className="text-amber-700">
-                      Quý khách vui lòng thanh toán theo hướng dẫn của AsahiVietLife. 
-                      Chi tiết liên hệ qua email: asahivietlifejapantours@gmail.com
+                      {t('calculator.payment.pleaseFollowInstructions', 'Please make payment according to AsahiVietLife instructions.')} 
+                      {t('calculator.payment.contactDetailsEmail', 'For details, contact via email:')} asahivietlifejapantours@gmail.com
                     </AlertDescription>
                   </Alert>
                   
-                  {/* Thông tin thanh toán với mã QR */}
+                  {/* Payment information with QR code */}
                   <div className="mt-4">
-                    <h4 className="font-medium mb-3">Thông tin chuyển khoản</h4>
+                    <h4 className="font-medium mb-3">{t('calculator.payment.transferInformation', 'Transfer Information')}</h4>
                     <PaymentInformation 
                       formatCurrency={formatCurrency}
                       totalAmount={calculation.costs.totalAmount} 
