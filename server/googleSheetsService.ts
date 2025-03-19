@@ -375,10 +375,12 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
     // Kiểm tra và tạo sheet nếu cần thiết
     await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
     
-    // Get data from sheet - Không encode url vì Google API sẽ tự làm
+    // Get data from sheet - Xử lý đặc biệt cho tên sheet
+    const formattedSheetName = formatSheetName(sheetName);
+      
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: `${sheetName}!A1:Z1000`,
+      range: `${formattedSheetName}!A1:Z1000`,
     });
 
     const rows = response.data.values || [];
@@ -659,6 +661,17 @@ export async function syncDataFromSheets(storage: any, user?: User | null, speci
     console.error('Error syncing data from sheets:', error);
     throw error;
   }
+}
+
+/**
+ * Hàm xử lý các tên sheet có chứa ký tự đặc biệt
+ * GoogleSheet API yêu cầu tên sheet có chứa ký tự đặc biệt phải được đặt trong dấu nháy đơn
+ */
+function formatSheetName(sheetName: string): string {
+  // Escape tên sheet nếu cần thiết bằng cách đặt trong dấu nháy đơn
+  return sheetName.includes(' ') || sheetName.includes('-') || /[^\w]/.test(sheetName)
+    ? `'${sheetName}'`
+    : sheetName;
 }
 
 /**
