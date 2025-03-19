@@ -378,7 +378,7 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
     // Get data from sheet
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: `${sheetName}!A1:Z1000`, // Do not use single quotes - they get encoded incorrectly
+      range: encodeURIComponent(`${sheetName}!A1:Z1000`),
     });
 
     const rows = response.data.values || [];
@@ -444,7 +444,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     // First, get all the data to find the row index
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: `${sheetName}!A1:Z1000`,
+      range: encodeURIComponent(`${sheetName}!A1:Z1000`),
     });
 
     const rows = response.data.values || [];
@@ -475,7 +475,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
       // Update existing row
       await sheetsApi.spreadsheets.values.update({
         spreadsheetId,
-        range: `${sheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`,
+        range: encodeURIComponent(`${sheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`),
         valueInputOption: 'RAW',
         requestBody: {
           values: [values],
@@ -485,7 +485,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
       // Append new row
       await sheetsApi.spreadsheets.values.append({
         spreadsheetId,
-        range: `${sheetName}!A1:Z1`,
+        range: encodeURIComponent(`${sheetName}!A1:Z1`),
         valueInputOption: 'RAW',
         insertDataOption: 'INSERT_ROWS',
         requestBody: {
@@ -512,7 +512,7 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
     // First, get all the data to find the row index
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: `${sheetName}!A1:Z1000`,
+      range: encodeURIComponent(`${sheetName}!A1:Z1000`),
     });
 
     const rows = response.data.values || [];
