@@ -78,12 +78,18 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
+  const domain = process.env.APP_DOMAIN || '';
+  
   server.listen({
     port,
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    if (domain) {
+      log(`Custom domain configured: https://${domain}`);
+    }
     
     // Khởi động tác vụ đồng bộ tự động
     startScheduledTasks();
