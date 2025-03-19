@@ -48,10 +48,9 @@ const SpecialServicesStep = () => {
         <CardContent>
           <div className="space-y-4">
             <div className="border rounded-lg p-4 bg-muted/30">
-              <p className="text-sm font-medium mb-2 text-destructive">Lưu ý quan trọng:</p>
+              <p className="text-sm font-medium mb-2 text-destructive">{t('calculator.specialServices.importantNote', 'Lưu ý quan trọng')}:</p>
               <p className="text-sm">
-                Tất cả các dịch vụ dưới đây <span className="font-bold">không bao gồm trong báo giá tour</span>. 
-                Công ty sẽ liên hệ trực tiếp để tư vấn và báo giá cho các dịch vụ bổ sung này.
+                {t('calculator.specialServices.importantNoteText', 'Tất cả các dịch vụ dưới đây không bao gồm trong báo giá tour. Công ty sẽ liên hệ trực tiếp để tư vấn và báo giá cho các dịch vụ bổ sung này.')}
               </p>
             </div>
             
@@ -64,7 +63,7 @@ const SpecialServicesStep = () => {
                     handleSpecialServiceChange('geishaShow', Boolean(checked))
                   }
                 />
-                <Label htmlFor="geishaShow">Show Geisha</Label>
+                <Label htmlFor="geishaShow">{t('calculator.specialServices.geishaShow', 'Show Geisha')}</Label>
               </div>
               
               <div className="flex items-center space-x-2">
@@ -75,7 +74,7 @@ const SpecialServicesStep = () => {
                     handleSpecialServiceChange('kimonoExperience', Boolean(checked))
                   }
                 />
-                <Label htmlFor="kimonoExperience">Trải nghiệm mặc Kimono</Label>
+                <Label htmlFor="kimonoExperience">{t('calculator.specialServices.kimonoExperience', 'Trải nghiệm mặc Kimono')}</Label>
               </div>
               
               <div className="flex items-center space-x-2">
@@ -86,7 +85,7 @@ const SpecialServicesStep = () => {
                     handleSpecialServiceChange('teaCeremony', Boolean(checked))
                   }
                 />
-                <Label htmlFor="teaCeremony">Trà đạo truyền thống</Label>
+                <Label htmlFor="teaCeremony">{t('calculator.specialServices.teaCeremony', 'Trà đạo truyền thống')}</Label>
               </div>
               
               <div className="flex items-center space-x-2">
@@ -97,7 +96,7 @@ const SpecialServicesStep = () => {
                     handleSpecialServiceChange('wagyuDinner', Boolean(checked))
                   }
                 />
-                <Label htmlFor="wagyuDinner">Ăn tối với bò Wagyu</Label>
+                <Label htmlFor="wagyuDinner">{t('calculator.specialServices.wagyuDinner', 'Ăn tối với bò Wagyu')}</Label>
               </div>
               
               <div className="flex items-center space-x-2">
@@ -108,7 +107,7 @@ const SpecialServicesStep = () => {
                     handleSpecialServiceChange('sumoShow', Boolean(checked))
                   }
                 />
-                <Label htmlFor="sumoShow">Xem đấu Sumo</Label>
+                <Label htmlFor="sumoShow">{t('calculator.specialServices.sumoShow', 'Xem đấu Sumo')}</Label>
               </div>
               
               <div className="flex items-center space-x-2">
@@ -119,7 +118,7 @@ const SpecialServicesStep = () => {
                     handleSpecialServiceChange('disneylandTickets', Boolean(checked))
                   }
                 />
-                <Label htmlFor="disneylandTickets">Vé Disneyland</Label>
+                <Label htmlFor="disneylandTickets">{t('calculator.specialServices.disneylandTickets', 'Vé Disneyland')}</Label>
               </div>
               
               <div className="flex items-center space-x-2">
@@ -130,7 +129,7 @@ const SpecialServicesStep = () => {
                     handleSpecialServiceChange('universalStudioTickets', Boolean(checked))
                   }
                 />
-                <Label htmlFor="universalStudioTickets">Vé Universal Studio</Label>
+                <Label htmlFor="universalStudioTickets">{t('calculator.specialServices.universalStudioTickets', 'Vé Universal Studio')}</Label>
               </div>
               
               <div className="flex items-center space-x-2">
@@ -142,16 +141,16 @@ const SpecialServicesStep = () => {
                   }
                 />
                 <Label htmlFor="airportTransfer" className="flex items-center">
-                  <Plane className="h-4 w-4 mr-1" /> Dịch vụ đưa đón sân bay
+                  <Plane className="h-4 w-4 mr-1" /> {t('calculator.specialServices.airportTransfer', 'Dịch vụ đưa đón sân bay')}
                 </Label>
               </div>
             </div>
             
             <div className="space-y-2 mt-4">
-              <Label htmlFor="notes">Ghi chú thêm</Label>
+              <Label htmlFor="notes">{t('calculator.specialServices.notes', 'Ghi chú thêm')}</Label>
               <Textarea 
                 id="notes"
-                placeholder="Thêm yêu cầu đặc biệt hoặc câu hỏi về các dịch vụ bổ sung..."
+                placeholder={t('calculator.specialServices.notesPlaceholder', 'Thêm yêu cầu đặc biệt hoặc câu hỏi về các dịch vụ bổ sung...')}
                 value={specialServices.notes || ''}
                 onChange={(e) => handleSpecialServiceChange('notes', e.target.value)}
                 className="min-h-[100px]"
