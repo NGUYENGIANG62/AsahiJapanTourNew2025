@@ -117,7 +117,7 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
                 <div className="flex flex-col items-center justify-center">
                   <div className="border rounded-lg p-2 bg-white">
                     <img 
-                      src="/attached_assets/871dfb8adbcd32936bdc.jpeg" 
+                      src="attached_assets/871dfb8adbcd32936bdc.jpeg" 
                       alt="Payment QR Code" 
                       className="h-32 w-32 object-contain"
                     />
