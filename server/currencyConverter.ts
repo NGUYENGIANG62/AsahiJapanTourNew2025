@@ -4,7 +4,9 @@ import axios from 'axios';
 let conversionRates: Record<string, number> = {
   JPY: 1,
   USD: 0.0067, // Default fallback rate
-  VND: 161.83   // Default fallback rate
+  VND: 161.83, // Default fallback rate
+  CNY: 0.048,  // Default fallback rate for Chinese Yuan
+  KRW: 9.05    // Default fallback rate for Korean Won
 };
 
 let lastUpdated: Date = new Date();
@@ -44,9 +46,18 @@ export async function updateConversionRates(): Promise<void> {
     const response = await axios.get('https://api.exchangerate-api.com/v4/latest/JPY');
     
     if (response.data && response.data.rates) {
-      // Update USD and VND rates
+      // Update all currency rates
       conversionRates.USD = response.data.rates.USD;
       conversionRates.VND = response.data.rates.VND;
+      conversionRates.CNY = response.data.rates.CNY;
+      conversionRates.KRW = response.data.rates.KRW;
+      
+      console.log('Currency rates updated:', {
+        USD: conversionRates.USD,
+        VND: conversionRates.VND,
+        CNY: conversionRates.CNY,
+        KRW: conversionRates.KRW
+      });
       
       lastUpdated = new Date();
     }
