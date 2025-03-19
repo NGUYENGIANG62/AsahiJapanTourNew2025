@@ -13,8 +13,11 @@ export interface IStorage {
   // User Management
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>; // Lấy danh sách tất cả người dùng
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(id: number, newPassword: string): Promise<User | undefined>;
+  updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined>; // Cập nhật thông tin người dùng
+  deleteUser(id: number): Promise<boolean>; // Xóa người dùng
   
   // Tour Management
   getAllTours(): Promise<Tour[]>;
