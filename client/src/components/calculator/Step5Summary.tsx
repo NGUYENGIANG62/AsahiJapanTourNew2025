@@ -637,7 +637,7 @@ const Step5Summary = () => {
                               <>
                                 <div className="font-medium">{hotel.name} - {hotel.stars} {t('calculator.summary.stars', 'stars')}</div>
                                 <div className="text-xs text-muted-foreground mt-1">
-                                  <div>{getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'Không có phòng')}</div>
+                                  <div>{getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'No room selected')}</div>
                                   <div>{formData.stayingNights || calculateDuration() - 1} {t('calculator.summary.nights', 'nights')}</div>
                                   <div className="mt-1">
                                     {hotel.singleRoomPrice > 0 && <span className="mr-2">{t('calculator.summary.singleRoom', 'Single room')}: {formatCurrency(hotel.singleRoomPrice)}/{t('calculator.summary.perNight', 'per night')}</span>}
@@ -653,12 +653,12 @@ const Step5Summary = () => {
                                 <>
                                   <div className="font-medium">{t('calculator.summary.hotel', 'Hotel')} {formData.hotelStars} {t('calculator.summary.stars', 'stars')}</div>
                                   <div className="text-xs text-muted-foreground mt-1">
-                                    <div>{getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'Không có phòng')}</div>
+                                    <div>{getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'No room selected')}</div>
                                     <div>{formData.stayingNights || calculateDuration() - 1} {t('calculator.summary.nights', 'nights')}</div>
                                   </div>
                                 </>
                               )
-                              : <span className="text-amber-600">{t('calculator.summary.noHotelSelected', 'Chưa chọn khách sạn')}</span>
+                              : <span className="text-amber-600">{t('calculator.summary.noHotelSelected', 'No hotel selected')}</span>
                           }
                         </div>
                       </li>
@@ -690,7 +690,7 @@ const Step5Summary = () => {
                                 )}
                               </>)
                               : <span className="text-amber-600">{t('calculator.summary.guideSelectedButNotSpecific', 'Guide service included, but no specific guide selected')}</span>
-                            : <span className="text-muted-foreground">{t('calculator.summary.noGuideSelected', 'Không bao gồm hướng dẫn viên')}</span>
+                            : <span className="text-muted-foreground">{t('calculator.summary.noGuideSelected', 'No guide included')}</span>
                           }
                         </div>
                       </li>
