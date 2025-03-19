@@ -12,7 +12,7 @@ interface EmailRequest {
 // Email config - khai báo cố định
 const EMAIL_CONFIG = {
   user: 'asahivietlifejapantours@gmail.com',
-  senderName: 'AsahiJapanTours',
+  senderName: 'AsahiJapanTours', // Tên hiển thị
   password: 'xdppaohryuhknygk', // App password
   host: 'smtp.gmail.com',
   port: 465,
