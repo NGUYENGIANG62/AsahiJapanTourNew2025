@@ -114,25 +114,21 @@ export class MemStorage implements IStorage {
   }
 
   private async initializeData() {
-    // Create default admin user
-    const adminPassword = await bcrypt.hash('Kiminonaha01', 10);
-    
+    // Create default admin user - lưu dạng gốc theo yêu cầu
     this.users.set(this.currentUserId, {
       id: this.currentUserId++,
       username: 'AsahiVietLifeJapanTour',
-      password: adminPassword,
+      password: 'Kiminonaha01', // Lưu mật khẩu dạng gốc không dùng bcrypt
       role: 'admin',
       agencyId: null,
       dataSource: null
     });
     
-    // Create default customer user
-    const customerPassword = await bcrypt.hash('AsahiTour2024', 10);
-    
+    // Create default customer user - lưu dạng gốc theo yêu cầu
     this.users.set(this.currentUserId, {
       id: this.currentUserId++,
       username: 'customer',
-      password: customerPassword,
+      password: 'AsahiTour2024', // Lưu mật khẩu dạng gốc không dùng bcrypt
       role: 'user',
       agencyId: null,
       dataSource: null
@@ -502,9 +498,8 @@ export class MemStorage implements IStorage {
     const user = this.users.get(id);
     if (!user) return undefined;
     
-    // Tạo mật khẩu đã mã hóa
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    const updatedUser = { ...user, password: hashedPassword };
+    // Lưu mật khẩu dạng gốc theo yêu cầu
+    const updatedUser = { ...user, password: newPassword };
     this.users.set(id, updatedUser);
     
     // Nếu không phải tài khoản admin (id=1), thì cập nhật lên Google Sheet
@@ -544,10 +539,8 @@ export class MemStorage implements IStorage {
       }
     }
     
-    // Nếu có mật khẩu mới, mã hóa nó
-    if (userData.password) {
-      userData.password = await bcrypt.hash(userData.password, 10);
-    }
+    // Nếu có mật khẩu mới, lưu dạng gốc theo yêu cầu
+    // Không mã hóa mật khẩu cho phù hợp với Google Sheet
     
     // Cập nhật thông tin người dùng
     const updatedUser = {
