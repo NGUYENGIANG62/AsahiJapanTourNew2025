@@ -310,10 +310,11 @@ export async function validateCredentials(username: string, password: string): P
       return null;
     }
 
-    // Trả về thông tin user
+    // Trả về thông tin user (bao gồm trường password để tương thích với User type)
     return {
       id: account.id,
       username: account.username,
+      password: account.password, // Thêm password để tương thích với type User
       role: account.role,
       agencyId: account.agencyId || null,
       dataSource: account.dataSource || null,
@@ -332,6 +333,7 @@ export async function getAllAccounts(): Promise<User[]> {
   return accounts.map(account => ({
     id: account.id,
     username: account.username,
+    password: account.password, // Thêm password để tương thích với type User
     role: account.role,
     agencyId: account.agencyId || null,
     dataSource: account.dataSource || null,
@@ -362,6 +364,7 @@ export async function createAccount(userData: {
     return {
       id: newAccount.id,
       username: newAccount.username,
+      password: newAccount.password, // Thêm password để tương thích với type User
       role: newAccount.role,
       agencyId: newAccount.agencyId || null,
       dataSource: newAccount.dataSource || null,
