@@ -37,14 +37,14 @@ const TourCalculator = () => {
     { id: 2, name: t('calculator.steps.services'), icon: <MapPin className="w-4 h-4" /> },
     { id: 3, name: t('calculator.steps.participants'), icon: <Users className="w-4 h-4" /> },
     { id: 4, name: t('calculator.steps.accommodation'), icon: <Hotel className="w-4 h-4" /> },
-    { id: 5, name: 'Dịch vụ đặc biệt', icon: <MapPin className="w-4 h-4" /> },
+    { id: 5, name: t('calculator.specialServices.title', 'Optional Services'), icon: <MapPin className="w-4 h-4" /> },
     { id: 6, name: t('calculator.steps.summary'), icon: <FileText className="w-4 h-4" /> },
   ];
 
   // Handle next button click
   const handleNext = () => {
     if (currentStep === 5) {
-      // Khi chuyển từ bước 5 (Dịch vụ đặc biệt) sang bước 6 (Summary), tính giá
+      // Khi chuyển từ bước 5 (Optional Services) sang bước 6 (Summary), tính giá
       calculatePrice();
       nextStep();
     } else if (currentStep === 6) {
