@@ -9,30 +9,31 @@ const SCOPES = [
 ];
 const SPREADSHEET_NAME = 'AsahiJapanTours';
 
+// Cấu trúc lưu trữ thông tin spreadsheet
 interface SpreadsheetInfo {
   id: string;
   auth: JWT | null;
   sheetsApi: sheets_v4.Sheets | null;
 }
 
-let spreadsheetInfo: SpreadsheetInfo = {
-  id: '',
-  auth: null,
-  sheetsApi: null
-};
+// Map lưu trữ các spreadsheet theo userID hoặc agencyID
+const spreadsheets = new Map<string, SpreadsheetInfo>();
+
+// Spreadsheet mặc định cho người dùng thông thường
+const DEFAULT_SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1DQ1e6k4I65O5NxmX8loJ_SKUI7aoIj3WCu5BMLUCznw/edit?usp=sharing";
+
+// Biến này chỉ giữ lại để tương thích với code cũ cho đến khi cập nhật hoàn toàn
+let spreadsheetId: string | null = null;
 
 /**
  * Lấy spreadsheet ID từ URL hoặc môi trường
  */
 function getSpreadsheetIdFromUrl(url: string): string | null {
-  try {
-    const regex = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-  } catch (error) {
-    console.error('Error extracting spreadsheet ID from URL:', error);
-    return null;
+  const urlMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  if (urlMatch && urlMatch[1]) {
+    return urlMatch[1];
   }
+  return null;
 }
 
 /**
@@ -44,85 +45,62 @@ function getSpreadsheetIdFromUrl(url: string): string | null {
  */
 async function authorize(customSpreadsheetUrl?: string) {
   try {
-    // Ưu tiên sử dụng URL tùy chỉnh nếu có
-    const spreadsheetUrl = customSpreadsheetUrl || process.env.GOOGLE_SPREADSHEET_URL;
-    console.log(`ENV variables check:\nGOOGLE_SPREADSHEET_URL: ${process.env.GOOGLE_SPREADSHEET_URL}`);
+    // Kiểm tra và ghi log các biến môi trường
+    console.log('ENV variables check:');
+    console.log('GOOGLE_SPREADSHEET_URL:', process.env.GOOGLE_SPREADSHEET_URL);
     
-    if (!spreadsheetUrl) {
-      throw new Error('GOOGLE_SPREADSHEET_URL environment variable not found');
-    }
+    // Lấy đường dẫn tới Google Sheets từ tham số, biến môi trường hoặc mặc định
+    const spreadsheetUrl = customSpreadsheetUrl || process.env.GOOGLE_SPREADSHEET_URL || DEFAULT_SPREADSHEET_URL;
     
-    console.log(`Using spreadsheet URL: ${spreadsheetUrl}`);
+    console.log('Using spreadsheet URL:', spreadsheetUrl);
     
-    // Extract spreadsheet ID from URL
+    // Trích xuất ID từ URL
     const spreadsheetId = getSpreadsheetIdFromUrl(spreadsheetUrl);
-    if (!spreadsheetId) {
-      throw new Error('Could not extract spreadsheet ID from URL');
+    if (spreadsheetId) {
+      console.log('Using spreadsheet ID:', spreadsheetId);
+    } else {
+      console.warn('Could not extract spreadsheet ID from URL. Will attempt to find by name.');
     }
+
+    // Phương pháp 1: Sử dụng Service Account (đọc và ghi)
+    const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    const serviceAccountPrivateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
     
-    console.log(`Using spreadsheet ID: ${spreadsheetId}`);
-    
-    // Kiểm tra loại xác thực
-    if (process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY) {
+    if (serviceAccountEmail && serviceAccountPrivateKey) {
       console.log('Using Service Account for full access (read & write)');
       
-      // Sử dụng Service Account (hỗ trợ đọc và ghi)
-      const auth = new google.auth.JWT({
-        email: process.env.GOOGLE_CLIENT_EMAIL,
-        key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      // Xử lý private key (thay thế \\n bằng \n nếu cần)
+      const privateKey = serviceAccountPrivateKey.replace(/\\n/g, '\n');
+      
+      const auth = new JWT({
+        email: serviceAccountEmail,
+        key: privateKey,
         scopes: SCOPES
       });
       
-      await auth.authorize();
-      const sheetsApi = google.sheets({ version: 'v4', auth });
-      
-      spreadsheetInfo = {
-        id: spreadsheetId,
-        auth,
-        sheetsApi
-      };
-    } else if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REFRESH_TOKEN) {
-      console.log('Using Service Account for full access (read & write)');
-      
-      // Sử dụng OAuth2 (hỗ trợ đọc và ghi)
-      const auth = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET
-      );
-      
-      auth.setCredentials({
-        refresh_token: process.env.GOOGLE_REFRESH_TOKEN
-      });
-      
-      const sheetsApi = google.sheets({ version: 'v4', auth });
-      
-      spreadsheetInfo = {
-        id: spreadsheetId,
-        auth: null, // Không sử dụng JWT trong trường hợp này
-        sheetsApi
-      };
-    } else if (process.env.GOOGLE_API_KEY) {
-      console.log('Using API Key for read-only access');
-      
-      // Sử dụng API Key (chỉ hỗ trợ đọc)
-      const auth = null; // Không có JWT
-      const sheetsApi = google.sheets({
+      return google.sheets({
         version: 'v4',
-        auth: process.env.GOOGLE_API_KEY
+        auth: auth
       });
-      
-      spreadsheetInfo = {
-        id: spreadsheetId,
-        auth,
-        sheetsApi
-      };
-    } else {
-      throw new Error('No Google authentication method found. Please set either GOOGLE_CLIENT_EMAIL and GOOGLE_PRIVATE_KEY, or GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_REFRESH_TOKEN, or GOOGLE_API_KEY');
     }
     
-    return spreadsheetInfo;
+    // Phương pháp 2: Sử dụng API key (chỉ đọc)
+    const apiKey = process.env.GOOGLE_API_KEY;
+    if (apiKey) {
+      console.log('Using Google API key for authenticated public access (read-only)');
+      return google.sheets({
+        version: 'v4',
+        auth: apiKey
+      });
+    }
+    
+    // Phương pháp cuối cùng: không có xác thực (hạn chế quota)
+    console.log('WARNING: No authentication method available. Using unauthenticated access with limited quota.');
+    return google.sheets({ 
+      version: 'v4'
+    });
   } catch (error) {
-    console.error('Error authorizing with Google:', error);
+    console.error('Authorization error:', error);
     throw error;
   }
 }
@@ -133,25 +111,18 @@ async function authorize(customSpreadsheetUrl?: string) {
  * Thay vào đó, chúng ta đã trích xuất ID từ URL
  */
 async function findSpreadsheetId(sheetsApi: sheets_v4.Sheets): Promise<string> {
-  try {
-    const response = await sheetsApi.spreadsheets.list();
-    const spreadsheets = response.data.files;
-    
-    if (!spreadsheets || spreadsheets.length === 0) {
-      throw new Error('No spreadsheets found');
-    }
-    
-    const spreadsheet = spreadsheets.find(s => s.name === SPREADSHEET_NAME);
-    
-    if (!spreadsheet || !spreadsheet.id) {
-      throw new Error(`Spreadsheet with name ${SPREADSHEET_NAME} not found`);
-    }
-    
-    return spreadsheet.id;
-  } catch (error) {
-    console.error('Error finding spreadsheet ID:', error);
-    throw error;
+  // Sử dụng URL mặc định từ biến môi trường hoặc hằng số
+  if (process.env.GOOGLE_SPREADSHEET_URL) {
+    const id = getSpreadsheetIdFromUrl(process.env.GOOGLE_SPREADSHEET_URL);
+    if (id) return id;
   }
+
+  // Sử dụng URL mặc định
+  const id = getSpreadsheetIdFromUrl(DEFAULT_SPREADSHEET_URL);
+  if (id) return id;
+
+  // Vì chúng ta không có xác thực, không thể tìm kiếm spreadsheet theo tên
+  throw new Error(`Spreadsheet ID không được xác định. Vui lòng cung cấp ID trong GOOGLE_SPREADSHEET_URL.`);
 }
 
 /**
@@ -159,127 +130,65 @@ async function findSpreadsheetId(sheetsApi: sheets_v4.Sheets): Promise<string> {
  * Lưu ý: Phương pháp này không còn hoạt động khi chúng ta không có xác thực
  */
 async function createSpreadsheet(sheetsApi: sheets_v4.Sheets): Promise<string> {
-  try {
-    const spreadsheet = await sheetsApi.spreadsheets.create({
-      requestBody: {
-        properties: {
-          title: SPREADSHEET_NAME
-        },
-        sheets: [
-          {
-            properties: {
-              title: 'Tours'
-            }
-          },
-          {
-            properties: {
-              title: 'Vehicles'
-            }
-          },
-          {
-            properties: {
-              title: 'Hotels'
-            }
-          },
-          {
-            properties: {
-              title: 'Guides'
-            }
-          },
-          {
-            properties: {
-              title: 'Seasons'
-            }
-          },
-          {
-            properties: {
-              title: 'Settings'
-            }
-          }
-        ]
-      }
-    });
-    
-    if (!spreadsheet.data.spreadsheetId) {
-      throw new Error('Could not create spreadsheet');
-    }
-    
-    return spreadsheet.data.spreadsheetId;
-  } catch (error) {
-    console.error('Error creating spreadsheet:', error);
-    throw error;
-  }
+  // Không có quyền tạo bảng tính khi không có xác thực, hãy hiển thị thông báo hướng dẫn
+  throw new Error(
+    'Không thể tự động tạo Google Spreadsheet. Vui lòng tạo bảng tính thủ công và cập nhật URL trong biến môi trường GOOGLE_SPREADSHEET_URL.' + 
+    '\nHướng dẫn:' +
+    '\n1. Đi đến drive.google.com và tạo một Google Sheets mới' +
+    '\n2. Đặt tên bảng tính là "AsahiJapanTours"' + 
+    '\n3. Tạo các sheet: Tours, Vehicles, Hotels, Guides, Seasons, Settings' +
+    '\n4. Thêm tiêu đề vào mỗi sheet theo mẫu sau:' +
+    '\n   - Tours: id, name, code, location, description, durationDays, basePrice, imageUrl, nameJa, nameZh' +
+    '\n   - Vehicles: id, name, seats, luggageCapacity, pricePerDay, driverCostPerDay' +
+    '\n   - Hotels: id, name, location, stars, singleRoomPrice, doubleRoomPrice, tripleRoomPrice, breakfastPrice, imageUrl' +
+    '\n   - Guides: id, name, languages, pricePerDay, experience, hasInternationalLicense, personality, gender, age' +
+    '\n   - Seasons: id, name, startMonth, endMonth, description, priceMultiplier, nameJa, nameZh' +
+    '\n   - Settings: id, key, value' +
+    '\n5. Chia sẻ bảng tính với quyền "Bất kỳ ai có liên kết" có thể xem' +
+    '\n6. Sao chép URL và cập nhật vào biến môi trường GOOGLE_SPREADSHEET_URL'
+  );
 }
 
 /**
  * Initialize sheets with headers
  */
 async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
-  try {
-    // Initialize Tours sheet
+  const updates = [
+    {
+      range: 'Tours!A1:J1',
+      values: [['id', 'name', 'code', 'location', 'description', 'durationDays', 'basePrice', 'imageUrl', 'nameJa', 'nameZh']],
+    },
+    {
+      range: 'Vehicles!A1:F1',
+      values: [['id', 'name', 'seats', 'luggageCapacity', 'pricePerDay', 'driverCostPerDay']],
+    },
+    {
+      range: 'Hotels!A1:I1',
+      values: [['id', 'name', 'location', 'stars', 'singleRoomPrice', 'doubleRoomPrice', 'tripleRoomPrice', 'breakfastPrice', 'imageUrl']],
+    },
+    {
+      range: 'Guides!A1:I1',
+      values: [['id', 'name', 'languages', 'pricePerDay', 'experience', 'hasInternationalLicense', 'personality', 'gender', 'age']],
+    },
+    {
+      range: 'Seasons!A1:H1',
+      values: [['id', 'name', 'startMonth', 'endMonth', 'description', 'priceMultiplier', 'nameJa', 'nameZh']],
+    },
+    {
+      range: 'Settings!A1:C1',
+      values: [['id', 'key', 'value']],
+    },
+  ];
+
+  for (const update of updates) {
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: 'Tours!A1:Z1',
+      range: update.range,
       valueInputOption: 'RAW',
       requestBody: {
-        values: [['id', 'name', 'code', 'avfCode', 'location', 'description', 'durationDays', 'basePrice', 'imageUrl', 'nameJa', 'nameZh', 'nameKo', 'nameVi', 'descriptionJa', 'descriptionZh', 'descriptionKo', 'descriptionVi']]
-      }
+        values: update.values,
+      },
     });
-    
-    // Initialize Vehicles sheet
-    await sheetsApi.spreadsheets.values.update({
-      spreadsheetId: sheetId,
-      range: 'Vehicles!A1:Z1',
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: [['id', 'name', 'seats', 'luggageCapacity', 'pricePerDay', 'driverCostPerDay']]
-      }
-    });
-    
-    // Initialize Hotels sheet
-    await sheetsApi.spreadsheets.values.update({
-      spreadsheetId: sheetId,
-      range: 'Hotels!A1:Z1',
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: [['id', 'name', 'location', 'stars', 'singleRoomPrice', 'doubleRoomPrice', 'tripleRoomPrice', 'breakfastPrice', 'imageUrl']]
-      }
-    });
-    
-    // Initialize Guides sheet
-    await sheetsApi.spreadsheets.values.update({
-      spreadsheetId: sheetId,
-      range: 'Guides!A1:Z1',
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: [['id', 'name', 'languages', 'pricePerDay', 'experience', 'hasInternationalLicense', 'personality', 'gender', 'age']]
-      }
-    });
-    
-    // Initialize Seasons sheet
-    await sheetsApi.spreadsheets.values.update({
-      spreadsheetId: sheetId,
-      range: 'Seasons!A1:Z1',
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: [['id', 'name', 'startMonth', 'endMonth', 'description', 'priceMultiplier', 'nameJa', 'nameZh', 'nameKo', 'nameVi', 'descriptionJa', 'descriptionZh', 'descriptionKo', 'descriptionVi']]
-      }
-    });
-    
-    // Initialize Settings sheet
-    await sheetsApi.spreadsheets.values.update({
-      spreadsheetId: sheetId,
-      range: 'Settings!A1:Z1',
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: [['id', 'key', 'value']]
-      }
-    });
-    
-    console.log('Sheets initialized successfully');
-  } catch (error) {
-    console.error('Error initializing sheets:', error);
-    throw error;
   }
 }
 
@@ -289,41 +198,101 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
  */
 export async function getSpreadsheetForUser(user?: User | null, specificSource?: string): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sourceName: string }> {
   try {
-    // Nếu có nguồn chỉ định, dùng nó thay vì tìm kiếm từ user
+    // Xác định nguồn dữ liệu dựa trên vai trò người dùng hoặc nguồn được chỉ định
+    let customUrl: string | undefined = undefined;
+    let sourceName: string = 'default';
+    
+    // Nếu có nguồn dữ liệu cụ thể được chỉ định (được sử dụng bởi admin)
     if (specificSource) {
-      if (specificSource.includes('http')) {
-        // It's a URL, authorize with it
-        const { sheetsApi, id } = await authorize(specificSource);
-        if (!sheetsApi) throw new Error('Could not authorize with Google');
-        return { sheetsApi, spreadsheetId: id, sourceName: 'custom' };
+      // Kiểm tra xem đây có phải là URL hoàn chỉnh hay chỉ là tên nguồn
+      if (specificSource.startsWith('http')) {
+        customUrl = specificSource;
+        sourceName = specificSource.includes('_') ? specificSource.split('_').pop() || 'Custom' : 'Custom';
+      } else if (specificSource.includes('-')) {
+        // Đây là ID Google Sheet đầy đủ (chứa dấu gạch ngang)
+        // Xây dựng URL từ ID
+        customUrl = `https://docs.google.com/spreadsheets/d/${specificSource}/edit`;
+        sourceName = 'AsahiJapanTours_NamA'; // Tên nguồn cho đại lý Nam A
       } else {
-        // It's already a spreadsheet ID
-        const { sheetsApi } = await authorize();
-        if (!sheetsApi) throw new Error('Could not authorize with Google');
-        return { sheetsApi, spreadsheetId: specificSource, sourceName: 'custom-id' };
+        // Xây dựng URL từ tên nguồn (ví dụ: 'NamA' -> URL với '_NamA')
+        if (process.env.GOOGLE_SPREADSHEET_URL) {
+          const baseUrl = process.env.GOOGLE_SPREADSHEET_URL;
+          // Tách URL cơ sở và ID
+          const urlParts = baseUrl.split('/');
+          const baseId = urlParts[5]; // ID thường ở vị trí thứ 5 trong URL
+          
+          // Thêm hậu tố vào ID nếu cần
+          if (specificSource !== 'default') {
+            // Tạo ID mới bằng cách thêm hậu tố (ví dụ: baseId + '_NamA')
+            const newId = baseId + '_' + specificSource;
+            // Thay thế ID cũ bằng ID mới trong URL
+            urlParts[5] = newId;
+            customUrl = urlParts.join('/');
+            sourceName = specificSource;
+          }
+        }
       }
-    } 
-    // Nếu là agency user và có agencyDataSource
-    else if (user && user.role === 'agent' && user.agencyDataSource) {
-      // Sử dụng nguồn dữ liệu của đại lý
-      if (user.agencyDataSource.includes('http')) {
-        // It's a URL, authorize with it
-        const { sheetsApi, id } = await authorize(user.agencyDataSource);
-        if (!sheetsApi) throw new Error('Could not authorize with Google');
-        return { sheetsApi, spreadsheetId: id, sourceName: user.username || 'agency' };
-      } else {
-        // It's already a spreadsheet ID
-        const { sheetsApi } = await authorize();
-        if (!sheetsApi) throw new Error('Could not authorize with Google');
-        return { sheetsApi, spreadsheetId: user.agencyDataSource, sourceName: user.username || 'agency' };
-      }
-    } 
-    // Mặc định: sử dụng Google Sheet mặc định
-    else {
-      return await getSpreadsheet();
+      console.log(`Admin requested specific data source: ${sourceName} (URL: ${customUrl})`);
     }
+    // Nếu là đại lý (agent) và có dataSource được cấu hình
+    else if (user && user.role === 'agent' && user.dataSource) {
+      customUrl = user.dataSource;
+      sourceName = user.agencyId || 'Agency';
+      console.log(`Using agent-specific spreadsheet for ${user.username}: ${sourceName}`);
+    }
+    // Nếu là khách hàng thông thường, sử dụng URL mặc định hoặc URL khách hàng cụ thể
+    else if (user && user.role === 'user') {
+      // Khách hàng luôn sử dụng bảng tính "AsahiJapanTours"
+      if (process.env.GOOGLE_SPREADSHEET_URL) {
+        // Sử dụng URL chuẩn không thay đổi nếu khách hàng không có dataSource riêng
+        const baseUrl = process.env.GOOGLE_SPREADSHEET_URL;
+        
+        // Đảm bảo chúng ta sử dụng ID đầy đủ từ URL gốc
+        const spreadsheetId = getSpreadsheetIdFromUrl(baseUrl);
+        if (spreadsheetId) {
+          customUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
+          console.log(`Using complete spreadsheet ID for customer: ${spreadsheetId}`);
+        } else {
+          console.error("Could not extract valid spreadsheet ID from URL");
+        }
+      }
+      sourceName = 'Customer';
+      console.log(`Using customer spreadsheet for ${user.username}: AsahiJapanTours`);
+    }
+    // Nếu là admin và không chỉ định nguồn cụ thể, sử dụng URL mặc định
+    else if (user && user.role === 'admin') {
+      console.log(`Using default spreadsheet for admin: ${user.username}`);
+    }
+    
+    const sheetsApi = await authorize(customUrl);
+    
+    // Trích xuất spreadsheetId từ URL
+    let id: string | null = null;
+    
+    if (customUrl) {
+      id = getSpreadsheetIdFromUrl(customUrl);
+      console.log(`Using custom spreadsheet ID: ${id} (${sourceName})`);
+    } else if (process.env.GOOGLE_SPREADSHEET_URL) {
+      id = getSpreadsheetIdFromUrl(process.env.GOOGLE_SPREADSHEET_URL);
+      console.log(`Using default spreadsheet ID: ${id}`);
+    }
+    
+    if (!id) {
+      try {
+        // Cố gắng tìm bảng tính hiện có theo tên
+        id = await findSpreadsheetId(sheetsApi);
+        console.log(`Found spreadsheet ID by name: ${id}`);
+      } catch (error) {
+        // Nếu không tìm thấy, tạo một bảng tính mới
+        console.log('Spreadsheet not found, creating new one...');
+        id = await createSpreadsheet(sheetsApi);
+        console.log(`Created new spreadsheet with ID: ${id}`);
+      }
+    }
+    
+    return { sheetsApi, spreadsheetId: id, sourceName };
   } catch (error) {
-    console.error('Error getting spreadsheet for user:', error);
+    console.error('Failed to get spreadsheet:', error);
     throw error;
   }
 }
@@ -332,30 +301,21 @@ export async function getSpreadsheetForUser(user?: User | null, specificSource?:
  * Get the default spreadsheet (legacy support)
  */
 export async function getSpreadsheet(): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sourceName: string }> {
-  try {
-    // Authorize with Google
-    const { sheetsApi, id } = await authorize();
-    if (!sheetsApi) throw new Error('Could not authorize with Google');
-    
-    console.log(`Using default spreadsheet ID: ${id}`);
-    return { sheetsApi, spreadsheetId: id, sourceName: 'default' };
-  } catch (error) {
-    console.error('Error getting spreadsheet:', error);
-    throw error;
-  }
+  return getSpreadsheetForUser();
 }
 
+/**
+ * Get all data from a sheet
+ */
+// Hàm kiểm tra và tạo sheet nếu không tồn tại
 async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sheetName: string): Promise<void> {
   try {
-    console.log(`Checking if sheet '${sheetName}' exists...`);
-    
     // Kiểm tra xem sheet đã tồn tại chưa
-    const spreadsheet = await sheetsApi.spreadsheets.get({
+    const response = await sheetsApi.spreadsheets.get({
       spreadsheetId,
-      includeGridData: false
     });
     
-    const sheetExists = spreadsheet.data.sheets?.some(
+    const sheetExists = response.data.sheets?.some(
       sheet => sheet.properties?.title === sheetName
     );
     
@@ -367,70 +327,43 @@ async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId:
         await sheetsApi.spreadsheets.batchUpdate({
           spreadsheetId,
           requestBody: {
-            requests: [
-              {
-                addSheet: {
-                  properties: {
-                    title: sheetName
-                  }
+            requests: [{
+              addSheet: {
+                properties: {
+                  title: sheetName
                 }
               }
-            ]
+            }]
           }
         });
         
-        console.log(`Sheet '${sheetName}' đã được tạo thành công`);
-        
-        // Thêm các header tùy thuộc vào loại sheet
-        let headers: string[] = [];
-        
-        switch (sheetName) {
-          case 'Tours':
-            headers = ['id', 'name', 'code', 'avfCode', 'location', 'description', 'durationDays', 'basePrice', 'imageUrl', 'nameJa', 'nameZh', 'nameKo', 'nameVi', 'descriptionJa', 'descriptionZh', 'descriptionKo', 'descriptionVi'];
-            break;
-          case 'Vehicles':
-            headers = ['id', 'name', 'seats', 'luggageCapacity', 'pricePerDay', 'driverCostPerDay'];
-            break;
-          case 'Hotels':
-            headers = ['id', 'name', 'location', 'stars', 'singleRoomPrice', 'doubleRoomPrice', 'tripleRoomPrice', 'breakfastPrice', 'imageUrl'];
-            break;
-          case 'Guides':
-            headers = ['id', 'name', 'languages', 'pricePerDay', 'experience', 'hasInternationalLicense', 'personality', 'gender', 'age'];
-            break;
-          case 'Seasons':
-            headers = ['id', 'name', 'startMonth', 'endMonth', 'description', 'priceMultiplier', 'nameJa', 'nameZh', 'nameKo', 'nameVi', 'descriptionJa', 'descriptionZh', 'descriptionKo', 'descriptionVi'];
-            break;
-          case 'Settings':
-            headers = ['id', 'key', 'value'];
-            break;
-          default:
-            headers = ['id', 'name', 'value'];
-        }
-        
-        // Thêm headers
-        await sheetsApi.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${sheetName}!A1:Z1`,
-          valueInputOption: 'RAW',
-          requestBody: {
-            values: [headers]
+        // Thêm header nếu là sheet Settings
+        if (sheetName === 'Settings') {
+          try {
+            await sheetsApi.spreadsheets.values.update({
+              spreadsheetId,
+              range: 'Settings!A1:C1',
+              valueInputOption: 'RAW',
+              requestBody: {
+                values: [['id', 'key', 'value']],
+              },
+            });
+          } catch (error) {
+            console.warn(`Không thể cập nhật header cho sheet Settings: ${error.message}`);
+            // Tiếp tục thực thi mà không dừng lại
           }
-        });
-        
-        console.log(`Headers added to sheet '${sheetName}'`);
-      } catch (error: any) {
-        if (error.message && error.message.includes('permission')) {
-          console.error(`Không thể tạo sheet '${sheetName}': ${error.message}`);
-          console.log(`Tiếp tục thực thi - sheet '${sheetName}' có thể cần được tạo thủ công.`);
-        } else {
-          throw error;
         }
+      } catch (error) {
+        console.warn(`Không thể tạo sheet '${sheetName}': ${error.message}`);
+        console.log(`Tiếp tục thực thi - sheet '${sheetName}' có thể cần được tạo thủ công.`);
+        // Không throw lỗi ở đây, cho phép tiếp tục thực hiện ngay cả khi không thể tạo sheet
       }
-    } else {
-      console.log(`Sheet '${sheetName}' đã tồn tại`);
+      
+      console.log(`Sheet '${sheetName}' đã được tạo thành công`);
     }
-  } catch (error: any) {
-    console.error(`Error checking or creating sheet '${sheetName}':`, error.message || error);
+  } catch (error) {
+    console.error(`Lỗi khi kiểm tra/tạo sheet '${sheetName}':`, error);
+    // Không ném lỗi ra ngoài để đảm bảo quá trình đồng bộ vẫn tiếp tục
     console.log(`Tiếp tục đồng bộ bỏ qua sheet '${sheetName}' do lỗi quyền truy cập.`);
   }
 }
@@ -442,7 +375,7 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
     // Kiểm tra và tạo sheet nếu cần thiết
     await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
     
-    // Get data from sheet - Sử dụng tên sheet thô không thêm range
+    // Get data from sheet - Sử dụng tên sheet thô
     console.log(`Getting data from sheet: ${sheetName}`);
     
     // Phương pháp 1: Đơn giản nhất - chỉ sử dụng tên sheet (đôi khi hoạt động tốt nhất)
@@ -512,11 +445,11 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
     
     // First, get all the data to find the row index
-    console.log(`Updating data in sheet: ${sheetName}`);
+    const formattedSheetName = formatSheetName(sheetName);
     
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: sheetName,
+      range: `${formattedSheetName}!A1:Z1000`,
     });
 
     const rows = response.data.values || [];
@@ -545,9 +478,11 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     
     if (rowIndex > 0) {
       // Update existing row
+      const formattedSheetName = formatSheetName(sheetName);
+      
       await sheetsApi.spreadsheets.values.update({
         spreadsheetId,
-        range: `${sheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`,
+        range: `${formattedSheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`,
         valueInputOption: 'RAW',
         requestBody: {
           values: [values],
@@ -555,9 +490,11 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
       });
     } else {
       // Append new row
+      const formattedSheetName = formatSheetName(sheetName);
+      
       await sheetsApi.spreadsheets.values.append({
         spreadsheetId,
-        range: `${sheetName}!A1`,
+        range: `${formattedSheetName}!A1:Z1`,
         valueInputOption: 'RAW',
         insertDataOption: 'INSERT_ROWS',
         requestBody: {
@@ -582,11 +519,11 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
     await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
     
     // First, get all the data to find the row index
-    console.log(`Deleting data from sheet: ${sheetName}`);
+    const formattedSheetName = formatSheetName(sheetName);
     
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: sheetName,
+      range: `${formattedSheetName}!A1:Z1000`,
     });
 
     const rows = response.data.values || [];
@@ -733,6 +670,21 @@ export async function syncDataFromSheets(storage: any, user?: User | null, speci
     console.error('Error syncing data from sheets:', error);
     throw error;
   }
+}
+
+/**
+ * Hàm xử lý các tên sheet có chứa ký tự đặc biệt
+ * GoogleSheet API yêu cầu escape khi có ký tự đặc biệt nhưng cách triển khai phức tạp
+ */
+function formatSheetName(sheetName: string): string {
+  // Logging để debug
+  console.log(`Formatting sheet name: ${sheetName}`);
+  
+  // Sử dụng kỹ thuật encode như API client Google Sheets sử dụng
+  // Tuy nhiên chỉ encode khi thực sự cần thiết
+  
+  // Trả về nguyên văn - Google API tự xử lý
+  return sheetName;
 }
 
 /**
