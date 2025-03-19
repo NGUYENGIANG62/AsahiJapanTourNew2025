@@ -1189,6 +1189,19 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         mealsCost = (totalLunchCost + totalDinnerCost) * calculationData.participants;
       }
       
+      // Tính phí đưa đón sân bay nếu được chọn
+      let airportTransferCost = 0;
+      if (calculationData.specialServices?.airportTransfer) {
+        // Phí cố định cho dịch vụ đưa đón sân bay, lấy từ setting
+        const transferPrice = parseFloat(await storage.getSetting('airport_transfer_price') || '10000');
+        
+        // Tính cả đưa và đón (2 lượt)
+        airportTransferCost = transferPrice * 2;
+        
+        // Thêm vào tổng chi phí
+        baseCost += airportTransferCost;
+      }
+      
       // Add guide costs if selected
       let guideCost = 0;
       if (calculationData.includeGuide && calculationData.guideId) {
