@@ -157,7 +157,7 @@ const Step5Summary = () => {
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
     
-    // Luôn tính trọn ngày, dù khách bay sáng hay chiều vẫn sử dụng dịch vụ đủ ngày 
+    // Always count full days, regardless of whether guests arrive in the morning or afternoon, they still use the service for the entire day 
     return diffDays > 0 ? diffDays : 1; // Ensure we always have at least 1 day
   };
   
@@ -198,24 +198,24 @@ const Step5Summary = () => {
     }
   }, [taxRateSetting, profitMarginSetting]);
   
-  // Không chuyển đổi tiền tệ nữa, chỉ sử dụng Yên Nhật (JPY)
+  // No longer converting currency, only using Japanese Yen (JPY)
   const convertCost = (amountInJPY: number): number => {
-    // Luôn trả về số tiền gốc bằng Yên Nhật
+    // Always return the original amount in Japanese Yen
     return amountInJPY;
   };
   
-  // Format currency - giờ chỉ dùng JPY
+  // Format currency - now only using JPY
   const formatCurrency = (amount: number) => {
-    // Làm tròn số trước khi hiển thị
+    // Round the number before display
     const roundedAmount = Math.round(amount);
-    // Chỉ hiển thị định dạng Yên Nhật (JPY)
+    // Only display in Japanese Yen (JPY) format
     return `¥${Math.round(roundedAmount).toLocaleString()}`;
   };
   
   // Get calculated amount from calculation result
   const getTotalAmount = () => {
     if (calculation) {
-      // Luôn sử dụng tổng chi phí gốc bằng JPY
+      // Always use the original total cost in JPY
       return calculation.costs.totalAmount;
     }
     return 0;
@@ -304,7 +304,7 @@ const Step5Summary = () => {
         }
       }
 
-      // Thêm phần thông tin bay
+      // Add flight information section
       const getFlightTimeInfo = () => {
         const arrivalInfo = (() => {
           switch(formData.arrivalTime) {
@@ -378,7 +378,7 @@ const Step5Summary = () => {
     } catch (error) {
       console.error("Error sending email:", error);
       
-      // Lưu thông tin yêu cầu tour vào localStorage để không mất dữ liệu
+      // Save tour request information to localStorage to prevent data loss
       try {
         const savedTourRequest = {
           customerName,
