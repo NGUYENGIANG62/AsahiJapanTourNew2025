@@ -82,7 +82,7 @@ export type Setting = {
 
 export type Language = 'en' | 'ja' | 'zh' | 'ko' | 'vi';
 
-export type Currency = 'JPY' | 'USD' | 'VND';
+export type Currency = 'JPY' | 'USD' | 'VND' | 'CNY' | 'KRW';
 
 export type RoomType = 'single' | 'double' | 'triple';
 
