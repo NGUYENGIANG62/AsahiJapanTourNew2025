@@ -325,51 +325,35 @@ export async function comparePasswords(supplied: string, stored: string): Promis
  */
 export async function validateCredentials(username: string, password: string): Promise<User | null> {
   try {
-    // Đặc biệt xử lý tài khoản admin
-    if (username === 'AsahiVietLifeJapanTour') {
-      console.log("Detected admin login attempt, using internal authentication only");
-      // Tài khoản admin chỉ được xác thực trong storage nội bộ
-      return null;
-    }
-    
-    // Lấy danh sách tài khoản
+    // Lấy danh sách tài khoản từ Google Sheet
     const accounts = await fetchAccountsFromSheet();
     
-    // Tìm tài khoản theo username
+    // Tìm tài khoản theo username trong Google Sheet
     const account = accounts.find(a => a.username === username);
-    if (!account) {
-      return null;
+    if (account) {
+      // Nếu tìm thấy trong Google Sheet, kiểm tra mật khẩu
+      // Theo yêu cầu, lưu mật khẩu dạng gốc để dễ quản lý
+      const isValid = (password === account.password);
+      
+      if (isValid) {
+        console.log(`User '${username}' authenticated via Google Sheet`);
+        return {
+          id: account.id,
+          username: account.username,
+          password: account.password,
+          role: account.role,
+          agencyId: account.agencyId || null,
+          dataSource: account.dataSource || null,
+        };
+      }
     }
-
-    // Kiểm tra mật khẩu
-    // Trong Google Sheets, mật khẩu được lưu ở dạng gốc, nên đối chiếu trực tiếp
-    // Nếu mật khẩu bao gồm dấu "." thì có thể là mật khẩu đã hash, 
-    // thì dùng comparePasswords
-    const isPasswordHashed = account.password.includes('.');
     
-    let isValid = false;
-    if (isPasswordHashed) {
-      isValid = await comparePasswords(password, account.password);
-    } else {
-      // Mật khẩu lưu dạng gốc, so sánh trực tiếp
-      isValid = (password === account.password);
-    }
-    
-    if (!isValid) {
-      return null;
-    }
-
-    // Trả về thông tin user (bao gồm trường password để tương thích với User type)
-    return {
-      id: account.id,
-      username: account.username,
-      password: account.password, // Thêm password để tương thích với type User
-      role: account.role,
-      agencyId: account.agencyId || null,
-      dataSource: account.dataSource || null,
-    };
+    // Nếu không tìm thấy trong Google Sheet hoặc mật khẩu không đúng,
+    // trả về null để hệ thống sẽ kiểm tra tiếp trong bộ nhớ nội bộ
+    console.log(`User '${username}' not found in Google Sheet or password invalid`);
+    return null;
   } catch (error) {
-    console.error('Error validating credentials:', error);
+    console.error('Error validating credentials from Google Sheet:', error);
     return null;
   }
 }
