@@ -375,10 +375,10 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
     // Kiểm tra và tạo sheet nếu cần thiết
     await createSheetIfNotExist(sheetsApi, spreadsheetId, sheetName);
     
-    // Get data from sheet
+    // Get data from sheet - Không encode url vì Google API sẽ tự làm
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: encodeURIComponent(`${sheetName}!A1:Z1000`),
+      range: `${sheetName}!A1:Z1000`,
     });
 
     const rows = response.data.values || [];
@@ -444,7 +444,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     // First, get all the data to find the row index
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: encodeURIComponent(`${sheetName}!A1:Z1000`),
+      range: `${sheetName}!A1:Z1000`,
     });
 
     const rows = response.data.values || [];
@@ -475,7 +475,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
       // Update existing row
       await sheetsApi.spreadsheets.values.update({
         spreadsheetId,
-        range: encodeURIComponent(`${sheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`),
+        range: `${sheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`,
         valueInputOption: 'RAW',
         requestBody: {
           values: [values],
@@ -485,7 +485,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
       // Append new row
       await sheetsApi.spreadsheets.values.append({
         spreadsheetId,
-        range: encodeURIComponent(`${sheetName}!A1:Z1`),
+        range: `${sheetName}!A1:Z1`,
         valueInputOption: 'RAW',
         insertDataOption: 'INSERT_ROWS',
         requestBody: {
@@ -512,7 +512,7 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
     // First, get all the data to find the row index
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: encodeURIComponent(`${sheetName}!A1:Z1000`),
+      range: `${sheetName}!A1:Z1000`,
     });
 
     const rows = response.data.values || [];
