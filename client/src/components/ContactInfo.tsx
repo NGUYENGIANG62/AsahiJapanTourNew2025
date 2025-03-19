@@ -59,7 +59,8 @@ const ContactInfo = ({ compact = false }: ContactInfoProps) => {
             <div>
               <div>Hotline: 03-6675-4977</div>
               <div>070-2813-6693 (Mrs. Rina - Nhật)</div>
-              <div>070-2794-4770 (Mr. Truong Giang - Việt Nam) Zalo – WhatsApp – Line</div>
+              <div>+8170-2794-4770 (Mr. Truong Giang - Việt Nam)</div>
+              <div>Zalo/WhatsApp/Line: +8170-2794-4770 (Mr. Truong Giang)</div>
               <div>Mr. Linh - English Guide: 07091881073</div>
             </div>
           </div>
@@ -78,7 +79,7 @@ const ContactInfo = ({ compact = false }: ContactInfoProps) => {
               >
                 <Button size="sm" variant="outline" className="flex items-center gap-1">
                   <Facebook className="h-4 w-4" />
-                  <span className="hidden sm:inline">Facebook</span>
+                  <span className="hidden sm:inline">Du Lịch Asahi VietLife - Japan Travel</span>
                   <ExternalLink className="h-3 w-3" />
                 </Button>
               </a>
