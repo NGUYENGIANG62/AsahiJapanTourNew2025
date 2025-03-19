@@ -454,7 +454,7 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
     
     // Format tên sheet theo đúng định dạng API
     // Sử dụng định dạng đơn giản nhất
-    const safeSheetName = `${sheetName}!A:Z`;
+    const safeSheetName = getSafeSheetName(sheetName);
     console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
@@ -526,7 +526,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     
     // Format tên sheet theo đúng định dạng API
     // Sử dụng định dạng đơn giản nhất
-    const safeSheetName = `${sheetName}!A:Z`;
+    const safeSheetName = getSafeSheetName(sheetName);
     console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
@@ -604,7 +604,7 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
     
     // Format tên sheet theo đúng định dạng API
     // Sử dụng định dạng đơn giản nhất
-    const safeSheetName = `${sheetName}!A:Z`;
+    const safeSheetName = getSafeSheetName(sheetName);
     console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
