@@ -500,37 +500,15 @@ const Step5Summary = () => {
       
       {/* Show Direct Contact Information if there was an error sending email */}
       <Dialog open={showContactDirectly} onOpenChange={setShowContactDirectly}>
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="sm:max-w-[540px]">
           <DialogHeader>
             <DialogTitle>{t('calculator.summary.directContactInfo', 'Thông tin liên hệ trực tiếp')}</DialogTitle>
             <DialogDescription>
               {t('calculator.summary.contactUsPrompt', 'Vui lòng liên hệ với chúng tôi qua các thông tin dưới đây để được tư vấn nhanh chóng')}
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
-            <div className="border rounded-md p-4 bg-muted/10 text-left">
-              <ul className="space-y-3 text-sm">
-                <li className="flex items-start">
-                  <Map className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
-                  <span>1-35 Adachi, Adachi-ku, Tokyo, Japan</span>
-                </li>
-                <li className="flex items-start">
-                  <Mail className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
-                  <div>
-                    <div>asahivietlifejapantours@gmail.com</div>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <Phone className="mr-2 h-4 w-4 mt-0.5 text-muted-foreground" />
-                  <div>
-                    <div>Hotline: 03-6675-4977</div>
-                    <div>070-2813-6693 (Mrs. Rina - Nhật)</div>
-                    <div>070-2794-4770 (Mr. Truong Giang - Việt Nam) Zalo – WhatsApp – Line</div>
-                    <div>Mr. Linh - English Guide: 07091881073</div>
-                  </div>
-                </li>
-              </ul>
-            </div>
+          <div className="py-3">
+            <ContactInfo showQR={true} />
           </div>
           <DialogFooter>
             <Button onClick={() => setShowContactDirectly(false)}>
@@ -1054,6 +1032,12 @@ const Step5Summary = () => {
                       Chi tiết liên hệ qua email: asahivietlifejapantours@gmail.com
                     </AlertDescription>
                   </Alert>
+                  
+                  {/* Thông tin thanh toán với mã QR */}
+                  <div className="mt-4">
+                    <h4 className="font-medium mb-3">Thông tin chuyển khoản</h4>
+                    <PaymentInformation currency={currency} showQR={true} />
+                  </div>
                 </div>
               )}
             </CardContent>

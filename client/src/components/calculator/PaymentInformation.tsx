@@ -15,17 +15,35 @@ import {
 import { Separator } from '@/components/ui/separator';
 
 interface PaymentInformationProps {
-  formatCurrency: (amount: number) => string;
-  totalAmount: number;
-  participants: number;
+  formatCurrency?: (amount: number) => string;
+  totalAmount?: number;
+  participants?: number;
+  currency?: string;
+  showQR?: boolean;
 }
 
 const PaymentInformation: React.FC<PaymentInformationProps> = ({
   formatCurrency,
   totalAmount,
-  participants
+  participants,
+  currency = 'JPY',
+  showQR = true
 }) => {
   const { t } = useTranslation();
+  
+  // Định dạng tiền tệ nếu không được cung cấp từ bên ngoài
+  const formatCurrencyFallback = (amount = 0) => {
+    if (formatCurrency) return formatCurrency(amount);
+    
+    const formatter = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+    
+    return formatter.format(amount);
+  };
 
   return (
     <Card className="mb-6 overflow-hidden">
