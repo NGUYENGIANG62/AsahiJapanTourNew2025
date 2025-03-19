@@ -105,12 +105,24 @@ function getSpreadsheetIdFromUrl(url: string): string | null {
  * API Key allows only read access
  * 
  * @param customSpreadsheetUrl URL tùy chỉnh cho các đại lý
+ * @param username Username để kiểm tra và sử dụng URL tùy chỉnh cho các đại lý cụ thể
  */
-async function authorize(customSpreadsheetUrl?: string) {
+async function authorize(customSpreadsheetUrl?: string, username?: string) {
   try {
-    // Ưu tiên sử dụng URL tùy chỉnh nếu có
-    const spreadsheetUrl = customSpreadsheetUrl || process.env.GOOGLE_SPREADSHEET_URL;
-    console.log(`ENV variables check:\nGOOGLE_SPREADSHEET_URL: ${process.env.GOOGLE_SPREADSHEET_URL}`);
+    let spreadsheetUrl = customSpreadsheetUrl;
+    
+    // Nếu không có URL tùy chỉnh, kiểm tra xem có phải là đại lý AsahiLKNamA không
+    if (!spreadsheetUrl && username === 'AsahiLKNamA' && process.env.AGENCY_NAMN_SPREADSHEET_URL) {
+      spreadsheetUrl = process.env.AGENCY_NAMN_SPREADSHEET_URL;
+      console.log(`Using agency-specific spreadsheet for ${username}`);
+    }
+    
+    // Nếu vẫn không có URL, sử dụng URL mặc định
+    spreadsheetUrl = spreadsheetUrl || process.env.GOOGLE_SPREADSHEET_URL;
+    
+    console.log(`ENV variables check:
+GOOGLE_SPREADSHEET_URL: ${process.env.GOOGLE_SPREADSHEET_URL}
+AGENCY_NAMN_SPREADSHEET_URL: ${process.env.AGENCY_NAMN_SPREADSHEET_URL || 'Not set'}`);
     
     if (!spreadsheetUrl) {
       throw new Error('GOOGLE_SPREADSHEET_URL environment variable not found');
@@ -527,34 +539,41 @@ export async function getSpreadsheetForUser(user?: User | null, specificSource?:
     if (specificSource) {
       if (specificSource.includes('http')) {
         // It's a URL, authorize with it
-        const { sheetsApi, id } = await authorize(specificSource);
+        const { sheetsApi, id } = await authorize(specificSource, user?.username);
         if (!sheetsApi) throw new Error('Could not authorize with Google');
         return { sheetsApi, spreadsheetId: id, sourceName: 'custom' };
       } else {
         // It's already a spreadsheet ID
-        const { sheetsApi } = await authorize();
+        const { sheetsApi } = await authorize(undefined, user?.username);
         if (!sheetsApi) throw new Error('Could not authorize with Google');
         return { sheetsApi, spreadsheetId: specificSource, sourceName: 'custom-id' };
       }
-    } 
+    }
+    // Xử lý riêng cho đại lý AsahiLKNamA
+    else if (user && user.username === 'AsahiLKNamA' && process.env.AGENCY_NAMN_SPREADSHEET_URL) {
+      console.log(`Đang sử dụng Google Sheet riêng cho đại lý ${user.username}`);
+      const { sheetsApi, id } = await authorize(process.env.AGENCY_NAMN_SPREADSHEET_URL, user.username);
+      if (!sheetsApi) throw new Error('Could not authorize with Google');
+      return { sheetsApi, spreadsheetId: id, sourceName: user.username };
+    }
     // Nếu là agency user và có dataSource
     else if (user && user.role === 'agent' && user.dataSource) {
       // Sử dụng nguồn dữ liệu của đại lý
       if (user.dataSource.includes('http')) {
         // It's a URL, authorize with it
-        const { sheetsApi, id } = await authorize(user.dataSource);
+        const { sheetsApi, id } = await authorize(user.dataSource, user.username);
         if (!sheetsApi) throw new Error('Could not authorize with Google');
         return { sheetsApi, spreadsheetId: id, sourceName: user.username || 'agency' };
       } else {
         // It's already a spreadsheet ID
-        const { sheetsApi } = await authorize();
+        const { sheetsApi } = await authorize(undefined, user.username);
         if (!sheetsApi) throw new Error('Could not authorize with Google');
         return { sheetsApi, spreadsheetId: user.dataSource, sourceName: user.username || 'agency' };
       }
     } 
     // Mặc định: sử dụng Google Sheet mặc định
     else {
-      return await getSpreadsheet();
+      return await getSpreadsheet(user?.username);
     }
   } catch (error) {
     console.error('Error getting spreadsheet for user:', error);
@@ -564,11 +583,12 @@ export async function getSpreadsheetForUser(user?: User | null, specificSource?:
 
 /**
  * Get the default spreadsheet (legacy support)
+ * @param username Optional username parameter to pass through to authorize
  */
-export async function getSpreadsheet(): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sourceName: string }> {
+export async function getSpreadsheet(username?: string): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sourceName: string }> {
   try {
     // Authorize with Google
-    const { sheetsApi, id } = await authorize();
+    const { sheetsApi, id } = await authorize(undefined, username);
     if (!sheetsApi) throw new Error('Could not authorize with Google');
     
     console.log(`Using default spreadsheet ID: ${id}`);
