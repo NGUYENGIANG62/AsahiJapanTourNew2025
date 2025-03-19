@@ -134,20 +134,15 @@ async function authorize(customSpreadsheetUrl?: string) {
  */
 async function findSpreadsheetId(sheetsApi: sheets_v4.Sheets): Promise<string> {
   try {
-    const response = await sheetsApi.spreadsheets.list();
-    const spreadsheets = response.data.files;
+    // Note: This method is deprecated and not actually used
+    // The Google Sheets API v4 doesn't have a spreadsheets.list() method
+    // We now extract the ID directly from the spreadsheet URL
+    console.warn('findSpreadsheetId is deprecated - we use getSpreadsheetIdFromUrl instead');
     
-    if (!spreadsheets || spreadsheets.length === 0) {
-      throw new Error('No spreadsheets found');
-    }
+    // Mock implementation for compatibility
+    throw new Error('Method not implemented - use getSpreadsheetIdFromUrl instead');
     
-    const spreadsheet = spreadsheets.find(s => s.name === SPREADSHEET_NAME);
-    
-    if (!spreadsheet || !spreadsheet.id) {
-      throw new Error(`Spreadsheet with name ${SPREADSHEET_NAME} not found`);
-    }
-    
-    return spreadsheet.id;
+    return '';
   } catch (error) {
     console.error('Error finding spreadsheet ID:', error);
     throw error;
@@ -449,8 +444,8 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
     console.log(`Getting data from sheet: ${sheetName}`);
     
     // Format tên sheet theo đúng định dạng API
-    // Sử dụng định dạng A1 thay vì A:Z để tránh lỗi parse
-    const safeSheetName = `${sheetName}!A1:Z1000`;
+    // Sử dụng định dạng đơn giản nhất
+    const safeSheetName = `${sheetName}`;
     console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
@@ -520,9 +515,9 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     // First, get all the data to find the row index
     console.log(`Updating data in sheet: ${sheetName}`);
     
-    // Format tên sheet theo đúng định dạng API: Tên sheet + dấu "!" + range
-    // Không sử dụng URL encoding ở đây vì API của Google sẽ tự encode
-    const safeSheetName = `${sheetName}!A:Z`;
+    // Format tên sheet theo đúng định dạng API
+    // Sử dụng định dạng đơn giản nhất
+    const safeSheetName = `${sheetName}`;
     console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
@@ -598,9 +593,9 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
     // First, get all the data to find the row index
     console.log(`Deleting data from sheet: ${sheetName}`);
     
-    // Format tên sheet theo đúng định dạng API: Tên sheet + dấu "!" + range
-    // Không sử dụng URL encoding ở đây vì API của Google sẽ tự encode
-    const safeSheetName = `${sheetName}!A:Z`;
+    // Format tên sheet theo đúng định dạng API
+    // Sử dụng định dạng đơn giản nhất
+    const safeSheetName = `${sheetName}`;
     console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
