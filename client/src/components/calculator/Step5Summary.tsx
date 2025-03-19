@@ -1037,7 +1037,7 @@ const Step5Summary = () => {
                   <div className="mt-4">
                     <h4 className="font-medium mb-3">Thông tin chuyển khoản</h4>
                     <PaymentInformation 
-                      formatCurrency={(amount) => formatCurrency(amount, currency)}
+                      formatCurrency={formatCurrency}
                       totalAmount={calculation.totalInRequestedCurrency} 
                       participants={formData.participants} 
                       currency={currency} 
