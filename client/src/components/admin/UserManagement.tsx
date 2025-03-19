@@ -188,9 +188,20 @@ const UserManagement = () => {
   const { data: systemUsers, isLoading: loadingUsers, refetch: refetchUsers } = useQuery<User[]>({
     queryKey: ['/api/admin/users'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/admin/users');
-      if (!response.ok) throw new Error('Failed to fetch users');
-      return response.json();
+      try {
+        const response = await fetch('/api/admin/users', {
+          credentials: 'include',
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch users');
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        throw error;
+      }
     },
   });
   
