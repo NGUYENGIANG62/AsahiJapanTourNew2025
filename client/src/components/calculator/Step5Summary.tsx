@@ -499,9 +499,9 @@ const Step5Summary = () => {
       <Dialog open={showContactDirectly} onOpenChange={setShowContactDirectly}>
         <DialogContent className="sm:max-w-[540px]">
           <DialogHeader>
-            <DialogTitle>{t('calculator.summary.directContactInfo', 'Thông tin liên hệ trực tiếp')}</DialogTitle>
+            <DialogTitle>{t('calculator.summary.directContactInfo', 'Direct Contact Information')}</DialogTitle>
             <DialogDescription>
-              {t('calculator.summary.contactUsPrompt', 'Vui lòng liên hệ với chúng tôi qua các thông tin dưới đây để được tư vấn nhanh chóng')}
+              {t('calculator.summary.contactUsPrompt', 'Please contact us directly through the information below for quick consultation')}
             </DialogDescription>
           </DialogHeader>
           <div className="py-3">
@@ -509,7 +509,7 @@ const Step5Summary = () => {
           </div>
           <DialogFooter>
             <Button onClick={() => setShowContactDirectly(false)}>
-              {t('calculator.summary.understood', 'Đã hiểu')}
+              {t('calculator.summary.understood', 'Understood')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -611,8 +611,8 @@ const Step5Summary = () => {
                                 </div>
                                 {vehicle && (
                                   <div className="text-xs text-muted-foreground mt-1">
-                                    <span className="mr-2">{vehicle.seats} {t('calculator.summary.seats', 'chỗ ngồi')}</span>
-                                    <span>{t('calculator.summary.luggage', 'Hành lý')}: {vehicle.luggageCapacity} cái</span>
+                                    <span className="mr-2">{vehicle.seats} {t('calculator.summary.seats', 'seats')}</span>
+                                    <span>{t('calculator.summary.luggage', 'Luggage')}: {vehicle.luggageCapacity} {t('calculator.summary.pieces', 'pieces')}</span>
                                     {vehicle.driverCostPerDay > 0 && <div>{t('calculator.summary.driverCost', 'Driver cost')}: {formatCurrency(vehicle.driverCostPerDay)}/{t('calculator.summary.perDay', 'per day')}</div>}
                                   </div>
                                 )}
@@ -624,7 +624,7 @@ const Step5Summary = () => {
                                 )}
                               </>
                             ) 
-                            : <span className="text-amber-600">{t('calculator.summary.noVehicleSelected', 'Chưa chọn phương tiện')}</span>
+                            : <span className="text-amber-600">{t('calculator.summary.noVehicleSelected', 'No vehicle selected')}</span>
                           }
                         </div>
                       </li>
