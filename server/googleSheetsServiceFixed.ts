@@ -5,6 +5,9 @@ import { User, SYNC_SETTINGS } from '@shared/schema';
 /**
  * Hàm tiện ích để lấy tên sheet an toàn khi truy vấn Google Sheets API
  * Tránh lỗi "Unable to parse range" bằng cách chỉ sử dụng tên sheet
+ * 
+ * QUAN TRỌNG: Đây là phiên bản sửa lỗi - KHÔNG thêm phạm vi "!A:Z" vào tên sheet
+ * vì nó gây ra lỗi "Unable to parse range" trong một số trường hợp
  */
 function getSafeSheetName(sheetName: string): string {
   // Trả về chỉ tên sheet, không thêm phạm vi A:Z

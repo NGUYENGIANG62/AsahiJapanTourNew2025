@@ -18,6 +18,8 @@ import {
 } from "@shared/schema";
 import { convertCurrency } from "./currencyConverter";
 import { sendEmail } from "./emailService";
+// Use fixed Google Sheets service implementation
+import { getSheetData } from "./googleSheetsServiceFixed";
 import { syncDataFromSheets, syncDataToSheets } from "./googleSheetsService";
 import { SYNC_SETTINGS } from "../shared/schema";
 import { ZodError } from "zod";
