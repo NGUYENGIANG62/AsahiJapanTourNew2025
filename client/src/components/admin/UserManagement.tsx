@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
+import { ExternalLink, DownloadCloud, UploadCloud, RefreshCw, Check, AlertTriangle } from 'lucide-react';
 import { 
   Card, 
   CardContent, 
   CardHeader, 
   CardTitle,
-  CardDescription
+  CardDescription,
+  CardFooter
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,6 +57,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -142,6 +145,11 @@ const UserManagement = () => {
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('admin');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  
+  // States for Google Sheet management
+  const [googleSheetUrl, setGoogleSheetUrl] = useState<string | null>(null);
+  const [isSheetReady, setIsSheetReady] = useState<boolean | null>(null);
+  const [isSyncingFromSheet, setIsSyncingFromSheet] = useState(false);
   
   // Form for admin's own password
   const form = useForm<PasswordFormValues>({
@@ -395,7 +403,7 @@ const UserManagement = () => {
           onValueChange={setActiveTab}
           className="mb-6"
         >
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="admin" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
               <span>Tài khoản Admin</span>
@@ -403,6 +411,10 @@ const UserManagement = () => {
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span>Tài khoản người dùng</span>
+            </TabsTrigger>
+            <TabsTrigger value="google-sheets" className="flex items-center gap-2">
+              <ExternalLink className="h-4 w-4" />
+              <span>Google Sheets</span>
             </TabsTrigger>
           </TabsList>
           
@@ -546,6 +558,172 @@ const UserManagement = () => {
                 <LockKeyhole className="mr-2 h-4 w-4" />
                 Đổi mật khẩu người dùng
               </Button>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="google-sheets" className="space-y-6 mt-6">
+            <div className="border rounded-lg p-4">
+              <h3 className="text-lg font-medium mb-4">Quản lý tài khoản qua Google Sheet</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Liên kết với Google Sheet để quản lý tài khoản một cách tập trung. Bạn có thể import hoặc export tài khoản giữa hệ thống và Google Sheet.
+              </p>
+              
+              <div className="space-y-5">
+                {/* Google Sheet Status */}
+                <div className="flex items-center justify-between p-4 border rounded-md">
+                  <div className="flex flex-col">
+                    <h4 className="font-medium mb-1">Trạng thái kết nối Google Sheet</h4>
+                    <div className="flex items-center gap-2">
+                      {isSheetReady === null ? (
+                        <Badge variant="outline" className="flex items-center gap-1">
+                          <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                          <span>Đang kiểm tra...</span>
+                        </Badge>
+                      ) : isSheetReady ? (
+                        <Badge variant="success" className="bg-green-100 text-green-800 flex items-center gap-1">
+                          <Check className="h-3.5 w-3.5" />
+                          <span>Kết nối thành công</span>
+                        </Badge>
+                      ) : (
+                        <Badge variant="destructive" className="flex items-center gap-1">
+                          <AlertTriangle className="h-3.5 w-3.5" />
+                          <span>Chưa kết nối</span>
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/admin/account-sheet-status');
+                        if (response.ok) {
+                          const data = await response.json();
+                          setIsSheetReady(data.ready);
+                          toast({
+                            title: "Kiểm tra kết nối",
+                            description: data.ready 
+                              ? "Google Sheet đã được kết nối thành công" 
+                              : "Google Sheet chưa được kết nối hoặc không thể truy cập",
+                            variant: data.ready ? "default" : "destructive",
+                          });
+                        }
+                      } catch (error) {
+                        console.error("Error checking sheet status:", error);
+                        toast({
+                          title: "Lỗi",
+                          description: "Không thể kiểm tra trạng thái Google Sheet",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                  >
+                    Kiểm tra kết nối
+                  </Button>
+                </div>
+                
+                {/* Google Sheet URL */}
+                <div className="flex items-center justify-between p-4 border rounded-md">
+                  <div className="flex flex-col flex-1 mr-4">
+                    <h4 className="font-medium mb-1">URL Google Sheet</h4>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {googleSheetUrl ? googleSheetUrl : "Chưa có thông tin URL Google Sheet"}
+                    </p>
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/admin/account-sheet-url');
+                        if (response.ok) {
+                          const data = await response.json();
+                          setGoogleSheetUrl(data.url);
+                          
+                          // Mở Google Sheet trong tab mới
+                          window.open(data.url, '_blank');
+                        } else {
+                          toast({
+                            title: "Lỗi",
+                            description: "URL Google Sheet không được cấu hình hoặc không thể truy cập",
+                            variant: "destructive",
+                          });
+                        }
+                      } catch (error) {
+                        console.error("Error getting sheet URL:", error);
+                        toast({
+                          title: "Lỗi",
+                          description: "Không thể lấy URL Google Sheet",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Mở Google Sheet
+                  </Button>
+                </div>
+                
+                {/* Sync Operations */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border rounded-md flex flex-col">
+                    <h4 className="font-medium mb-2">Import từ Google Sheet</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Đồng bộ tài khoản từ Google Sheet vào hệ thống nội bộ
+                    </p>
+                    <Button 
+                      className="mt-auto"
+                      onClick={async () => {
+                        setIsSyncingFromSheet(true);
+                        try {
+                          const response = await fetch('/api/admin/sync-users-from-sheet', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                          });
+                          
+                          if (response.ok) {
+                            const result = await response.json();
+                            toast({
+                              title: "Đồng bộ thành công",
+                              description: result.message,
+                            });
+                            refetchUsers();
+                          } else {
+                            const error = await response.json();
+                            throw new Error(error.message);
+                          }
+                        } catch (error) {
+                          console.error("Error syncing from Google Sheet:", error);
+                          toast({
+                            title: "Lỗi đồng bộ",
+                            description: error instanceof Error ? error.message : "Không thể đồng bộ từ Google Sheet",
+                            variant: "destructive",
+                          });
+                        } finally {
+                          setIsSyncingFromSheet(false);
+                        }
+                      }}
+                      disabled={isSyncingFromSheet || !isSheetReady}
+                    >
+                      {isSyncingFromSheet ? (
+                        <>
+                          <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                          Đang đồng bộ...
+                        </>
+                      ) : (
+                        <>
+                          <DownloadCloud className="mr-2 h-4 w-4" />
+                          Import tài khoản
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           </TabsContent>
         </Tabs>

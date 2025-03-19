@@ -187,6 +187,70 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
     }
   });
   
+  // API để lấy URL của Google Account Sheet
+  apiRouter.get("/admin/account-sheet-url", isAdminMiddleware, async (req, res) => {
+    try {
+      const accountSheetUrl = process.env.ACCOUNT_MANAGEMENT_SHEET_URL;
+      if (!accountSheetUrl) {
+        return res.status(404).json({ message: "Account management sheet URL not configured" });
+      }
+      res.json({ url: accountSheetUrl });
+    } catch (error) {
+      console.error("Error getting account sheet URL:", error);
+      return res.status(500).json({ message: "Failed to get account sheet URL" });
+    }
+  });
+  
+  // API để kiểm tra xem Google Account Sheet có sẵn sàng không
+  apiRouter.get("/admin/account-sheet-status", isAdminMiddleware, async (req, res) => {
+    try {
+      const isReady = await accountService.isAccountSheetReady();
+      res.json({ ready: isReady });
+    } catch (error) {
+      console.error("Error checking account sheet status:", error);
+      return res.status(500).json({ message: "Failed to check account sheet status" });
+    }
+  });
+  
+  // API để đồng bộ người dùng từ Google Account Sheet vào hệ thống nội bộ
+  apiRouter.post("/admin/sync-users-from-sheet", isAdminMiddleware, async (req, res) => {
+    try {
+      const accounts = await accountService.getAllAccounts();
+      let syncedCount = 0;
+      let errorCount = 0;
+      
+      // Xử lý từng tài khoản, thêm vào hệ thống nội bộ nếu chưa tồn tại
+      for(const account of accounts) {
+        try {
+          // Kiểm tra xem tài khoản đã tồn tại trong hệ thống nội bộ chưa
+          const existingUser = await storage.getUserByUsername(account.username);
+          if (!existingUser) {
+            // Thêm tài khoản vào hệ thống nội bộ
+            await storage.createUser({
+              username: account.username,
+              password: account.password,
+              role: account.role,
+              agencyId: account.agencyId,
+              dataSource: account.dataSource
+            });
+            syncedCount++;
+          }
+        } catch (syncError) {
+          console.error(`Error syncing account ${account.username}:`, syncError);
+          errorCount++;
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Synced ${syncedCount} accounts from Google Sheet. ${errorCount > 0 ? `Failed to sync ${errorCount} accounts.` : ''}` 
+      });
+    } catch (error) {
+      console.error("Error syncing users from sheet:", error);
+      return res.status(500).json({ message: "Failed to sync users from sheet" });
+    }
+  });
+  
   // Tạo người dùng mới (chỉ admin)
   apiRouter.post("/admin/users", isAdminMiddleware, async (req, res) => {
     try {
