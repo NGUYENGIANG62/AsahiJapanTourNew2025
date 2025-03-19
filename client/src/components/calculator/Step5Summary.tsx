@@ -638,7 +638,7 @@ const Step5Summary = () => {
                                 <div className="font-medium">{hotel.name} - {hotel.stars} {t('calculator.summary.stars', 'stars')}</div>
                                 <div className="text-xs text-muted-foreground mt-1">
                                   <div>{getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'Không có phòng')}</div>
-                                  <div>{formData.stayingNights || calculateDuration() - 1} {t('calculator.summary.nights', 'đêm')}</div>
+                                  <div>{formData.stayingNights || calculateDuration() - 1} {t('calculator.summary.nights', 'nights')}</div>
                                   <div className="mt-1">
                                     {hotel.singleRoomPrice > 0 && <span className="mr-2">{t('calculator.summary.singleRoom', 'Single room')}: {formatCurrency(hotel.singleRoomPrice)}/{t('calculator.summary.perNight', 'per night')}</span>}
                                     {hotel.doubleRoomPrice > 0 && <span className="mr-2">{t('calculator.summary.doubleRoom', 'Double room')}: {formatCurrency(hotel.doubleRoomPrice)}/{t('calculator.summary.perNight', 'per night')}</span>}
@@ -654,7 +654,7 @@ const Step5Summary = () => {
                                   <div className="font-medium">{t('calculator.summary.hotel', 'Hotel')} {formData.hotelStars} {t('calculator.summary.stars', 'stars')}</div>
                                   <div className="text-xs text-muted-foreground mt-1">
                                     <div>{getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'Không có phòng')}</div>
-                                    <div>{formData.stayingNights || calculateDuration() - 1} {t('calculator.summary.nights', 'đêm')}</div>
+                                    <div>{formData.stayingNights || calculateDuration() - 1} {t('calculator.summary.nights', 'nights')}</div>
                                   </div>
                                 </>
                               )
