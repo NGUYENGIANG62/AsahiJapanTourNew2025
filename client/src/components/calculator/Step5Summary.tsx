@@ -271,14 +271,14 @@ const Step5Summary = () => {
 
     try {
       // Prepare the email content
-      const emailSubject = `Yêu cầu tư vấn tour: ${tour?.name || 'Tour mới'} - ${formatDate(formData.startDate)}`;
+      const emailSubject = `Tour Request: ${tour?.name || 'New Tour'} - ${formatDate(formData.startDate)}`;
       
       // Add customer information
       const customerInfo = `
-        Thông tin khách hàng:
-        Họ tên: ${customerName || 'Không cung cấp'}
-        Tuổi: ${customerAge || 'Không cung cấp'}
-        Điện thoại: ${customerPhone || 'Không cung cấp'}
+        Customer Information:
+        Name: ${customerName || 'Not provided'}
+        Age: ${customerAge || 'Not provided'}
+        Phone: ${customerPhone || 'Not provided'}
         Email: ${customerEmail}
       `;
       
@@ -286,21 +286,21 @@ const Step5Summary = () => {
       let specialServicesText = '';
       if (formData.specialServices) {
         const services = [];
-        if (formData.specialServices.geishaShow) services.push('Show Geisha');
-        if (formData.specialServices.kimonoExperience) services.push('Trải nghiệm mặc Kimono');
-        if (formData.specialServices.teaCeremony) services.push('Trà đạo truyền thống');
-        if (formData.specialServices.wagyuDinner) services.push('Ăn tối với bò Wagyu');
-        if (formData.specialServices.sumoShow) services.push('Xem đấu Sumo');
-        if (formData.specialServices.disneylandTickets) services.push('Vé Disneyland');
-        if (formData.specialServices.universalStudioTickets) services.push('Vé Universal Studio');
-        if (formData.specialServices.airportTransfer) services.push('Dịch vụ đưa đón sân bay');
+        if (formData.specialServices.geishaShow) services.push('Geisha Show');
+        if (formData.specialServices.kimonoExperience) services.push('Kimono Experience');
+        if (formData.specialServices.teaCeremony) services.push('Tea Ceremony');
+        if (formData.specialServices.wagyuDinner) services.push('Wagyu Dinner');
+        if (formData.specialServices.sumoShow) services.push('Sumo Show');
+        if (formData.specialServices.disneylandTickets) services.push('Disneyland Tickets');
+        if (formData.specialServices.universalStudioTickets) services.push('Universal Studio Tickets');
+        if (formData.specialServices.airportTransfer) services.push('Airport Transfer');
         
         specialServicesText = services.length > 0 
-          ? `Dịch vụ đặc biệt: ${services.join(', ')}`
-          : 'Dịch vụ đặc biệt: Không';
+          ? `Special Services: ${services.join(', ')}`
+          : 'Special Services: None';
           
         if (formData.specialServices.notes) {
-          specialServicesText += `\nGhi chú dịch vụ đặc biệt: ${formData.specialServices.notes}`;
+          specialServicesText += `\nSpecial Service Notes: ${formData.specialServices.notes}`;
         }
       }
 
@@ -417,9 +417,9 @@ const Step5Summary = () => {
       <Dialog open={showContactInfo} onOpenChange={setShowContactInfo}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{t('calculator.summary.sendTourRequest', 'Gửi yêu cầu tư vấn tour')}</DialogTitle>
+            <DialogTitle>{t('calculator.summary.sendTourRequest', 'Send Tour Request')}</DialogTitle>
             <DialogDescription>
-              {t('calculator.summary.provideContactInfo', 'Vui lòng cung cấp thông tin để chúng tôi liên hệ với bạn')}
+              {t('calculator.summary.provideContactInfo', 'Please provide your information so we can contact you')}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -489,7 +489,7 @@ const Step5Summary = () => {
               disabled={emailStatus === 'sending'}
             >
               {emailStatus === 'sending' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {emailStatus === 'sending' ? t('calculator.summary.sending', 'Đang gửi...') : t('calculator.summary.sendRequest', 'Gửi yêu cầu')}
+              {emailStatus === 'sending' ? t('calculator.summary.sending', 'Sending...') : t('calculator.summary.sendRequest', 'Send Request')}
             </Button>
           </DialogFooter>
         </DialogContent>
