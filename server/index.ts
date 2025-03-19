@@ -20,6 +20,10 @@ console.log('Email ENV check:', {
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD ? `Set (${process.env.EMAIL_PASSWORD.length} chars)` : 'not set'
 });
 
+// Đảm bảo các biến môi trường email được tải đúng
+process.env.EMAIL_USER = process.env.EMAIL_USER || 'asahivietlifejapantours@gmail.com';
+process.env.EMAIL_PASSWORD = process.env.EMAIL_PASSWORD || 'xdppaohryuhknygk';
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
