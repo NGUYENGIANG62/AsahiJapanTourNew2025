@@ -157,6 +157,7 @@ const Step5Summary = () => {
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
     
+    // Luôn tính trọn ngày, dù khách bay sáng hay chiều vẫn sử dụng dịch vụ đủ ngày 
     return diffDays > 0 ? diffDays : 1; // Ensure we always have at least 1 day
   };
   
@@ -201,8 +202,33 @@ const Step5Summary = () => {
   const convertCost = (amountInJPY: number): number => {
     if (!calculation || currency === 'JPY') return amountInJPY;
     
-    // Sử dụng tỷ lệ quy đổi từ tổng tiền
-    const conversionRate = calculation.totalInRequestedCurrency / calculation.costs.totalAmount;
+    // Sử dụng tỷ lệ quy đổi từ API
+    let conversionRate = 1;
+    
+    switch(currency) {
+      case 'USD':
+        conversionRate = 0.0067; // Mặc định: 1 JPY = 0.0067 USD
+        break;
+      case 'VND':
+        conversionRate = 161.83; // Mặc định: 1 JPY = 161.83 VND
+        break;
+      case 'CNY':
+        conversionRate = 0.048; // Mặc định: 1 JPY = 0.048 CNY
+        break;
+      case 'KRW':
+        conversionRate = 9.05; // Mặc định: 1 JPY = 9.05 KRW
+        break;
+    }
+    
+    // Sử dụng tỷ lệ quy đổi chính xác từ server (nếu có)
+    if (calculation.totalInRequestedCurrency && calculation.costs.totalAmount) {
+      const serverRate = calculation.totalInRequestedCurrency / calculation.costs.totalAmount;
+      if (serverRate > 0) {
+        conversionRate = serverRate;
+        console.log(`Tỷ giá quy đổi từ server: 1 JPY = ${conversionRate} ${currency}`);
+      }
+    }
+    
     return Math.round(amountInJPY * conversionRate);
   };
   
