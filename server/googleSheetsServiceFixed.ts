@@ -44,7 +44,18 @@ function getSafeRange(sheetName: string, fullRange: boolean = true): string {
     return 'default!A1'; // Sử dụng tên sheet hợp lệ, sẽ được xử lý trong khối try-catch
   }
   
-  // Đối với các sheet thông thường, bọc tên sheet trong dấu nháy đơn
+  // Đối với các sheet thông thường, chúng ta cần xử lý đặc biệt một số trường hợp
+  // Đặc biệt xử lý trường hợp 'Settings' do lỗi parse range
+  if (trimmedName === 'Settings') {
+    // Sử dụng định dạng sheet theo cách khác
+    if (fullRange) {
+      return 'Settings!A:Z'; // Phạm vi rộng theo định dạng đơn giản hơn
+    } else {
+      return 'Settings!A:A'; // Chỉ lấy cột đầu tiên
+    }
+  }
+  
+  // Đối với các sheet thông thường còn lại, bọc tên sheet trong dấu nháy đơn
   let safeName = `'${trimmedName}'`;
   
   // Luôn thêm phạm vi cụ thể
