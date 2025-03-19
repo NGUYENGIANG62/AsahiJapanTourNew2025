@@ -240,7 +240,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Hotels sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `${encodeURIComponent('Hotels')}!A1:Z1`,
+      range: `Hotels!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'name', 'location', 'stars', 'singleRoomPrice', 'doubleRoomPrice', 'tripleRoomPrice', 'breakfastPrice', 'imageUrl']]
@@ -250,7 +250,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Guides sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `${encodeURIComponent('Guides')}!A1:Z1`,
+      range: `Guides!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'name', 'languages', 'pricePerDay', 'experience', 'hasInternationalLicense', 'personality', 'gender', 'age']]
@@ -260,7 +260,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Seasons sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `${encodeURIComponent('Seasons')}!A1:Z1`,
+      range: `Seasons!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'name', 'startMonth', 'endMonth', 'description', 'priceMultiplier', 'nameJa', 'nameZh', 'nameKo', 'nameVi', 'descriptionJa', 'descriptionZh', 'descriptionKo', 'descriptionVi']]
@@ -270,7 +270,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Settings sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `${encodeURIComponent('Settings')}!A1:Z1`,
+      range: `Settings!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'key', 'value']]
@@ -304,19 +304,19 @@ export async function getSpreadsheetForUser(user?: User | null, specificSource?:
         return { sheetsApi, spreadsheetId: specificSource, sourceName: 'custom-id' };
       }
     } 
-    // Nếu là agency user và có agencyDataSource
-    else if (user && user.role === 'agent' && user.agencyDataSource) {
+    // Nếu là agency user và có dataSource
+    else if (user && user.role === 'agent' && user.dataSource) {
       // Sử dụng nguồn dữ liệu của đại lý
-      if (user.agencyDataSource.includes('http')) {
+      if (user.dataSource.includes('http')) {
         // It's a URL, authorize with it
-        const { sheetsApi, id } = await authorize(user.agencyDataSource);
+        const { sheetsApi, id } = await authorize(user.dataSource);
         if (!sheetsApi) throw new Error('Could not authorize with Google');
         return { sheetsApi, spreadsheetId: id, sourceName: user.username || 'agency' };
       } else {
         // It's already a spreadsheet ID
         const { sheetsApi } = await authorize();
         if (!sheetsApi) throw new Error('Could not authorize with Google');
-        return { sheetsApi, spreadsheetId: user.agencyDataSource, sourceName: user.username || 'agency' };
+        return { sheetsApi, spreadsheetId: user.dataSource, sourceName: user.username || 'agency' };
       }
     } 
     // Mặc định: sử dụng Google Sheet mặc định
@@ -357,7 +357,7 @@ async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId:
     });
     
     const sheetExists = spreadsheet.data.sheets?.some(
-      sheet => sheet.properties?.title === sheetName
+      (sheet: any) => sheet.properties?.title === sheetName
     );
     
     if (!sheetExists) {
@@ -620,7 +620,7 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
         ranges: [sheetName],
       });
       
-      const sheet = sheetsResponse.data.sheets?.find(s => 
+      const sheet = sheetsResponse.data.sheets?.find((s: any) => 
         s.properties?.title === sheetName
       );
       
