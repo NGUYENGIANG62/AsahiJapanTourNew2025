@@ -11,7 +11,7 @@ import AdminPanel from "@/pages/AdminPanel";
 import Calculator from "@/pages/Calculator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { TuDongChatBot } from "@/components/TuDongChatBot";
+import { TuDongChatScript } from "@/components/TuDongChatScript";
 import { useEffect } from "react";
 import i18n from "@/lib/i18n";
 
@@ -71,7 +71,7 @@ function App() {
       <AuthProvider>
         <CalculatorProvider>
           <Router />
-          <TuDongChatBot />
+          <TuDongChatScript />
           <Toaster />
         </CalculatorProvider>
       </AuthProvider>
