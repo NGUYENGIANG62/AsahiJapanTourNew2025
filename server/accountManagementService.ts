@@ -361,14 +361,17 @@ export async function createAccount(userData: {
     // Thêm tài khoản mới
     const newAccount = await addAccountToSheet(userData);
     
-    return {
+    // Ép kiểu về interface User để tương thích
+    const user: User = {
       id: newAccount.id,
       username: newAccount.username,
-      password: newAccount.password, // Thêm password để tương thích với type User
+      password: newAccount.password,
       role: newAccount.role,
       agencyId: newAccount.agencyId || null,
       dataSource: newAccount.dataSource || null,
     };
+    
+    return user;
   } catch (error) {
     console.error('Error creating account:', error);
     return null;

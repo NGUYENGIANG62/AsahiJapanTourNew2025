@@ -211,6 +211,23 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         
         if (sheetUser) {
           console.log(`Account '${username}' created successfully in Google Sheet`);
+          
+          // Đồng bộ tài khoản vào hệ thống nội bộ để hiển thị trong UI Admin
+          try {
+            const internalUser = await storage.createUser({
+              username: sheetUser.username,
+              password: sheetUser.password,
+              role: sheetUser.role,
+              agencyId: sheetUser.agencyId,
+              dataSource: sheetUser.dataSource
+            });
+            console.log(`Account '${username}' synchronized to internal storage`);
+          } catch (error) {
+            const syncError = error as Error;
+            console.warn(`Warning: Could not sync account to internal storage: ${syncError.message}`);
+            // Không trả về lỗi vì tài khoản đã được tạo thành công trong Google Sheet
+          }
+          
           return res.status(201).json(sheetUser);
         }
       } catch (sheetError) {
