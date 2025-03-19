@@ -27,7 +27,7 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
   totalAmount,
   participants,
   currency = 'JPY',
-  showQR = true
+  showQR = false
 }) => {
   const { t } = useTranslation();
   
@@ -167,8 +167,8 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
               <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800 flex">
                 <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-medium">{t('calculator.summary.importantNote', 'Lưu ý quan trọng')}:</span>{' '}
-                  {t('calculator.summary.paymentNotes', 'Giá trên là ước tính, chúng tôi sẽ liên hệ để xác nhận chi tiết sau khi nhận được yêu cầu đặt tour. Vui lòng ghi rõ tên và ngày tour khi thanh toán.')}
+                  <span className="font-medium">{t('calculator.summary.importantNote', 'Important Note')}:</span>{' '}
+                  {t('calculator.summary.paymentNotes', 'The price above is an estimate. We will contact you to confirm details after receiving your tour booking request. Please include your name and tour date when making payment.')}
                 </div>
               </div>
             </div>
