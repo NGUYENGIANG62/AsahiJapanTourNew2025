@@ -96,7 +96,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({ showQR = true }) => {
             <div className="flex flex-col items-center justify-center">
               <div className="border rounded-lg p-2 bg-white">
                 <img 
-                  src="/attached_assets/871dfb8adbcd32936bdc.jpeg" 
+                  src="attached_assets/IMG_2419.jpeg" 
                   alt="Contact QR Code" 
                   className="h-32 w-32 object-contain"
                 />
