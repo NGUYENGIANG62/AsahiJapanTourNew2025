@@ -578,7 +578,7 @@ const Step5Summary = () => {
                   <div className="space-y-1">
                     <div className="text-sm text-muted-foreground flex items-center">
                       <PlaneTakeoff className="mr-2 h-4 w-4" />
-                      Thời gian khởi hành
+                      {t('calculator.summary.departureTime', 'Departure Time')}
                     </div>
                     <p className="flex items-center text-sm">
                       {(() => {
@@ -723,25 +723,25 @@ const Step5Summary = () => {
 
                       {/* Thông tin chuyến bay */}
                       <li className="mt-4">
-                        <h4 className="font-medium mb-2">Thông tin chuyến bay</h4>
+                        <h4 className="font-medium mb-2">{t('calculator.summary.flightInfo', 'Flight Information')}</h4>
                         <ul className="space-y-1 pl-4">
                           <li className="flex items-center">
                             <PlaneLanding className="mr-2 h-3 w-3 text-muted-foreground" />
-                            <span className="text-sm">Giờ đáp: {(() => {
+                            <span className="text-sm">{t('calculator.summary.arrivalTimeDetail', 'Arrival Time')}: {(() => {
                               switch(formData.arrivalTime) {
-                                case 'morning': return 'Sáng (trước 12h)';
-                                case 'afternoon': return 'Chiều (sau 12h)';
-                                default: return 'Chưa xác định';
+                                case 'morning': return t('calculator.summary.morningTime', 'Morning (before 12PM)');
+                                case 'afternoon': return t('calculator.summary.afternoonTime', 'Afternoon (after 12PM)');
+                                default: return t('calculator.summary.undefinedTime', 'Not specified');
                               }
                             })()}</span>
                           </li>
                           <li className="flex items-center">
                             <PlaneTakeoff className="mr-2 h-3 w-3 text-muted-foreground" />
-                            <span className="text-sm">Giờ khởi hành: {(() => {
+                            <span className="text-sm">{t('calculator.summary.departureTimeDetail', 'Departure Time')}: {(() => {
                               switch(formData.departureTime) {
-                                case 'morning': return 'Sáng (trước 12h)';
-                                case 'afternoon': return 'Chiều (sau 12h)';
-                                default: return 'Chưa xác định';
+                                case 'morning': return t('calculator.summary.morningTime', 'Morning (before 12PM)');
+                                case 'afternoon': return t('calculator.summary.afternoonTime', 'Afternoon (after 12PM)');
+                                default: return t('calculator.summary.undefinedTime', 'Not specified');
                               }
                             })()}</span>
                           </li>
@@ -751,7 +751,7 @@ const Step5Summary = () => {
                       {/* Special Services section */}
                       {formData.specialServices && (
                         <li className="mt-4">
-                          <h4 className="font-medium mb-2">Dịch vụ đặc biệt</h4>
+                          <h4 className="font-medium mb-2">{t('calculator.summary.specialServices', 'Special Services')}</h4>
                           <ul className="space-y-1 pl-4">
                             {formData.specialServices.geishaShow && (
                               <li className="flex items-center">
