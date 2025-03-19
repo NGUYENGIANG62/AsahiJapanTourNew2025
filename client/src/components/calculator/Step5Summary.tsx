@@ -1037,6 +1037,15 @@ const Step5Summary = () => {
                       {t('calculator.summary.season')}: {calculation.calculationDetails.season.name}
                     </p>
                   )}
+                  <Alert className="mt-3 bg-amber-50 border-amber-200">
+                    <AlertTitle className="text-amber-800 font-medium">
+                      Thông báo thanh toán
+                    </AlertTitle>
+                    <AlertDescription className="text-amber-700">
+                      Quý khách vui lòng thanh toán theo hướng dẫn của AsahiVietLife. 
+                      Chi tiết liên hệ qua email: asahivietlifejapantours@gmail.com
+                    </AlertDescription>
+                  </Alert>
                 </div>
               )}
             </CardContent>
