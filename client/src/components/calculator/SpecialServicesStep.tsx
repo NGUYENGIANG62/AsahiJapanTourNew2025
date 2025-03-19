@@ -40,9 +40,9 @@ const SpecialServicesStep = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{t('Dịch vụ đặc biệt (tùy chọn)')}</CardTitle>
+          <CardTitle>{t('calculator.specialServices.title', 'Dịch vụ đặc biệt (tùy chọn)')}</CardTitle>
           <CardDescription>
-            {t('Chọn các dịch vụ đặc biệt bạn muốn thêm vào tour của mình. Chi phí cho các dịch vụ này không bao gồm trong báo giá và sẽ được thông báo riêng.')}
+            {t('calculator.specialServices.description', 'Chọn các dịch vụ đặc biệt bạn muốn thêm vào tour của mình. Chi phí cho các dịch vụ này không bao gồm trong báo giá và sẽ được thông báo riêng.')}
           </CardDescription>
         </CardHeader>
         <CardContent>

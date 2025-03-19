@@ -247,7 +247,25 @@ const enTranslations = {
       age: 'Age',
       phone: 'Phone',
       email: 'Email',
-      tourRequestInfo: 'Tour request information will be sent to Asahi VietLife for detailed consultation'
+      tourRequestInfo: 'Tour request information will be sent to Asahi VietLife for detailed consultation',
+      // Payment Information
+      paymentInstructions: 'Payment Instructions',
+      paymentMethods: 'Payment Methods',
+      bankTransfer: 'Bank Transfer',
+      companyName: 'Company Name',
+      bank: 'Bank',
+      bankCode: 'Bank Code',
+      accountName: 'Account Name',
+      branch: 'Branch',
+      accountNumber: 'Account Number',
+      swiftCode: 'Swift Code',
+      jpBankAccount: 'JP Bank Account',
+      vnBankAccount: 'VN Bank Account',
+      accountHolder: 'Account Holder',
+      scanQR: 'Scan QR code to pay',
+      importantNote: 'Important Note',
+      paymentNotes: 'The price above is an estimate, we will contact you to confirm the details after receiving your tour request. Please specify your name and tour date when making payment.',
+      stars: 'stars'
     }
   },
   languages: {
@@ -301,6 +319,7 @@ const enTranslations = {
 const jaTranslations = {
   common: {
     appName: 'あさひジャパンツアーズ',
+    contactDescription: '旅行の相談や質問がある場合は、お気軽にお問い合わせください。',
     login: 'ログイン',
     logout: 'ログアウト',
     home: 'ホーム',
