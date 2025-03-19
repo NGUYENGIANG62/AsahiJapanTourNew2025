@@ -92,32 +92,32 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
                 <div className="flex-1">
                   <div className="flex items-center mb-3">
                     <Building2 className="mr-2 h-5 w-5 text-indigo-600" />
-                    <h5 className="font-medium">{t('calculator.summary.bankTransfer', 'Chuyển khoản ngân hàng')}</h5>
+                    <h5 className="font-medium">{t('calculator.summary.bankTransfer', 'Bank Transfer')}</h5>
                   </div>
                   
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">{t('calculator.summary.companyName', 'Tên công ty')}:</span>
-                      <span>ASAHI VIET LIFE JSC</span>
+                      <span className="font-medium w-32">{t('calculator.summary.companyName', 'Company Name')}:</span>
+                      <span>ASAHI VIETLIFE</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">{t('calculator.summary.bank', 'Ngân hàng')}:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.bank', 'Bank')}:</span>
                       <span>Mitsubishi UFJ (MUFG)</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">{t('calculator.summary.bankCode', 'Mã ngân hàng')}:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.bankCode', 'Bank Code')}:</span>
                       <span>195</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">{t('calculator.summary.accountName', 'Tên tài khoản')}:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.accountName', 'Account Name')}:</span>
                       <span>Kifushi Rina</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">{t('calculator.summary.branch', 'Chi nhánh')}:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.branch', 'Branch')}:</span>
                       <span>Senju Chuo, Japan</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">{t('calculator.summary.accountNumber', 'Số tài khoản')}:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.accountNumber', 'Account Number')}:</span>
                       <span>0115737</span>
                     </li>
                     <li className="flex items-baseline">
@@ -133,11 +133,11 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
                       <span>VietinBank - 103869460710</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">{t('calculator.summary.accountHolder', 'Chủ tài khoản')}:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.accountHolder', 'Account Holder')}:</span>
                       <span>NGUYEN TRUONG GIANG</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">{t('calculator.summary.branch', 'Chi nhánh')}:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.branch', 'Branch')}:</span>
                       <span>VietinBank CN DO THANH - HOI SO</span>
                     </li>
                   </ul>
@@ -155,7 +155,7 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
                     </div>
                     <p className="text-xs text-center mt-2 text-muted-foreground flex items-center justify-center">
                       <QrCode className="h-3 w-3 mr-1" />
-                      {t('calculator.summary.scanQR', 'Quét mã QR để thanh toán')} 
+                      {t('calculator.summary.scanQR', 'Scan QR code to pay')} 
                       {currency === 'VND' ? ' (VietinBank)' : ' (JP)'}
                     </p>
                   </div>
