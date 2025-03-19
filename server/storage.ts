@@ -479,6 +479,11 @@ export class MemStorage implements IStorage {
       (user) => user.username === username,
     );
   }
+  
+  async getAllUsers(): Promise<User[]> {
+    // Chuyển đổi Map thành mảng các người dùng và sắp xếp theo ID
+    return Array.from(this.users.values()).sort((a, b) => a.id - b.id);
+  }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
@@ -501,6 +506,53 @@ export class MemStorage implements IStorage {
     const updatedUser = { ...user, password: hashedPassword };
     this.users.set(id, updatedUser);
     return updatedUser;
+  }
+  
+  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined> {
+    const user = await this.getUser(id);
+    if (!user) {
+      return undefined;
+    }
+    
+    // Không cho phép thay đổi username hoặc role của admin chính
+    if (user.role === 'admin' && user.id === 1) {
+      // Vẫn có thể thay đổi mật khẩu, nhưng không thay đổi username hoặc role
+      if (userData.username && userData.username !== user.username) {
+        userData.username = user.username; // Giữ nguyên username
+      }
+      if (userData.role && userData.role !== user.role) {
+        userData.role = user.role; // Giữ nguyên role
+      }
+    }
+    
+    // Nếu có mật khẩu mới, mã hóa nó
+    if (userData.password) {
+      userData.password = await bcrypt.hash(userData.password, 10);
+    }
+    
+    // Cập nhật thông tin người dùng
+    const updatedUser = {
+      ...user,
+      ...userData
+    };
+    
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+  
+  async deleteUser(id: number): Promise<boolean> {
+    // Không cho phép xóa admin chính
+    if (id === 1) {
+      return false;
+    }
+    
+    // Kiểm tra xem người dùng có tồn tại không
+    const exists = this.users.has(id);
+    if (exists) {
+      this.users.delete(id);
+      return true;
+    }
+    return false;
   }
 
   // Tour Management

@@ -175,17 +175,121 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   // User Management Routes (Admin only)
   apiRouter.get("/admin/users", isAdminMiddleware, async (req, res) => {
     try {
-      const users = [
-        { id: 2, username: 'customer', role: 'user' },
-        { id: 3, username: 'AsahiLKNamA', role: 'agent' }
-      ];
-      
-      res.json(users);
+      const users = await storage.getAllUsers();
+      // Không gửi mật khẩu khi phản hồi
+      const safeUsers = users.map(({ password, ...rest }) => rest);
+      res.json(safeUsers);
     } catch (error) {
+      console.error("Error fetching users:", error);
       return res.status(500).json({ message: "Failed to fetch users" });
     }
   });
   
+  // Tạo người dùng mới (chỉ admin)
+  apiRouter.post("/admin/users", isAdminMiddleware, async (req, res) => {
+    try {
+      const { username, password, role, agencyId, dataSource } = req.body;
+      
+      // Kiểm tra xem username đã tồn tại chưa
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+      
+      // Tạo người dùng mới
+      const newUser = await storage.createUser({
+        username,
+        password,
+        role: role || 'user',
+        agencyId: agencyId || null,
+        dataSource: dataSource || null
+      });
+      
+      // Loại bỏ mật khẩu trước khi trả về
+      const { password: _, ...safeUser } = newUser;
+      
+      res.status(201).json(safeUser);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      return res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+  
+  // Cập nhật thông tin người dùng (chỉ admin)
+  apiRouter.put("/admin/users/:id", isAdminMiddleware, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { username, role, agencyId, dataSource } = req.body;
+      
+      // Lấy thông tin người dùng hiện tại
+      const existingUser = await storage.getUser(userId);
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Cập nhật thông tin người dùng
+      const updatedUser = await storage.updateUser(userId, {
+        username,
+        role,
+        agencyId,
+        dataSource
+      });
+      
+      // Loại bỏ mật khẩu trước khi trả về
+      const { password: _, ...safeUser } = updatedUser!;
+      
+      res.json(safeUser);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      return res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+  
+  // Xóa người dùng (chỉ admin)
+  apiRouter.delete("/admin/users/:id", isAdminMiddleware, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // Không cho phép xóa chính mình
+      if (req.user && req.user.id === userId) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+      
+      const success = await storage.deleteUser(userId);
+      if (!success) {
+        return res.status(404).json({ message: "User not found or cannot be deleted" });
+      }
+      
+      res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      return res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+  
+  // Đổi mật khẩu người dùng (chỉ admin)
+  apiRouter.put("/admin/users/:id/password", isAdminMiddleware, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { password } = req.body;
+      
+      if (!password) {
+        return res.status(400).json({ message: "Password is required" });
+      }
+      
+      const updatedUser = await storage.updateUserPassword(userId, password);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Error updating password:", error);
+      return res.status(500).json({ message: "Failed to update password" });
+    }
+  });
+  
+  // Đổi mật khẩu của chính mình
   apiRouter.put("/admin/password", isAdminMiddleware, async (req, res) => {
     try {
       const { newPassword } = req.body;
