@@ -445,10 +445,11 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
     // Get data from sheet - Sử dụng tên sheet thô không thêm range
     console.log(`Getting data from sheet: ${sheetName}`);
     
-    // Phương pháp 1: Đơn giản nhất - chỉ sử dụng tên sheet (đôi khi hoạt động tốt nhất)
+    // Đưa tên sheet vào dấu nháy đơn để xử lý tên sheet có ký tự đặc biệt
+    const safeSheetName = `'${sheetName}'`;
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: sheetName,
+      range: safeSheetName,
     });
 
     const rows = response.data.values || [];
@@ -514,9 +515,10 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     // First, get all the data to find the row index
     console.log(`Updating data in sheet: ${sheetName}`);
     
+    const safeSheetName = `'${sheetName}'`;
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: sheetName,
+      range: safeSheetName,
     });
 
     const rows = response.data.values || [];
@@ -547,7 +549,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
       // Update existing row
       await sheetsApi.spreadsheets.values.update({
         spreadsheetId,
-        range: `${sheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`,
+        range: `'${sheetName}'!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`,
         valueInputOption: 'RAW',
         requestBody: {
           values: [values],
@@ -557,7 +559,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
       // Append new row
       await sheetsApi.spreadsheets.values.append({
         spreadsheetId,
-        range: `${sheetName}!A1`,
+        range: `'${sheetName}'!A1`,
         valueInputOption: 'RAW',
         insertDataOption: 'INSERT_ROWS',
         requestBody: {
@@ -584,9 +586,10 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
     // First, get all the data to find the row index
     console.log(`Deleting data from sheet: ${sheetName}`);
     
+    const safeSheetName = `'${sheetName}'`;
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
-      range: sheetName,
+      range: safeSheetName,
     });
 
     const rows = response.data.values || [];
