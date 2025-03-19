@@ -63,6 +63,7 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
   const [formData, setFormData] = useState<CalculatorFormData>({...initialFormData});
   const [calculation, setCalculation] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  // Chỉ sử dụng đơn vị Yên Nhật
   const [currency, setCurrency] = useState<Currency>('JPY');
   const [isValid, setIsValid] = useState(false);
   const { toast } = useToast();
