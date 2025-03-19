@@ -63,13 +63,13 @@ async function authorize(customSpreadsheetUrl?: string) {
     console.log(`Using spreadsheet ID: ${spreadsheetId}`);
     
     // Kiểm tra loại xác thực
-    if (process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY) {
+    if (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) {
       console.log('Using Service Account for full access (read & write)');
       
       // Sử dụng Service Account (hỗ trợ đọc và ghi)
       const auth = new google.auth.JWT({
-        email: process.env.GOOGLE_CLIENT_EMAIL,
-        key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        key: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/g, '\n'),
         scopes: SCOPES
       });
       
