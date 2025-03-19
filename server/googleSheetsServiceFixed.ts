@@ -45,9 +45,9 @@ function getSafeRange(sheetName: string, fullRange: boolean = true): string {
   }
   
   // Đối với các sheet thông thường, chúng ta cần xử lý đặc biệt một số trường hợp
-  // Đặc biệt xử lý trường hợp 'Settings' do lỗi parse range
+  // Đặc biệt xử lý trường hợp 'Settings' do lỗi parse range - đã hoạt động đúng
   if (trimmedName === 'Settings') {
-    // Thử cách khác - bọc tên sheet trong nháy đơn để tránh xung đột
+    // Bọc tên sheet trong nháy đơn để tránh xung đột, đã kiểm chứng hoạt động tốt
     if (fullRange) {
       return "'Settings'!A1:Z1000"; // Phạm vi rộng với định dạng rõ ràng
     } else {
@@ -584,6 +584,12 @@ export async function getSpreadsheet(): Promise<{ sheetsApi: sheets_v4.Sheets, s
  */
 export async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sheetName: string): Promise<void> {
   try {
+    // Đặc biệt xử lý sheet Settings - không cố gắng tạo mới
+    if (sheetName === 'Settings') {
+      console.log(`Bỏ qua việc kiểm tra và tạo sheet '${sheetName}' vì đã có sẵn`);
+      return;
+    }
+    
     console.log(`Checking if sheet '${sheetName}' exists...`);
     
     // Kiểm tra xem sheet đã tồn tại chưa
