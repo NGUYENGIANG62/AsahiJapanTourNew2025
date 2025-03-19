@@ -408,7 +408,7 @@ async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId:
         }
         
         // Thêm headers - đảm bảo định dạng range đúng với Google Sheets API
-        const headerRange = `'${sheetName}'!A1:Z1`;
+        const headerRange = `${sheetName}!A1:Z1`;
         console.log(`Adding headers to range: ${headerRange}`);
         await sheetsApi.spreadsheets.values.update({
           spreadsheetId,
@@ -447,8 +447,9 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
     // Get data from sheet - Sử dụng tên sheet thô không thêm range
     console.log(`Getting data from sheet: ${sheetName}`);
     
-    // Đưa tên sheet vào dấu nháy đơn kèm theo phạm vi ô (thêm !A:Z để lấy toàn bộ dữ liệu)
-    const safeSheetName = `'${sheetName}'!A:Z`;
+    // Thử với cách định dạng range khác nhau
+    // Cách 1: Không sử dụng dấu nháy đơn với tên sheet đơn giản
+    const safeSheetName = `${sheetName}!A:Z`;
     console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
@@ -518,7 +519,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     // First, get all the data to find the row index
     console.log(`Updating data in sheet: ${sheetName}`);
     
-    const safeSheetName = `'${sheetName}'!A:Z`;
+    const safeSheetName = `${sheetName}!A:Z`;
     console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
@@ -551,7 +552,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     
     if (rowIndex > 0) {
       // Update existing row - đảm bảo format đúng
-      const updateRange = `'${sheetName}'!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`;
+      const updateRange = `${sheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`;
       console.log(`Updating row at range: ${updateRange}`);
       await sheetsApi.spreadsheets.values.update({
         spreadsheetId,
@@ -563,7 +564,7 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
       });
     } else {
       // Append new row - đảm bảo format đúng
-      const appendRange = `'${sheetName}'!A1`;
+      const appendRange = `${sheetName}!A1`;
       console.log(`Appending new row at range: ${appendRange}`);
       await sheetsApi.spreadsheets.values.append({
         spreadsheetId,
@@ -594,7 +595,7 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
     // First, get all the data to find the row index
     console.log(`Deleting data from sheet: ${sheetName}`);
     
-    const safeSheetName = `'${sheetName}'!A:Z`;
+    const safeSheetName = `${sheetName}!A:Z`;
     console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
