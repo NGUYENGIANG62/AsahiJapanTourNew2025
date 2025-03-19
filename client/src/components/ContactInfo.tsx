@@ -83,42 +83,6 @@ const ContactInfo = ({ compact = false }: ContactInfoProps) => {
                   <ExternalLink className="h-3 w-3" />
                 </Button>
               </a>
-              
-              <a 
-                href="https://zalo.me/8170-2794-4770" 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                <Button size="sm" variant="outline" className="flex items-center gap-1">
-                  <span className="text-sm font-bold">Zalo</span>
-                  <span className="hidden sm:inline">Mr. Truong Giang</span>
-                  <ExternalLink className="h-3 w-3" />
-                </Button>
-              </a>
-              
-              <a 
-                href="https://wa.me/817027944770" 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                <Button size="sm" variant="outline" className="flex items-center gap-1">
-                  <span className="text-sm font-bold">WhatsApp</span>
-                  <span className="hidden sm:inline">Mr. Truong Giang</span>
-                  <ExternalLink className="h-3 w-3" />
-                </Button>
-              </a>
-              
-              <a 
-                href="https://line.me/ti/p/~8170-2794-4770" 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                <Button size="sm" variant="outline" className="flex items-center gap-1">
-                  <span className="text-sm font-bold">Line</span>
-                  <span className="hidden sm:inline">Mr. Truong Giang</span>
-                  <ExternalLink className="h-3 w-3" />
-                </Button>
-              </a>
             </div>
           </div>
         </div>

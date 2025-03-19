@@ -221,13 +221,13 @@ const Step4Accommodation = () => {
                   {/* Number of nights stay */}
                   <div>
                     <Label className="block text-sm font-medium text-neutral mb-2">
-                      {t('calculator.stayingNights', 'Số đêm nghỉ tại khách sạn')}
+                      {t('calculator.stayingNights', 'Number of nights at hotel')}
                     </Label>
                     <div className="flex items-center space-x-2 border rounded-md p-3">
                       <div className="flex-1">
-                        <h4 className="font-medium">{t('calculator.nights', 'Đêm')}</h4>
+                        <h4 className="font-medium">{t('calculator.nights', 'Nights')}</h4>
                         <p className="text-sm text-muted-foreground">
-                          {t('calculator.stayingNightsDescription', 'Số đêm lưu trú tại khách sạn')}
+                          {t('calculator.stayingNightsDescription', 'Number of nights staying at the hotel')}
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -255,7 +255,7 @@ const Step4Accommodation = () => {
                   
                   <div>
                     <Label className="block text-sm font-medium text-neutral mb-2 mt-4">
-                      {t('calculator.preferredRoomType', 'Loại phòng ưu tiên')}
+                      {t('calculator.preferredRoomType', 'Preferred Room Type')}
                     </Label>
                     <Select 
                       value={formData.roomType || ""}
@@ -283,7 +283,7 @@ const Step4Accommodation = () => {
                       <div className="flex items-center justify-between border rounded-md p-3">
                         <div>
                           <h4 className="font-medium">{t('calculator.singleRoom')}</h4>
-                          <p className="text-sm text-muted-foreground">1 người</p>
+                          <p className="text-sm text-muted-foreground">1 {t('calculator.person', 'person')}</p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Button 
@@ -311,7 +311,7 @@ const Step4Accommodation = () => {
                       <div className="flex items-center justify-between border rounded-md p-3">
                         <div>
                           <h4 className="font-medium">{t('calculator.doubleRoom')}</h4>
-                          <p className="text-sm text-muted-foreground">2 người</p>
+                          <p className="text-sm text-muted-foreground">2 {t('calculator.people', 'people')}</p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Button 
@@ -339,7 +339,7 @@ const Step4Accommodation = () => {
                       <div className="flex items-center justify-between border rounded-md p-3">
                         <div>
                           <h4 className="font-medium">{t('calculator.tripleRoom')}</h4>
-                          <p className="text-sm text-muted-foreground">3 người</p>
+                          <p className="text-sm text-muted-foreground">3 {t('calculator.people', 'people')}</p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Button 
