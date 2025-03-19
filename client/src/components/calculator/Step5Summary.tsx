@@ -6,6 +6,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Tour, Vehicle, Hotel, Guide, Season } from '@/types';
 import CurrencySelector from './CurrencySelector';
+import PaymentInformation from './PaymentInformation';
+import ContactInfo from './ContactInfo';
 import { 
   Card, 
   CardContent, 
