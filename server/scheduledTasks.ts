@@ -36,16 +36,7 @@ async function syncFromSheets() {
   try {
     console.log('Scheduled sync: Starting automatic sync from Google Sheets...');
     
-    // 1. Đồng bộ từ sheet chính (main/admin sheet)
-    try {
-      console.log('Scheduled sync: Đồng bộ từ sheet chính (Main/Admin)...');
-      await syncDataFromSheets(storage);
-      console.log('Scheduled sync: Đồng bộ từ sheet chính thành công');
-    } catch (mainSyncError) {
-      console.error('Scheduled sync: Lỗi khi đồng bộ từ sheet chính:', mainSyncError);
-    }
-    
-    // 2. Đồng bộ từ sheet đại lý (agency sheet)
+    // 1. ĐẦU TIÊN, đồng bộ từ sheet đại lý (agency sheet)
     try {
       console.log('Scheduled sync: Đồng bộ từ sheet đại lý (Agency - AsahiLKNamA)...');
       // Sử dụng URL của đại lý NAMN (AsahiLKNamA)
@@ -69,7 +60,31 @@ async function syncFromSheets() {
       console.error('Scheduled sync: Lỗi khi đồng bộ từ sheet đại lý:', agencySyncError);
     }
     
+    // 2. SAU ĐÓ, đồng bộ từ sheet chính (main/admin sheet) để nó ghi đè lên dữ liệu từ sheet đại lý
+    try {
+      console.log('Scheduled sync: Đồng bộ từ sheet chính (Main/Admin)...');
+      // Đảm bảo sử dụng URL sheet chính để ghi đè dữ liệu từ sheet đại lý
+      const mainSheetUrl = process.env.GOOGLE_SPREADSHEET_URL;
+      const adminUser = { 
+        id: 1, 
+        username: 'AsahiVietLifeJapanTour', 
+        role: 'admin'
+      } as any;
+      
+      // Truyền URL sheet chính trực tiếp để đảm bảo dùng đúng nguồn
+      await syncDataFromSheets(storage, adminUser, mainSheetUrl);
+      console.log('Scheduled sync: Đồng bộ từ sheet chính thành công');
+    } catch (mainSyncError) {
+      console.error('Scheduled sync: Lỗi khi đồng bộ từ sheet chính:', mainSyncError);
+    }
+    
+    // Cập nhật thời gian đồng bộ gần nhất
     await storage.updateLastSyncTimestamp();
+    
+    // Cập nhật nguồn dữ liệu hiện tại là sheet chính sau khi hoàn tất
+    await storage.updateSetting('current_data_source', process.env.GOOGLE_SPREADSHEET_URL || '');
+    await storage.updateSetting('current_data_source_name', 'AsahiVietLifeJapanTour-Admin');
+    
     console.log('Scheduled sync: Automatic sync completed successfully');
     
     // Tạo mã AVF cho tour nếu chưa có
