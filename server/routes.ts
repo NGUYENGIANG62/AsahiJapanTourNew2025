@@ -1173,22 +1173,10 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         let lunchDays = durationDays;
         let dinnerDays = durationDays;
         
-        // Điều chỉnh bữa ăn dựa trên thời gian đến/đi
-        if (calculationData.arrivalTime) {
-          if (calculationData.arrivalTime === 'afternoon') {
-            // Đến buổi chiều: không tính bữa trưa ngày đầu tiên
-            lunchDays -= 1;
-          }
-          // Nếu "unknown" hoặc "morning", giữ nguyên tính toán mặc định
-        }
-        
-        if (calculationData.departureTime) {
-          if (calculationData.departureTime === 'morning') {
-            // Khởi hành buổi sáng: không tính bữa trưa ngày cuối
-            lunchDays -= 1;
-          }
-          // Nếu "unknown" hoặc "afternoon", giữ nguyên tính toán mặc định
-        }
+        // KHÔNG điều chỉnh số ngày dựa trên thời gian bay
+        // Khách hàng phải trả tiền cho trọn ngày, bất kể thời gian bay
+        // Khách đến buổi chiều: vẫn tính toàn bộ ngày đầu tiên
+        // Khách đi buổi sáng: vẫn tính toàn bộ ngày cuối cùng
         
         // Đảm bảo số ngày không bị âm
         lunchDays = Math.max(0, lunchDays);
@@ -1207,13 +1195,9 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         const guide = await storage.getGuide(calculationData.guideId);
         
         if (guide) {
-          // Điều chỉnh chi phí hướng dẫn viên dựa trên thời gian bay
+          // KHÔNG điều chỉnh chi phí hướng dẫn viên dựa trên thời gian bay
+          // Hướng dẫn viên luôn tính theo số ngày đầy đủ, bất kể khách đến sáng hay chiều
           let guideDays = durationDays;
-          
-          if (calculationData.arrivalTime === 'afternoon') {
-            // Nếu đến buổi chiều, hướng dẫn viên chỉ đón tại sân bay, không dẫn tour cả ngày
-            guideDays -= 0.5;
-          }
           
           guideCost = guide.pricePerDay * guideDays;
           
@@ -1276,14 +1260,9 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
             let lunchDays = durationDays;
             let dinnerDays = durationDays;
             
-            // Điều chỉnh bữa ăn dựa trên thời gian đến/đi
-            if (calculationData.arrivalTime === 'afternoon') {
-              lunchDays -= 1;
-            }
-            
-            if (calculationData.departureTime === 'morning') {
-              lunchDays -= 1;
-            }
+            // KHÔNG điều chỉnh số ngày ăn dựa trên thời gian bay
+            // Hướng dẫn viên luôn được tính đầy đủ bữa ăn
+            // Bất kể thời gian đến/đi của khách hàng
             
             // Đảm bảo số ngày không bị âm
             lunchDays = Math.max(0, lunchDays);
