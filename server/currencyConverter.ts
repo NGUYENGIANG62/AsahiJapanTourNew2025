@@ -40,6 +40,11 @@ export async function convertCurrency(amount: number, fromCurrency: string, toCu
   }
 }
 
+// Accessor function for current rates
+export function getConversionRates(): Record<string, number> {
+  return {...conversionRates}; // Return a copy to prevent direct modification
+}
+
 export async function updateConversionRates(): Promise<void> {
   try {
     // Using ExchangeRate-API for currency conversion
