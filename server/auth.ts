@@ -2,15 +2,48 @@ import bcrypt from 'bcrypt';
 import { storage } from './storage';
 import { User } from '@shared/schema';
 import { syncDataFromSheets } from './googleSheetsServiceFixed';
+import * as accountService from './accountManagementService';
 
+/**
+ * Xác thực thông tin đăng nhập
+ * Sẽ kiểm tra từ dịch vụ quản lý tài khoản trước, nếu không thành công sẽ kiểm tra từ storage
+ */
 export async function validateCredentials(username: string, password: string): Promise<User | null> {
-  const user = await storage.getUserByUsername(username);
-  if (!user) return null;
-  
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) return null;
-  
-  return user;
+  try {
+    // Thử xác thực từ Account Management Service trước
+    const accountUser = await accountService.validateCredentials(username, password);
+    if (accountUser) {
+      console.log(`User '${username}' authenticated via Account Management Service`);
+      return accountUser;
+    }
+    
+    // Nếu không thành công, thử xác thực từ storage
+    const user = await storage.getUserByUsername(username);
+    if (!user) return null;
+    
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) return null;
+    
+    console.log(`User '${username}' authenticated via legacy storage`);
+    return user;
+  } catch (error) {
+    console.error('Authentication error:', error);
+    
+    // Fallback để luôn thử storage nếu Account Service có lỗi
+    try {
+      const user = await storage.getUserByUsername(username);
+      if (!user) return null;
+      
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) return null;
+      
+      console.log(`User '${username}' authenticated via legacy storage (fallback)`);
+      return user;
+    } catch (error) {
+      console.error('Legacy authentication error:', error);
+      return null;
+    }
+  }
 }
 
 export function isAdmin(user: User): boolean {
