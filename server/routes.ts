@@ -1302,11 +1302,10 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       const taxAmount = totalBeforeTax * taxRate;
       const totalAmount = totalBeforeTax + taxAmount;
       
-      // Convert to requested currency if needed
+      // Không cần chuyển đổi tiền tệ nữa - chỉ dùng JPY
       let totalInRequestedCurrency = totalAmount;
-      if (calculationData.currency !== 'JPY') {
-        totalInRequestedCurrency = await convertCurrency(totalAmount, 'JPY', calculationData.currency);
-      }
+      // Đảm bảo currency luôn là JPY cho nhất quán
+      calculationData.currency = 'JPY';
       
       // Return the calculation
       res.json({
