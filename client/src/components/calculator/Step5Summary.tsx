@@ -5,6 +5,7 @@ import { CalculatorContext } from '@/context/CalculatorContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Tour, Vehicle, Hotel, Guide, Season } from '@/types';
+import CurrencySelector from './CurrencySelector';
 import { 
   Card, 
   CardContent, 
