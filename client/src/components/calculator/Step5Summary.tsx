@@ -340,8 +340,8 @@ const Step5Summary = () => {
         
         ${getFlightTimeInfo()}
         
-        Tổng chi phí: ${formatCurrency(calculation?.totalInRequestedCurrency || 0)}
-        ${formData.participants > 1 ? `Chi phí mỗi người: ${formatCurrency((calculation?.totalInRequestedCurrency || 0) / formData.participants)}` : ''}
+        Tổng chi phí: ${formatCurrency(calculation?.costs.totalAmount || 0)}
+        ${formData.participants > 1 ? `Chi phí mỗi người: ${formatCurrency((calculation?.costs.totalAmount || 0) / formData.participants)}` : ''}
         ${preferredLocations ? `Địa điểm mong muốn: ${preferredLocations}` : ''}
       `;
 
@@ -912,7 +912,7 @@ const Step5Summary = () => {
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-bold">{t('calculator.summary.totalPrice')}</TableCell>
-                      <TableCell className="text-right font-bold">{formatCurrency(calculation.totalInRequestedCurrency)}</TableCell>
+                      <TableCell className="text-right font-bold">{formatCurrency(calculation.costs.totalAmount)}</TableCell>
                     </TableRow>
                   </TableFooter>
                 </Table>
@@ -921,13 +921,13 @@ const Step5Summary = () => {
                 <div className="p-8 text-center">
                   <h3 className="text-2xl font-bold mb-4">{t('calculator.summary.totalPrice')}</h3>
                   <div className="text-3xl font-bold text-primary">
-                    {formatCurrency(calculation.totalInRequestedCurrency)}
+                    {formatCurrency(calculation.costs.totalAmount)}
                   </div>
                   
                   {calculation.calculationDetails.participants > 1 && (
                     <div className="mt-3 text-lg font-semibold">
                       <span className="mr-2">{t('calculator.summary.pricePerPerson', 'Giá cho mỗi người:')}</span>
-                      {formatCurrency(calculation.totalInRequestedCurrency / calculation.calculationDetails.participants)}
+                      {formatCurrency(calculation.costs.totalAmount / calculation.calculationDetails.participants)}
                     </div>
                   )}
                   
@@ -935,7 +935,7 @@ const Step5Summary = () => {
                     <div className="p-3 border rounded-md bg-muted/20">
                       <div className="flex justify-between items-center">
                         <span className="font-medium">{t('calculator.summary.tourForPeople', 'Tour cho')} {calculation.calculationDetails.participants} {t('calculator.summary.people', 'người')}</span>
-                        <span className="font-semibold">{formatCurrency(calculation.totalInRequestedCurrency)}</span>
+                        <span className="font-semibold">{formatCurrency(calculation.costs.totalAmount)}</span>
                       </div>
                       <div className="text-xs text-muted-foreground text-left mt-1">
                         {calculation.tourDetails.durationDays} {t('calculator.summary.days', 'ngày')}, {calculation.tourDetails.name}, {calculation.tourDetails.location}
@@ -1035,9 +1035,9 @@ const Step5Summary = () => {
                     <h4 className="font-medium mb-3">Thông tin chuyển khoản</h4>
                     <PaymentInformation 
                       formatCurrency={formatCurrency}
-                      totalAmount={calculation.totalInRequestedCurrency} 
+                      totalAmount={calculation.costs.totalAmount} 
                       participants={formData.participants} 
-                      currency={currency} 
+                      currency={'JPY'} 
                       showQR={true} 
                     />
                   </div>
