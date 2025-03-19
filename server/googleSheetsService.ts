@@ -224,7 +224,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Tours sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `Tours!A1:Z1`,
+      range: `${getSafeSheetName('Tours')}!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'name', 'code', 'avfCode', 'location', 'description', 'durationDays', 'basePrice', 'imageUrl', 'nameJa', 'nameZh', 'nameKo', 'nameVi', 'descriptionJa', 'descriptionZh', 'descriptionKo', 'descriptionVi']]
@@ -234,7 +234,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Vehicles sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `Vehicles!A1:Z1`,
+      range: `${getSafeSheetName('Vehicles')}!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'name', 'seats', 'luggageCapacity', 'pricePerDay', 'driverCostPerDay']]
@@ -244,7 +244,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Hotels sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `Hotels!A1:Z1`,
+      range: `${getSafeSheetName('Hotels')}!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'name', 'location', 'stars', 'singleRoomPrice', 'doubleRoomPrice', 'tripleRoomPrice', 'breakfastPrice', 'imageUrl']]
@@ -254,7 +254,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Guides sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `Guides!A1:Z1`,
+      range: `${getSafeSheetName('Guides')}!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'name', 'languages', 'pricePerDay', 'experience', 'hasInternationalLicense', 'personality', 'gender', 'age']]
@@ -264,7 +264,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Seasons sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `Seasons!A1:Z1`,
+      range: `${getSafeSheetName('Seasons')}!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'name', 'startMonth', 'endMonth', 'description', 'priceMultiplier', 'nameJa', 'nameZh', 'nameKo', 'nameVi', 'descriptionJa', 'descriptionZh', 'descriptionKo', 'descriptionVi']]
@@ -274,7 +274,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Settings sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `Settings!A1:Z1`,
+      range: `${getSafeSheetName('Settings')}!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'key', 'value']]
