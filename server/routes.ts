@@ -55,12 +55,16 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
+        console.log(`Passport: Attempting login for user: ${username}`);
         const user = await validateCredentials(username, password);
         if (!user) {
+          console.log(`Passport: Login failed for user: ${username} - Invalid credentials`);
           return done(null, false, { message: "Invalid credentials" });
         }
+        console.log(`Passport: Login successful for user: ${username} (${user.role})`);
         return done(null, user);
       } catch (error) {
+        console.error(`Passport: Login error for user: ${username}`, error);
         return done(error);
       }
     })
@@ -1497,12 +1501,24 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
 // Middleware to check if user is admin
 function isAdminMiddleware(req: Request, res: Response, next: express.NextFunction) {
   if (!req.isAuthenticated()) {
+    console.log("Admin authentication failed: Not authenticated");
     return res.status(401).json({ message: "Not authenticated" });
   }
   
-  if (req.user && (req.user as any).role !== 'admin') {
+  // Đảm bảo user đã được đọc từ session
+  if (!req.user) {
+    console.log("Admin authentication failed: No user in request");
+    return res.status(401).json({ message: "User session invalid" });
+  }
+  
+  // Ghi lại thông tin người dùng để gỡ lỗi
+  console.log(`Admin access check: ${(req.user as any).username} (${(req.user as any).role})`);
+  
+  if ((req.user as any).role !== 'admin') {
+    console.log(`Admin authentication failed: User ${(req.user as any).username} is not admin (${(req.user as any).role})`);
     return res.status(403).json({ message: "Not authorized" });
   }
   
+  console.log(`Admin access granted for: ${(req.user as any).username}`);
   next();
 }

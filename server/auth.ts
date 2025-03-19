@@ -10,7 +10,27 @@ import * as accountService from './accountManagementService';
  */
 export async function validateCredentials(username: string, password: string): Promise<User | null> {
   try {
-    // Thử xác thực từ Account Management Service trước
+    // Xử lý đặc biệt cho tài khoản admin
+    if (username === 'AsahiVietLifeJapanTour') {
+      console.log("Cố gắng xác thực admin, sử dụng bộ nhớ nội bộ");
+      // Admin luôn sử dụng storage nội bộ, không qua Google Sheets
+      const adminUser = await storage.getUserByUsername(username);
+      if (!adminUser) {
+        console.log("Không tìm thấy admin trong storage nội bộ!");
+        return null;
+      }
+      
+      const isPasswordValid = await bcrypt.compare(password, adminUser.password);
+      if (!isPasswordValid) {
+        console.log("Mật khẩu admin không hợp lệ!");
+        return null;
+      }
+      
+      console.log(`Admin '${username}' đã đăng nhập thành công`);
+      return adminUser;
+    }
+    
+    // Các tài khoản khác: thử xác thực từ Account Management Service trước
     const accountUser = await accountService.validateCredentials(username, password);
     if (accountUser) {
       console.log(`User '${username}' authenticated via Account Management Service`);
