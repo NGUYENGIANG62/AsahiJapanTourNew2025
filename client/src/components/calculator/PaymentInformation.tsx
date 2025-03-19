@@ -31,7 +31,7 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
 }) => {
   const { t } = useTranslation();
   
-  // Định dạng tiền tệ nếu không được cung cấp từ bên ngoài
+  // Format currency if not provided from outside
   const formatCurrencyFallback = (amount: number = 0): string => {
     if (formatCurrency) return formatCurrency(amount);
     
@@ -50,19 +50,19 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
       <CardHeader className="pb-3 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10">
         <CardTitle className="flex items-center font-heading">
           <Calculator className="mr-2 h-5 w-5 text-primary" />
-          {t('calculator.summary.paymentInfo', 'Thông tin thanh toán')}
+          {t('calculator.summary.paymentInfo', 'Payment Information')}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-5">
         <div className="space-y-5">
-          {/* Currency Selector - hiển thị khi ở trong bảng tính giá */}
+          {/* Currency Selector - displayed when in the calculator */}
           {totalAmount !== undefined && (
             <div className="pb-4 border-b">
               <CurrencySelector />
             </div>
           )}
           
-          {/* Total Cost - chỉ hiển thị khi có dữ liệu */}
+          {/* Total Cost - only displayed when data is available */}
           {totalAmount !== undefined && (
             <div className="text-center">
               <div className="text-4xl font-bold text-primary">
@@ -71,7 +71,7 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
               
               {participants !== undefined && participants > 1 && (
                 <div className="text-sm text-muted-foreground mt-2">
-                  {t('calculator.summary.perPerson', 'Cho mỗi khách')}: {formatCurrencyFallback(totalAmount / participants)}
+                  {t('calculator.summary.perPerson', 'Per person')}: {formatCurrencyFallback(totalAmount / participants)}
                 </div>
               )}
             </div>
@@ -82,7 +82,7 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
             <div className="bg-primary/10 p-3">
               <h4 className="font-semibold flex items-center">
                 <Receipt className="mr-2 h-4 w-4" />
-                {t('calculator.summary.paymentInstructions', 'Hướng dẫn thanh toán')}
+                {t('calculator.summary.paymentInstructions', 'Payment Instructions')}
               </h4>
             </div>
             
@@ -143,7 +143,7 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
                   </ul>
                 </div>
                 
-                {/* QR Code for payment - chỉ hiển thị khi được yêu cầu */}
+                {/* QR Code for payment - only displayed when requested */}
                 {showQR && (
                   <div className="flex flex-col items-center justify-center">
                     <div className="border rounded-lg p-2 bg-white">
