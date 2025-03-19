@@ -308,23 +308,23 @@ const Step5Summary = () => {
       const getFlightTimeInfo = () => {
         const arrivalInfo = (() => {
           switch(formData.arrivalTime) {
-            case 'morning': return 'Sáng (trước 12h)';
-            case 'afternoon': return 'Chiều (sau 12h)';
-            default: return 'Chưa xác định';
+            case 'morning': return t('calculator.flightTime.morning', 'Morning (before 12PM)');
+            case 'afternoon': return t('calculator.flightTime.afternoon', 'Afternoon (after 12PM)');
+            default: return t('calculator.flightTime.undefined', 'Not specified');
           }
         })();
 
         const departureInfo = (() => {
           switch(formData.departureTime) {
-            case 'morning': return 'Sáng (trước 12h)';
-            case 'afternoon': return 'Chiều (sau 12h)';
-            default: return 'Chưa xác định';
+            case 'morning': return t('calculator.flightTime.morning', 'Morning (before 12PM)');
+            case 'afternoon': return t('calculator.flightTime.afternoon', 'Afternoon (after 12PM)');
+            default: return t('calculator.flightTime.undefined', 'Not specified');
           }
         })();
 
-        return `Thông tin chuyến bay:\n` +
-          `Giờ đáp: ${arrivalInfo}\n` + 
-          `Giờ khởi hành: ${departureInfo}`;
+        return `${t('calculator.summary.flightInfo', 'Flight Information')}:\n` +
+          `${t('calculator.summary.arrivalTimeDetail', 'Arrival Time')}: ${arrivalInfo}\n` + 
+          `${t('calculator.summary.departureTimeDetail', 'Departure Time')}: ${departureInfo}`;
       };
 
       const tourDetails = `
@@ -394,7 +394,7 @@ const Step5Summary = () => {
         console.error('Error saving tour request to localStorage', err);
       }
       
-      // Cập nhật giao diện và hiển thị thông tin liên hệ trực tiếp
+      // Update UI and display direct contact information
       setEmailStatus('error');
       setShowContactInfo(false);
       setShowContactDirectly(true);
@@ -557,7 +557,7 @@ const Step5Summary = () => {
                   </div>
                 </div>
                 
-                {/* Thêm thông tin chuyến bay */}
+                {/* Flight information section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <div className="space-y-1">
                     <div className="text-sm text-muted-foreground flex items-center">
@@ -567,9 +567,9 @@ const Step5Summary = () => {
                     <p className="flex items-center text-sm">
                       {(() => {
                         switch(formData.arrivalTime) {
-                          case 'morning': return 'Sáng (trước 12h)';
-                          case 'afternoon': return 'Chiều (sau 12h)';
-                          default: return 'Chưa xác định';
+                          case 'morning': return t('calculator.flightTime.morning', 'Morning (before 12PM)');
+                          case 'afternoon': return t('calculator.flightTime.afternoon', 'Afternoon (after 12PM)');
+                          default: return t('calculator.flightTime.undefined', 'Not specified');
                         }
                       })()}
                     </p>
@@ -583,9 +583,9 @@ const Step5Summary = () => {
                     <p className="flex items-center text-sm">
                       {(() => {
                         switch(formData.departureTime) {
-                          case 'morning': return 'Sáng (trước 12h)';
-                          case 'afternoon': return 'Chiều (sau 12h)';
-                          default: return 'Chưa xác định';
+                          case 'morning': return t('calculator.flightTime.morning', 'Morning (before 12PM)');
+                          case 'afternoon': return t('calculator.flightTime.afternoon', 'Afternoon (after 12PM)');
+                          default: return t('calculator.flightTime.undefined', 'Not specified');
                         }
                       })()}
                     </p>
@@ -721,7 +721,7 @@ const Step5Summary = () => {
                         <span>{t('calculator.meals.dinner', 'Dinner')}</span>
                       </li>
 
-                      {/* Thông tin chuyến bay */}
+                      {/* Flight information details */}
                       <li className="mt-4">
                         <h4 className="font-medium mb-2">{t('calculator.summary.flightInfo', 'Flight Information')}</h4>
                         <ul className="space-y-1 pl-4">
