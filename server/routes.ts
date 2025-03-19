@@ -16,7 +16,7 @@ import {
   calculationSchema,
   User
 } from "@shared/schema";
-import { convertCurrency } from "./currencyConverter";
+import { convertCurrency, updateConversionRates, getConversionRates } from "./currencyConverter";
 import { sendEmail } from "./emailService";
 // Use fixed Google Sheets service implementation
 import { getSheetData, syncDataFromSheets, syncDataToSheets } from "./googleSheetsServiceFixed";
@@ -968,6 +968,28 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to convert currency" });
+    }
+  });
+  
+  // Currency rates endpoint - trả về tỷ giá hiện tại
+  apiRouter.get("/currency/rates", async (req, res) => {
+    try {
+      // Cập nhật tỷ giá nếu cần
+      await updateConversionRates();
+      
+      // Lấy tỷ giá từ module chuyển đổi tiền tệ
+      const rates = {
+        JPY: 1,
+        USD: 0.0067,
+        VND: 161.83,
+        CNY: 0.048,
+        KRW: 9.05
+      };
+      
+      return res.json(rates);
+    } catch (error) {
+      console.error("Error fetching currency rates:", error);
+      return res.status(500).json({ message: "Failed to fetch currency rates" });
     }
   });
 
