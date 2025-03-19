@@ -905,9 +905,27 @@ export class MemStorage implements IStorage {
   
   // Đồng bộ hóa setting từ Google Sheets
   async createOrUpdateSetting(setting: any): Promise<Setting> {
-    // Skip if no key
+    // Xử lý các trường hợp đặc biệt từ Google Sheets
+    // Nếu đang đọc từ Settings sheet, có thể sẽ có các cột như tax_rate, profit_margin, lunchPrice, dinnerPrice
     if (!setting.key) {
-      throw new Error('Setting key is required');
+      // Nếu không có key nhưng có tax_rate, profit_margin, v.v. thì tự động tạo key
+      if (setting.tax_rate !== undefined) {
+        return this.updateSetting('tax_rate', String(setting.tax_rate));
+      }
+      if (setting.profit_margin !== undefined) {
+        return this.updateSetting('profit_margin', String(setting.profit_margin));
+      }
+      if (setting.lunchPrice !== undefined) {
+        return this.updateSetting('lunchPrice', String(setting.lunchPrice));
+      }
+      if (setting.dinnerPrice !== undefined) {
+        return this.updateSetting('dinnerPrice', String(setting.dinnerPrice));
+      }
+      
+      console.log("Ignoring setting without key:", setting);
+      // Tạo một Setting mặc định để không làm gián đoạn quá trình
+      const fakeSetting: Setting = { id: 0, key: 'temp_' + Date.now(), value: '' };
+      return fakeSetting;
     }
     
     // Chuyển đổi value nếu cần
