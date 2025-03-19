@@ -978,13 +978,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       await updateConversionRates();
       
       // Lấy tỷ giá từ module chuyển đổi tiền tệ
-      const rates = {
-        JPY: 1,
-        USD: 0.0067,
-        VND: 161.83,
-        CNY: 0.048,
-        KRW: 9.05
-      };
+      const rates = getConversionRates();
       
       return res.json(rates);
     } catch (error) {
