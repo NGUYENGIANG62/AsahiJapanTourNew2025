@@ -26,7 +26,8 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Alert, 
-  AlertDescription 
+  AlertDescription,
+  AlertTitle
 } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { 

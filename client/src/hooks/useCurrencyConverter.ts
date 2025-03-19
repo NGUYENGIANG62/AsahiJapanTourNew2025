@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Currency } from '@/types';
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 type CurrencyConversionResult = {
   convert: (amount: number, from?: Currency, to?: Currency) => number;
@@ -8,14 +9,38 @@ type CurrencyConversionResult = {
   error: Error | null;
 };
 
+// Conversion rates relative to JPY
+interface ConversionRates {
+  JPY: number;
+  USD: number;
+  VND: number;
+  CNY: number;
+  KRW: number;
+}
+
 export const useCurrencyConverter = (defaultCurrency: Currency = 'JPY'): CurrencyConversionResult => {
   const [baseCurrency, setBaseCurrency] = useState<Currency>(defaultCurrency);
   
   // Fetch conversion rates
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['/api/currency/convert'],
+  const { data: conversionRates, isLoading, error } = useQuery<ConversionRates>({
+    queryKey: ['/api/currency/rates'],
     staleTime: 60 * 60 * 1000, // 1 hour
     refetchInterval: 60 * 60 * 1000, // 1 hour
+    queryFn: async () => {
+      try {
+        const response = await axios.get('/api/currency/rates');
+        return response.data;
+      } catch (err) {
+        // Fallback rates if API call fails
+        return {
+          JPY: 1,
+          USD: 0.0067,
+          VND: 161.83,
+          CNY: 0.048,
+          KRW: 9.05
+        };
+      }
+    }
   });
   
   // Update base currency when defaultCurrency changes
@@ -27,22 +52,20 @@ export const useCurrencyConverter = (defaultCurrency: Currency = 'JPY'): Currenc
     if (from === to) return amount;
     
     // If data is not loaded yet, return original amount
-    if (!data) return amount;
+    if (!conversionRates) return amount;
     
-    // Use API to convert
-    const params = new URLSearchParams({
-      amount: amount.toString(),
-      from,
-      to
-    });
-    
-    const url = `/api/currency/convert?${params.toString()}`;
-    
-    // Make a request to get the converted amount
-    // This is a simplified example, in a real implementation we would 
-    // cache conversion rates and calculate locally when possible
-    
-    return amount; // Placeholder until actual API call is implemented
+    // Convert using the rates
+    if (from === 'JPY') {
+      // From JPY to target currency
+      return parseFloat((amount * conversionRates[to]).toFixed(2));
+    } else if (to === 'JPY') {
+      // From source currency to JPY
+      return parseFloat((amount / conversionRates[from]).toFixed(2));
+    } else {
+      // First convert to JPY, then to target currency
+      const amountInJPY = amount / conversionRates[from];
+      return parseFloat((amountInJPY * conversionRates[to]).toFixed(2));
+    }
   };
   
   return {
