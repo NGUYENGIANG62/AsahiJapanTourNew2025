@@ -42,12 +42,17 @@ async function getAccountSheet(): Promise<SheetInfo> {
   const key = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
   const spreadsheetUrl = process.env.ACCOUNT_MANAGEMENT_SHEET_URL;
 
-  if (!email || !key) {
-    throw new Error('Missing Google Service Account credentials');
-  }
-
-  if (!spreadsheetUrl) {
-    throw new Error('Missing Account Management Sheet URL');
+  // Trường hợp không tìm thấy thông tin xác thực Service Account
+  // vẫn cho phép sử dụng storage nội bộ mà không gây lỗi
+  // Admin user sẽ luôn được xác thực qua internal storage
+  if (!email || !key || !spreadsheetUrl) {
+    console.warn('GoogleSheet không khả dụng: Thiếu thông tin xác thực hoặc URL Sheet');
+    // Thay vì ném lỗi, tạo một đối tượng fake để tránh lỗi khi gọi API
+    // Khi này, các API khác sẽ fallback về storage nội bộ
+    return {
+      sheetsApi: {} as any,
+      spreadsheetId: 'fake-spreadsheet-id'
+    };
   }
 
   try {
@@ -97,28 +102,42 @@ async function fetchAccountsFromSheet(): Promise<AccountInfo[]> {
     const { sheetsApi, spreadsheetId } = await getAccountSheet();
 
     // Đọc dữ liệu từ sheet
-    const response = await sheetsApi.spreadsheets.values.get({
-      spreadsheetId,
-      range: 'Admin_account!A1:D100',
-    });
-
-    const rows = response.data.values || [];
-    if (rows.length <= 1) {
-      // Chỉ có header hoặc không có dữ liệu
+    // Kiểm tra nếu đang sử dụng sheetsApi giả hoặc không có phương thức cần thiết
+    if (!sheetsApi.spreadsheets || !sheetsApi.spreadsheets.values || !sheetsApi.spreadsheets.values.get) {
+      console.warn('AccountSheet: Sử dụng sheetsApi giả, bỏ qua lấy dữ liệu từ sheet');
       return [];
     }
-
+    
+    let valuesData: any[][] = [];
+    
+    try {
+      const response = await sheetsApi.spreadsheets.values.get({
+        spreadsheetId,
+        range: 'Admin_account!A1:D100',
+      });
+      
+      valuesData = response?.data?.values || [];
+      
+      if (valuesData.length <= 1) {
+        // Chỉ có header hoặc không có dữ liệu
+        return [];
+      }
+    } catch (error) {
+      console.warn('Lỗi khi lấy dữ liệu từ sheet Admin_account:', error);
+      return [];
+    }
+    
     // Parse dữ liệu, bỏ qua hàng header
     const accounts: AccountInfo[] = [];
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i];
-      if (row[0] && row[1]) { // phải có ít nhất username và password
+    for (let i = 1; i < valuesData.length; i++) {
+      const rowData = valuesData[i];
+      if (rowData && rowData[0] && rowData[1]) { // phải có ít nhất username và password
         accounts.push({
           id: i,
-          username: row[0],
-          password: row[1],
-          role: (row[2] || 'user') as 'admin' | 'user' | 'agent',
-          dataSource: row[3] || null,
+          username: rowData[0],
+          password: rowData[1],
+          role: (rowData[2] || 'user') as 'admin' | 'user' | 'agent',
+          dataSource: rowData[3] || null,
           agencyId: null, // Để null vì chưa có trong sheet
         });
       }
@@ -149,16 +168,14 @@ async function addAccountToSheet(account: {
     // Lấy thông tin API và ID
     const { sheetsApi, spreadsheetId } = await getAccountSheet();
 
-    // Hash mật khẩu nếu chưa được hash
-    let hashedPassword = account.password;
-    if (!hashedPassword.includes('.')) {
-      hashedPassword = await hashPassword(account.password);
-    }
-
+    // Lưu mật khẩu gốc vào Google Sheet
+    // Mật khẩu trong Google Sheet được lưu ở dạng gốc (không hash)
+    // để dễ đọc và quản lý. Khi import vào hệ thống sẽ hash
+    
     // Chuẩn bị dữ liệu hàng mới
     const rowData = [
       account.username,
-      hashedPassword,
+      account.password, // Lưu mật khẩu gốc
       account.role,
       account.dataSource || ''
     ];
@@ -239,6 +256,12 @@ async function updateAccountPassword(username: string, newPassword: string): Pro
  */
 async function deleteAccount(username: string): Promise<boolean> {
   try {
+    // Không cho phép xóa tài khoản admin từ Google Sheet
+    if (username === 'AsahiVietLifeJapanTour') {
+      console.log('Cannot delete admin account from Google Sheet. Admin account is protected.');
+      return false;
+    }
+    
     // Lấy danh sách tài khoản
     const accounts = await fetchAccountsFromSheet();
     const accountIndex = accounts.findIndex(a => a.username === username);
@@ -319,7 +342,19 @@ export async function validateCredentials(username: string, password: string): P
     }
 
     // Kiểm tra mật khẩu
-    const isValid = await comparePasswords(password, account.password);
+    // Trong Google Sheets, mật khẩu được lưu ở dạng gốc, nên đối chiếu trực tiếp
+    // Nếu mật khẩu bao gồm dấu "." thì có thể là mật khẩu đã hash, 
+    // thì dùng comparePasswords
+    const isPasswordHashed = account.password.includes('.');
+    
+    let isValid = false;
+    if (isPasswordHashed) {
+      isValid = await comparePasswords(password, account.password);
+    } else {
+      // Mật khẩu lưu dạng gốc, so sánh trực tiếp
+      isValid = (password === account.password);
+    }
+    
     if (!isValid) {
       return null;
     }
