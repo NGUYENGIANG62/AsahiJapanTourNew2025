@@ -58,8 +58,8 @@ const ContactInfo = ({ compact = false }: ContactInfoProps) => {
             <Phone className={`${compact ? 'h-4 w-4 mt-0.5' : 'h-5 w-5 mt-0.5'} mr-2 text-muted-foreground`} />
             <div>
               <div>Hotline: 03-6675-4977</div>
-              <div>070-2813-6693 (Mrs. Rina - Nhật)</div>
-              <div>+8170-2794-4770 (Mr. Truong Giang - Việt Nam)</div>
+              <div>070-2813-6693 (Mrs. Rina - 日本語)</div>
+              <div>+8170-2794-4770 (Mr. Truong Giang - Tiếng Việt)</div>
               <div>Zalo/WhatsApp/Line: +8170-2794-4770 (Mr. Truong Giang)</div>
               <div>Mr. Linh - English Guide: 07091881073</div>
             </div>
@@ -71,7 +71,7 @@ const ContactInfo = ({ compact = false }: ContactInfoProps) => {
           
           {/* Social Media Links */}
           <div className="pt-2">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <a 
                 href="https://www.facebook.com/profile.php?id=61566880418544" 
                 target="_blank" 
@@ -80,6 +80,42 @@ const ContactInfo = ({ compact = false }: ContactInfoProps) => {
                 <Button size="sm" variant="outline" className="flex items-center gap-1">
                   <Facebook className="h-4 w-4" />
                   <span className="hidden sm:inline">Du Lịch Asahi VietLife - Japan Travel</span>
+                  <ExternalLink className="h-3 w-3" />
+                </Button>
+              </a>
+              
+              <a 
+                href="https://zalo.me/8170-2794-4770" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button size="sm" variant="outline" className="flex items-center gap-1">
+                  <span className="text-sm font-bold">Zalo</span>
+                  <span className="hidden sm:inline">Mr. Truong Giang</span>
+                  <ExternalLink className="h-3 w-3" />
+                </Button>
+              </a>
+              
+              <a 
+                href="https://wa.me/817027944770" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button size="sm" variant="outline" className="flex items-center gap-1">
+                  <span className="text-sm font-bold">WhatsApp</span>
+                  <span className="hidden sm:inline">Mr. Truong Giang</span>
+                  <ExternalLink className="h-3 w-3" />
+                </Button>
+              </a>
+              
+              <a 
+                href="https://line.me/ti/p/~8170-2794-4770" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button size="sm" variant="outline" className="flex items-center gap-1">
+                  <span className="text-sm font-bold">Line</span>
+                  <span className="hidden sm:inline">Mr. Truong Giang</span>
                   <ExternalLink className="h-3 w-3" />
                 </Button>
               </a>
