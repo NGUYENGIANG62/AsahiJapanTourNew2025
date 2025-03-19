@@ -47,11 +47,11 @@ function getSafeRange(sheetName: string, fullRange: boolean = true): string {
   // Đối với các sheet thông thường, chúng ta cần xử lý đặc biệt một số trường hợp
   // Đặc biệt xử lý trường hợp 'Settings' do lỗi parse range
   if (trimmedName === 'Settings') {
-    // Sử dụng định dạng sheet theo cách khác
+    // Thử cách khác - bọc tên sheet trong nháy đơn để tránh xung đột
     if (fullRange) {
-      return 'Settings!A:Z'; // Phạm vi rộng theo định dạng đơn giản hơn
+      return "'Settings'!A1:Z1000"; // Phạm vi rộng với định dạng rõ ràng
     } else {
-      return 'Settings!A:A'; // Chỉ lấy cột đầu tiên
+      return "'Settings'!A1:A1000"; // Chỉ lấy cột đầu tiên
     }
   }
   
