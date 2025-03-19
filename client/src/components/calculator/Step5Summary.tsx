@@ -205,6 +205,10 @@ const Step5Summary = () => {
       return `$${Math.round(roundedAmount).toLocaleString()}`;
     } else if (currency === 'VND') {
       return `₫${Math.round(roundedAmount).toLocaleString()}`;
+    } else if (currency === 'CNY') {
+      return `¥${Math.round(roundedAmount).toLocaleString()} (CNY)`;
+    } else if (currency === 'KRW') {
+      return `₩${Math.round(roundedAmount).toLocaleString()}`;
     }
     return Math.round(roundedAmount).toLocaleString();
   };
