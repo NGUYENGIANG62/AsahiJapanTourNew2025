@@ -196,6 +196,12 @@ export type Calculation = z.infer<typeof calculationSchema>;
 
 // Các hằng số cho cài đặt đồng bộ
 export const SYNC_SETTINGS = {
+  tours: true,
+  vehicles: true,
+  hotels: true,
+  guides: true,
+  seasons: true,
+  settings: true,
   LAST_SYNC_TIME: 'last_sync_time',
   CURRENT_DATA_SOURCE: 'current_data_source',
   CURRENT_DATA_SOURCE_NAME: 'current_data_source_name',
