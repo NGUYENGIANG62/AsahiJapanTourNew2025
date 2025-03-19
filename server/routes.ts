@@ -70,12 +70,28 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
     done(null, user.id);
   });
 
-  passport.deserializeUser(async (id: number, done) => {
+  passport.deserializeUser(async (id: any, done) => {
     try {
-      const user = await storage.getUser(id);
+      // Nếu không có id hoặc id không đúng định dạng, trả về null (người dùng không tồn tại)
+      if (!id || isNaN(parseInt(id))) {
+        return done(null, null);
+      }
+      
+      // Chuyển đổi id thành số nếu nó là string
+      const userId = typeof id === 'string' ? parseInt(id) : id;
+      
+      const user = await storage.getUser(userId);
+      
+      // Nếu không tìm thấy user, trả về null thay vì lỗi
+      if (!user) {
+        return done(null, null);
+      }
+      
       done(null, user);
     } catch (error) {
-      done(error);
+      console.error("Error deserializing user:", error);
+      // Trả về null thay vì lỗi để tránh lỗi session
+      done(null, null);
     }
   });
 
