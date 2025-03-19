@@ -756,54 +756,54 @@ const Step5Summary = () => {
                             {formData.specialServices.geishaShow && (
                               <li className="flex items-center">
                                 <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
-                                <span className="text-sm">Show Geisha</span>
+                                <span className="text-sm">{t('calculator.specialServices.geishaShow', 'Geisha Show')}</span>
                               </li>
                             )}
                             {formData.specialServices.kimonoExperience && (
                               <li className="flex items-center">
                                 <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
-                                <span className="text-sm">Trải nghiệm mặc Kimono</span>
+                                <span className="text-sm">{t('calculator.specialServices.kimonoExperience', 'Kimono Experience')}</span>
                               </li>
                             )}
                             {formData.specialServices.teaCeremony && (
                               <li className="flex items-center">
                                 <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
-                                <span className="text-sm">Trà đạo truyền thống</span>
+                                <span className="text-sm">{t('calculator.specialServices.teaCeremony', 'Traditional Tea Ceremony')}</span>
                               </li>
                             )}
                             {formData.specialServices.wagyuDinner && (
                               <li className="flex items-center">
                                 <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
-                                <span className="text-sm">Ăn tối với bò Wagyu</span>
+                                <span className="text-sm">{t('calculator.specialServices.wagyuDinner', 'Wagyu Beef Dinner')}</span>
                               </li>
                             )}
                             {formData.specialServices.sumoShow && (
                               <li className="flex items-center">
                                 <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
-                                <span className="text-sm">Xem đấu Sumo</span>
+                                <span className="text-sm">{t('calculator.specialServices.sumoShow', 'Sumo Wrestling Show')}</span>
                               </li>
                             )}
                             {formData.specialServices.disneylandTickets && (
                               <li className="flex items-center">
                                 <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
-                                <span className="text-sm">Vé Disneyland</span>
+                                <span className="text-sm">{t('calculator.specialServices.disneylandTickets', 'Disneyland Tickets')}</span>
                               </li>
                             )}
                             {formData.specialServices.universalStudioTickets && (
                               <li className="flex items-center">
                                 <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
-                                <span className="text-sm">Vé Universal Studio</span>
+                                <span className="text-sm">{t('calculator.specialServices.universalStudioTickets', 'Universal Studio Tickets')}</span>
                               </li>
                             )}
                             {formData.specialServices.airportTransfer && (
                               <li className="flex items-center">
                                 <CheckCircle2 className="mr-2 h-3 w-3 text-success" />
-                                <span className="text-sm">Dịch vụ đưa đón sân bay</span>
+                                <span className="text-sm">{t('calculator.specialServices.airportTransfer', 'Airport Transfer Service')}</span>
                               </li>
                             )}
                             {formData.specialServices.notes && (
                               <li className="text-sm text-muted-foreground mt-1">
-                                <strong>Ghi chú:</strong> {formData.specialServices.notes}
+                                <strong>{t('calculator.specialServices.notes', 'Notes')}:</strong> {formData.specialServices.notes}
                               </li>
                             )}
                             {!(formData.specialServices.geishaShow || 
@@ -815,7 +815,7 @@ const Step5Summary = () => {
                                formData.specialServices.universalStudioTickets ||
                                formData.specialServices.airportTransfer) && (
                               <li className="text-sm text-muted-foreground">
-                                Không có dịch vụ đặc biệt
+                                {t('calculator.summary.noSpecialServices', 'No special services')}
                               </li>
                             )}
                           </ul>
