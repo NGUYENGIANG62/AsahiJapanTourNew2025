@@ -260,8 +260,8 @@ const Step5Summary = () => {
   const sendTourRequestEmail = async () => {
     if (!customerEmail) {
       toast({
-        title: "Vui lòng nhập email của bạn",
-        description: "Chúng tôi cần email của bạn để gửi thông tin chi tiết",
+        title: t('calculator.summary.emailRequired', 'Please enter your email'),
+        description: t('calculator.summary.emailRequiredDesc', 'We need your email to send you the details'),
         variant: "destructive"
       });
       return;
@@ -369,8 +369,8 @@ const Step5Summary = () => {
         setShowContactInfo(false);
         setShowContactDirectly(true);
         toast({
-          title: "Yêu cầu của bạn đã được ghi lại",
-          description: result.message || "Thông tin tour của bạn đã được lưu. Chúng tôi sẽ liên hệ lại với bạn trong thời gian sớm nhất.",
+          title: t('calculator.summary.requestRecorded', 'Your request has been recorded'),
+          description: result.message || t('calculator.summary.requestRecordedDesc', 'Your tour information has been saved. We will contact you as soon as possible.'),
         });
       } else {
         throw new Error(result.message || 'Lỗi không xác định');
@@ -400,8 +400,8 @@ const Step5Summary = () => {
       setShowContactDirectly(true);
       
       toast({
-        title: "Không thể gửi yêu cầu qua email",
-        description: "Đã xảy ra lỗi khi gửi email. Thông tin liên hệ được hiển thị bên dưới.",
+        title: t('calculator.summary.emailError', 'Unable to send email request'),
+        description: t('calculator.summary.emailErrorDesc', 'An error occurred when sending the email. Contact information is displayed below.'),
         variant: "destructive"
       });
     }
@@ -562,7 +562,7 @@ const Step5Summary = () => {
                   <div className="space-y-1">
                     <div className="text-sm text-muted-foreground flex items-center">
                       <PlaneLanding className="mr-2 h-4 w-4" />
-                      Thời gian đáp máy bay
+                      {t('calculator.summary.arrivalTime', 'Arrival Time')}
                     </div>
                     <p className="flex items-center text-sm">
                       {(() => {
