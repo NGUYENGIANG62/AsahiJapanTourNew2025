@@ -130,7 +130,15 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
                     </li>
                     <li className="flex items-baseline">
                       <span className="font-medium w-32">VN Bank Account:</span>
-                      <span className="text-muted-foreground italic">Coming soon</span>
+                      <span>VietinBank - 103869460710</span>
+                    </li>
+                    <li className="flex items-baseline">
+                      <span className="font-medium w-32">Chủ tài khoản:</span>
+                      <span>NGUYEN TRUONG GIANG</span>
+                    </li>
+                    <li className="flex items-baseline">
+                      <span className="font-medium w-32">Chi nhánh:</span>
+                      <span>VietinBank CN DO THANH - HOI SO</span>
                     </li>
                   </ul>
                 </div>
@@ -140,14 +148,15 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
                   <div className="flex flex-col items-center justify-center">
                     <div className="border rounded-lg p-2 bg-white">
                       <img 
-                        src="attached_assets/871dfb8adbcd32936bdc.jpeg" 
+                        src={currency === 'VND' ? "attached_assets/IMG_2421.png" : "attached_assets/871dfb8adbcd32936bdc.jpeg"} 
                         alt="Payment QR Code" 
                         className="h-32 w-32 object-contain"
                       />
                     </div>
                     <p className="text-xs text-center mt-2 text-muted-foreground flex items-center justify-center">
                       <QrCode className="h-3 w-3 mr-1" />
-                      {t('calculator.summary.scanQR', 'Quét mã QR để thanh toán')}
+                      {t('calculator.summary.scanQR', 'Quét mã QR để thanh toán')} 
+                      {currency === 'VND' ? ' (VietinBank)' : ' (JP)'}
                     </p>
                   </div>
                 )}
