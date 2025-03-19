@@ -97,47 +97,47 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
                   
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">Tên công ty:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.companyName', 'Tên công ty')}:</span>
                       <span>ASAHI VIET LIFE JSC</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">Ngân hàng:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.bank', 'Ngân hàng')}:</span>
                       <span>Mitsubishi UFJ (MUFG)</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">Mã ngân hàng:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.bankCode', 'Mã ngân hàng')}:</span>
                       <span>195</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">Tên tài khoản:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.accountName', 'Tên tài khoản')}:</span>
                       <span>Kifushi Rina</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">Chi nhánh:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.branch', 'Chi nhánh')}:</span>
                       <span>Senju Chuo, Japan</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">Số tài khoản:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.accountNumber', 'Số tài khoản')}:</span>
                       <span>0115737</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">Swift Code:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.swiftCode', 'Swift Code')}:</span>
                       <span>BOTKJPJ</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">JP Bank Account:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.jpBankAccount', 'JP Bank Account')}:</span>
                       <span>10150-88796221</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">VN Bank Account:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.vnBankAccount', 'VN Bank Account')}:</span>
                       <span>VietinBank - 103869460710</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">Chủ tài khoản:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.accountHolder', 'Chủ tài khoản')}:</span>
                       <span>NGUYEN TRUONG GIANG</span>
                     </li>
                     <li className="flex items-baseline">
-                      <span className="font-medium w-32">Chi nhánh:</span>
+                      <span className="font-medium w-32">{t('calculator.summary.branch', 'Chi nhánh')}:</span>
                       <span>VietinBank CN DO THANH - HOI SO</span>
                     </li>
                   </ul>
