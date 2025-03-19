@@ -635,23 +635,23 @@ const Step5Summary = () => {
                           {hotel && hotel.name
                             ? (
                               <>
-                                <div className="font-medium">{hotel.name} - {hotel.stars} {t('calculator.summary.stars', 'sao')}</div>
+                                <div className="font-medium">{hotel.name} - {hotel.stars} {t('calculator.summary.stars', 'stars')}</div>
                                 <div className="text-xs text-muted-foreground mt-1">
                                   <div>{getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'Không có phòng')}</div>
                                   <div>{formData.stayingNights || calculateDuration() - 1} {t('calculator.summary.nights', 'đêm')}</div>
                                   <div className="mt-1">
-                                    {hotel.singleRoomPrice > 0 && <span className="mr-2">Phòng đơn: {formatCurrency(hotel.singleRoomPrice)}/đêm</span>}
-                                    {hotel.doubleRoomPrice > 0 && <span className="mr-2">Phòng đôi: {formatCurrency(hotel.doubleRoomPrice)}/đêm</span>}
-                                    {hotel.tripleRoomPrice > 0 && <span>Phòng ba: {formatCurrency(hotel.tripleRoomPrice)}/đêm</span>}
+                                    {hotel.singleRoomPrice > 0 && <span className="mr-2">{t('calculator.summary.singleRoom', 'Single room')}: {formatCurrency(hotel.singleRoomPrice)}/{t('calculator.summary.perNight', 'per night')}</span>}
+                                    {hotel.doubleRoomPrice > 0 && <span className="mr-2">{t('calculator.summary.doubleRoom', 'Double room')}: {formatCurrency(hotel.doubleRoomPrice)}/{t('calculator.summary.perNight', 'per night')}</span>}
+                                    {hotel.tripleRoomPrice > 0 && <span>{t('calculator.summary.tripleRoom', 'Triple room')}: {formatCurrency(hotel.tripleRoomPrice)}/{t('calculator.summary.perNight', 'per night')}</span>}
                                   </div>
-                                  {hotel.breakfastPrice > 0 && <div>Bữa sáng: {formatCurrency(hotel.breakfastPrice)}/người</div>}
+                                  {hotel.breakfastPrice > 0 && <div>{t('calculator.summary.breakfast', 'Breakfast')}: {formatCurrency(hotel.breakfastPrice)}/{t('calculator.summary.perPerson', 'per person')}</div>}
                                 </div>
                               </>
                             ) 
                             : formData.hotelStars 
                               ? (
                                 <>
-                                  <div className="font-medium">Khách sạn {formData.hotelStars} {t('calculator.summary.stars', 'sao')}</div>
+                                  <div className="font-medium">{t('calculator.summary.hotel', 'Hotel')} {formData.hotelStars} {t('calculator.summary.stars', 'stars')}</div>
                                   <div className="text-xs text-muted-foreground mt-1">
                                     <div>{getRoomTypeLabel() || t('calculator.summary.noRoomSelected', 'Không có phòng')}</div>
                                     <div>{formData.stayingNights || calculateDuration() - 1} {t('calculator.summary.nights', 'đêm')}</div>
