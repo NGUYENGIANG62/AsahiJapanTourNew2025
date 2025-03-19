@@ -10,41 +10,30 @@ import * as accountService from './accountManagementService';
  */
 export async function validateCredentials(username: string, password: string): Promise<User | null> {
   try {
-    // Xử lý đặc biệt cho tài khoản admin
-    if (username === 'AsahiVietLifeJapanTour') {
-      console.log("Cố gắng xác thực admin, sử dụng bộ nhớ nội bộ");
-      // Admin luôn sử dụng storage nội bộ, không qua Google Sheets
-      const adminUser = await storage.getUserByUsername(username);
-      if (!adminUser) {
-        console.log("Không tìm thấy admin trong storage nội bộ!");
-        return null;
-      }
-      
-      const isPasswordValid = await bcrypt.compare(password, adminUser.password);
-      if (!isPasswordValid) {
-        console.log("Mật khẩu admin không hợp lệ!");
-        return null;
-      }
-      
-      console.log(`Admin '${username}' đã đăng nhập thành công`);
-      return adminUser;
-    }
-    
-    // Các tài khoản khác: thử xác thực từ Account Management Service trước
+    // Trước tiên, thử xác thực từ Google Sheet cho tất cả tài khoản (kể cả admin)
+    // Vì người dùng muốn quản lý tất cả tài khoản qua Google Sheet
     const accountUser = await accountService.validateCredentials(username, password);
     if (accountUser) {
-      console.log(`User '${username}' authenticated via Account Management Service`);
+      console.log(`User '${username}' authenticated via Google Sheet`);
       return accountUser;
     }
     
-    // Nếu không thành công, thử xác thực từ storage
+    // Nếu không tìm thấy trong Google Sheet, thử xác thực từ storage nội bộ
+    console.log(`Attempting to authenticate user '${username}' from internal storage`);
     const user = await storage.getUserByUsername(username);
-    if (!user) return null;
+    if (!user) {
+      console.log(`User '${username}' not found in internal storage`);
+      return null;
+    }
     
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) return null;
+    // Kiểm tra mật khẩu - giữ nguyên dạng gốc
+    const isValid = (password === user.password);
+    if (!isValid) {
+      console.log(`Invalid password for user '${username}'`);
+      return null;
+    }
     
-    console.log(`User '${username}' authenticated via legacy storage`);
+    console.log(`User '${username}' authenticated via internal storage`);
     return user;
   } catch (error) {
     console.error('Authentication error:', error);
@@ -54,8 +43,9 @@ export async function validateCredentials(username: string, password: string): P
       const user = await storage.getUserByUsername(username);
       if (!user) return null;
       
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) return null;
+      // Kiểm tra mật khẩu dạng gốc thay vì dùng bcrypt
+      const isValid = (password === user.password);
+      if (!isValid) return null;
       
       console.log(`User '${username}' authenticated via legacy storage (fallback)`);
       return user;
