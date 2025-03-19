@@ -35,7 +35,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({ showQR = true }) => {
                 <Phone className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="font-medium">+81 80-2141-2614</p>
+                <p className="font-medium">+8170-2794-4770</p>
                 <p className="text-xs text-muted-foreground">
                   {t('contact.operationHours', 'Giờ làm việc: 9:00 - 18:00 (JP)')}
                 </p>
