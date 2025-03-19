@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { storage } from './storage';
 import { User } from '@shared/schema';
-import { syncDataFromSheets } from './googleSheetsService';
+import { syncDataFromSheets } from './googleSheetsServiceFixed';
 
 export async function validateCredentials(username: string, password: string): Promise<User | null> {
   const user = await storage.getUserByUsername(username);

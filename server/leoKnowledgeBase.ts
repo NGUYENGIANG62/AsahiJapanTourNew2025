@@ -3,7 +3,7 @@
  * Nó sử dụng các sheet riêng biệt cho FAQ, thông tin tour, và kiến thức địa phương.
  */
 
-import { getSheetData } from './googleSheetsService';
+import { getSheetData } from './googleSheetsServiceFixed';
 import { sheets_v4 } from 'googleapis';
 import axios from 'axios';
 import * as fs from 'fs';

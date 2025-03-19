@@ -1,4 +1,4 @@
-import { syncDataFromSheets } from './googleSheetsService';
+import { syncDataFromSheets } from './googleSheetsServiceFixed';
 import { storage } from './storage';
 
 // Interval in milliseconds: 12 hours = 12 * 60 * 60 * 1000
