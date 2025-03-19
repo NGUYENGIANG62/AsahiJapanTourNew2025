@@ -502,9 +502,28 @@ export class MemStorage implements IStorage {
     const user = this.users.get(id);
     if (!user) return undefined;
     
+    // Tạo mật khẩu đã mã hóa
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     const updatedUser = { ...user, password: hashedPassword };
     this.users.set(id, updatedUser);
+    
+    // Nếu không phải tài khoản admin (id=1), thì cập nhật lên Google Sheet
+    // Admin không được cập nhật từ/lên Google Sheet để bảo mật
+    if (user.id !== 1 && user.username !== 'AsahiVietLifeJapanTour') {
+      try {
+        // Thử cập nhật mật khẩu trên Google Sheet
+        // Lưu ý: Chúng ta cần truyền mật khẩu gốc (chưa hash) cho Google Sheet
+        const accountService = await import('./accountManagementService');
+        await accountService.changePassword(user.username, newPassword).catch(err => {
+          console.error(`Failed to update password for ${user.username} in Google Sheet:`, err);
+        });
+      } catch (error) {
+        console.error('Error importing accountManagementService:', error);
+      }
+    } else {
+      console.log('Admin password updated in internal storage only');
+    }
+    
     return updatedUser;
   }
   
