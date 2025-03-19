@@ -198,63 +198,25 @@ const Step5Summary = () => {
     }
   }, [taxRateSetting, profitMarginSetting]);
   
-  // Convert cost from JPY to current currency
+  // Không chuyển đổi tiền tệ nữa, chỉ sử dụng Yên Nhật (JPY)
   const convertCost = (amountInJPY: number): number => {
-    if (!calculation || currency === 'JPY') return amountInJPY;
-    
-    // Sử dụng tỷ lệ quy đổi từ API
-    let conversionRate = 1;
-    
-    switch(currency) {
-      case 'USD':
-        conversionRate = 0.0067; // Mặc định: 1 JPY = 0.0067 USD
-        break;
-      case 'VND':
-        conversionRate = 161.83; // Mặc định: 1 JPY = 161.83 VND
-        break;
-      case 'CNY':
-        conversionRate = 0.048; // Mặc định: 1 JPY = 0.048 CNY
-        break;
-      case 'KRW':
-        conversionRate = 9.05; // Mặc định: 1 JPY = 9.05 KRW
-        break;
-    }
-    
-    // Sử dụng tỷ lệ quy đổi chính xác từ server (nếu có)
-    if (calculation.totalInRequestedCurrency && calculation.costs.totalAmount) {
-      const serverRate = calculation.totalInRequestedCurrency / calculation.costs.totalAmount;
-      if (serverRate > 0) {
-        conversionRate = serverRate;
-        console.log(`Tỷ giá quy đổi từ server: 1 JPY = ${conversionRate} ${currency}`);
-      }
-    }
-    
-    return Math.round(amountInJPY * conversionRate);
+    // Luôn trả về số tiền gốc bằng Yên Nhật
+    return amountInJPY;
   };
   
-  // Format currency
+  // Format currency - giờ chỉ dùng JPY
   const formatCurrency = (amount: number) => {
     // Làm tròn số trước khi hiển thị
     const roundedAmount = Math.round(amount);
-    
-    if (currency === 'JPY') {
-      return `¥${Math.round(roundedAmount).toLocaleString()}`;
-    } else if (currency === 'USD') {
-      return `$${Math.round(roundedAmount).toLocaleString()}`;
-    } else if (currency === 'VND') {
-      return `₫${Math.round(roundedAmount).toLocaleString()}`;
-    } else if (currency === 'CNY') {
-      return `¥${Math.round(roundedAmount).toLocaleString()} (CNY)`;
-    } else if (currency === 'KRW') {
-      return `₩${Math.round(roundedAmount).toLocaleString()}`;
-    }
-    return Math.round(roundedAmount).toLocaleString();
+    // Chỉ hiển thị định dạng Yên Nhật (JPY)
+    return `¥${Math.round(roundedAmount).toLocaleString()}`;
   };
   
   // Get calculated amount from calculation result
   const getTotalAmount = () => {
     if (calculation) {
-      return calculation.totalInRequestedCurrency;
+      // Luôn sử dụng tổng chi phí gốc bằng JPY
+      return calculation.costs.totalAmount;
     }
     return 0;
   };
