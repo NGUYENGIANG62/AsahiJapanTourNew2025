@@ -295,6 +295,13 @@ export async function comparePasswords(supplied: string, stored: string): Promis
  */
 export async function validateCredentials(username: string, password: string): Promise<User | null> {
   try {
+    // Đặc biệt xử lý tài khoản admin
+    if (username === 'AsahiVietLifeJapanTour') {
+      console.log("Detected admin login attempt, using internal authentication only");
+      // Tài khoản admin chỉ được xác thực trong storage nội bộ
+      return null;
+    }
+    
     // Lấy danh sách tài khoản
     const accounts = await fetchAccountsFromSheet();
     
@@ -330,7 +337,14 @@ export async function validateCredentials(username: string, password: string): P
  */
 export async function getAllAccounts(): Promise<User[]> {
   const accounts = await fetchAccountsFromSheet();
-  return accounts.map(account => ({
+  
+  // Loại bỏ tài khoản admin khỏi danh sách kết quả
+  // để không cập nhật tài khoản admin từ Google Sheet
+  const filteredAccounts = accounts.filter(account => 
+    account.username !== 'AsahiVietLifeJapanTour'
+  );
+  
+  return filteredAccounts.map(account => ({
     id: account.id,
     username: account.username,
     password: account.password, // Thêm password để tương thích với type User
