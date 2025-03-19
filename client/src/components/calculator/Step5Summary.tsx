@@ -328,21 +328,21 @@ const Step5Summary = () => {
       };
 
       const tourDetails = `
-        Tour: ${tour?.name || 'Chưa chọn'}
-        Địa điểm: ${tour?.location || 'Chưa chọn'}
-        Số ngày: ${calculateDuration()} ngày (${formatDate(formData.startDate)} - ${formatDate(formData.endDate)})
-        Số người: ${formData.participants} người
-        Phương tiện: ${vehicle ? `${formData.vehicleCount || 1}x ${vehicle.name} (${vehicle.seats} chỗ ngồi, hành lý: ${vehicle.luggageCapacity} cái)` : 'Chưa chọn'}
-        Khách sạn: ${formData.hotelStars ? `${formData.hotelStars} sao (${getRoomTypeLabel()}) - ${formData.stayingNights || calculateDuration() - 1} đêm` : 'Không'}
-        Hướng dẫn viên: ${guide ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}${guide.experience ? `, ${guide.experience} năm kinh nghiệm` : ''}${guide.hasInternationalLicense ? ', có giấy phép HDV quốc tế' : ''}` : 'Không'}
-        Bữa ăn: ${(formData.includeBreakfast ? 'Bữa sáng, ' : '') + (formData.includeLunch ? 'Bữa trưa, ' : '') + (formData.includeDinner ? 'Bữa tối' : '') || 'Không'}
+        ${t('calculator.summary.tourName', 'Tour')}: ${tour?.name || t('calculator.summary.notSelected', 'Not selected')}
+        ${t('calculator.summary.location', 'Location')}: ${tour?.location || t('calculator.summary.notSelected', 'Not selected')}
+        ${t('calculator.summary.numDays', 'Number of days')}: ${calculateDuration()} ${t('calculator.summary.days', 'days')} (${formatDate(formData.startDate)} - ${formatDate(formData.endDate)})
+        ${t('calculator.summary.numPeople', 'Number of people')}: ${formData.participants} ${t('calculator.summary.people', 'people')}
+        ${t('calculator.summary.transport', 'Transport')}: ${vehicle ? `${formData.vehicleCount || 1}x ${vehicle.name} (${vehicle.seats} ${t('calculator.summary.seats', 'seats')}, ${t('calculator.summary.luggage', 'luggage')}: ${vehicle.luggageCapacity} ${t('calculator.summary.pieces', 'pieces')})` : t('calculator.summary.notSelected', 'Not selected')}
+        ${t('calculator.summary.hotel', 'Hotel')}: ${formData.hotelStars ? `${formData.hotelStars} ${t('calculator.summary.stars', 'stars')} (${getRoomTypeLabel()}) - ${formData.stayingNights || calculateDuration() - 1} ${t('calculator.summary.nights', 'nights')}` : t('calculator.summary.none', 'None')}
+        ${t('calculator.summary.guide', 'Guide')}: ${guide ? `${guide.name}${guide.languages && guide.languages.length > 0 ? ` (${guide.languages.join(', ')})` : ''}${guide.experience ? `, ${guide.experience} ${t('calculator.summary.yearsExperience', 'years experience')}` : ''}${guide.hasInternationalLicense ? `, ${t('calculator.summary.hasInternationalLicense', 'has international license')}` : ''}` : t('calculator.summary.none', 'None')}
+        ${t('calculator.summary.meals', 'Meals')}: ${(formData.includeBreakfast ? `${t('calculator.meals.breakfast', 'Breakfast')}, ` : '') + (formData.includeLunch ? `${t('calculator.meals.lunch', 'Lunch')}, ` : '') + (formData.includeDinner ? t('calculator.meals.dinner', 'Dinner') : '') || t('calculator.summary.none', 'None')}
         ${specialServicesText}
         
         ${getFlightTimeInfo()}
         
-        Tổng chi phí: ${formatCurrency(calculation?.costs.totalAmount || 0)}
-        ${formData.participants > 1 ? `Chi phí mỗi người: ${formatCurrency((calculation?.costs.totalAmount || 0) / formData.participants)}` : ''}
-        ${preferredLocations ? `Địa điểm mong muốn: ${preferredLocations}` : ''}
+        ${t('calculator.summary.totalPrice', 'Total price')}: ${formatCurrency(calculation?.costs.totalAmount || 0)}
+        ${formData.participants > 1 ? `${t('calculator.summary.pricePerPerson', 'Price per person')}: ${formatCurrency((calculation?.costs.totalAmount || 0) / formData.participants)}` : ''}
+        ${preferredLocations ? `${t('calculator.summary.preferredLocations', 'Preferred locations')}: ${preferredLocations}` : ''}
       `;
 
       const fullMessage = customerInfo + '\n' + tourDetails;
@@ -373,7 +373,7 @@ const Step5Summary = () => {
           description: result.message || t('calculator.summary.requestRecordedDesc', 'Your tour information has been saved. We will contact you as soon as possible.'),
         });
       } else {
-        throw new Error(result.message || 'Lỗi không xác định');
+        throw new Error(result.message || t('calculator.summary.undefinedError', 'Undefined error'));
       }
     } catch (error) {
       console.error("Error sending email:", error);
@@ -607,19 +607,19 @@ const Step5Summary = () => {
                                 <div className="font-medium">
                                   {vehicle 
                                     ? `${formData.vehicleCount || 1}x ${vehicle.name}`
-                                    : `Xe đã chọn (ID: ${formData.vehicleId})`}
+                                    : `${t('calculator.summary.selectedVehicle', 'Selected vehicle')} (ID: ${formData.vehicleId})`}
                                 </div>
                                 {vehicle && (
                                   <div className="text-xs text-muted-foreground mt-1">
                                     <span className="mr-2">{vehicle.seats} {t('calculator.summary.seats', 'chỗ ngồi')}</span>
                                     <span>{t('calculator.summary.luggage', 'Hành lý')}: {vehicle.luggageCapacity} cái</span>
-                                    {vehicle.driverCostPerDay > 0 && <div>Chi phí tài xế: {formatCurrency(vehicle.driverCostPerDay)}/ngày</div>}
+                                    {vehicle.driverCostPerDay > 0 && <div>{t('calculator.summary.driverCost', 'Driver cost')}: {formatCurrency(vehicle.driverCostPerDay)}/{t('calculator.summary.perDay', 'per day')}</div>}
                                   </div>
                                 )}
                                 {formData.specialServices?.airportTransfer && (
                                   <div className="text-xs text-success font-medium mt-1">
                                     <CheckCircle2 className="inline-block mr-1 h-3 w-3" />
-                                    Bao gồm dịch vụ đưa đón sân bay
+                                    {t('calculator.specialServices.includedAirportTransfer', 'Includes airport transfer service')}
                                   </div>
                                 )}
                               </>
@@ -677,19 +677,19 @@ const Step5Summary = () => {
                                 </div>
                                 {(guide.experience || guide.hasInternationalLicense || guide.gender || guide.age) && (
                                   <div className="text-xs text-muted-foreground mt-1">
-                                    {guide.experience && <span className="mr-2">{guide.experience} năm kinh nghiệm</span>}
-                                    {guide.hasInternationalLicense && <span className="mr-2">Có giấy phép HDV quốc tế</span>}
+                                    {guide.experience && <span className="mr-2">{guide.experience} {t('calculator.summary.yearsExperience', 'years experience')}</span>}
+                                    {guide.hasInternationalLicense && <span className="mr-2">{t('calculator.summary.hasInternationalLicense', 'Has international license')}</span>}
                                     {guide.gender && <span className="mr-2">{guide.gender}</span>}
-                                    {guide.age && <span>{guide.age} tuổi</span>}
+                                    {guide.age && <span>{guide.age} {t('calculator.summary.yearsOld', 'years old')}</span>}
                                   </div>
                                 )}
                                 {guide.personality && (
                                   <div className="text-xs text-muted-foreground mt-1">
-                                    Tính cách: {guide.personality}
+                                    {t('calculator.summary.personality', 'Personality')}: {guide.personality}
                                   </div>
                                 )}
                               </>)
-                              : <span className="text-amber-600">Đã chọn bao gồm hướng dẫn viên, nhưng chưa chọn HDV cụ thể</span>
+                              : <span className="text-amber-600">{t('calculator.summary.guideSelectedButNotSpecific', 'Guide service included, but no specific guide selected')}</span>
                             : <span className="text-muted-foreground">{t('calculator.summary.noGuideSelected', 'Không bao gồm hướng dẫn viên')}</span>
                           }
                         </div>
