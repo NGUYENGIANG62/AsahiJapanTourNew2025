@@ -1016,18 +1016,27 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       // Add vehicle costs based on number of vehicles
       const vehicleCount = calculationData.vehicleCount || 1; // Default to 1 if not specified
       
-      // Tính toán số ngày sử dụng xe dựa trên thời gian đến và đi
+      // Sử dụng toàn bộ số ngày cho chi phí xe và tài xế, không điều chỉnh theo thời gian bay
       let vehicleDays = durationDays;
       
-      // Điều chỉnh ngày xe dựa trên thời gian bay đến/đi
-      if (calculationData.arrivalTime === 'afternoon') {
-        // Nếu đến buổi chiều, chỉ tính nửa ngày xe cho ngày đầu tiên (dịch vụ đưa đón sân bay)
-        vehicleDays -= 0.5;
-      }
-      
-      // Tính chi phí xe và tài xế dựa trên số ngày đã điều chỉnh
+      // Tính chi phí xe và tài xế dựa trên số ngày tour
       const vehicleCost = vehicle.pricePerDay * vehicleDays * vehicleCount;
       const driverCost = vehicle.driverCostPerDay * vehicleDays * vehicleCount;
+      
+      // Thêm chi phí đưa đón sân bay nếu được yêu cầu
+      if (calculationData.specialServices?.airportTransfer) {
+        // Lấy giá dịch vụ đưa đón sân bay từ Setting
+        const airportTransferSetting = await storage.getSetting('airport_transfer_price');
+        const transferCost = airportTransferSetting ? parseInt(airportTransferSetting) : 10000; // Mặc định 10000 JPY nếu không có trong setting
+        
+        // Tính cả đưa và đón (2 lượt)
+        const totalTransferCost = transferCost * 2;
+        
+        // Thêm vào chi phí cơ bản
+        baseCost += totalTransferCost;
+        
+        console.log(`Phí đưa đón sân bay: ${totalTransferCost} JPY`);
+      }
       
       // Add hotel costs if selected
       let hotelCost = 0;
@@ -1189,18 +1198,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         mealsCost = (totalLunchCost + totalDinnerCost) * calculationData.participants;
       }
       
-      // Tính phí đưa đón sân bay nếu được chọn
-      let airportTransferCost = 0;
-      if (calculationData.specialServices?.airportTransfer) {
-        // Phí cố định cho dịch vụ đưa đón sân bay, lấy từ setting
-        const transferPrice = parseFloat(await storage.getSetting('airport_transfer_price') || '10000');
-        
-        // Tính cả đưa và đón (2 lượt)
-        airportTransferCost = transferPrice * 2;
-        
-        // Thêm vào tổng chi phí
-        baseCost += airportTransferCost;
-      }
+      // Đã xử lý chi phí đưa đón sân bay ở trên
       
       // Add guide costs if selected
       let guideCost = 0;
