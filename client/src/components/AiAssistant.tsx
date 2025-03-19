@@ -272,7 +272,7 @@ export function AiAssistant() {
         </TabsList>
         
         <TabsContent value="chat" className="flex-1 flex flex-col p-0 m-0">
-          <div className="flex-1 p-4 overflow-y-auto max-h-[calc(100vh-220px)]" style={{ scrollBehavior: 'smooth' }}>
+          <ScrollArea className="flex-1 p-4" style={{ scrollBehavior: 'smooth', maxHeight: 'calc(100vh - 240px)' }}>
             {messages.map((message, index) => (
               <div key={index} className="mb-4">
                 <div
@@ -281,10 +281,10 @@ export function AiAssistant() {
                   }`}
                 >
                   <div
-                    className={`rounded-lg px-3 py-2 max-w-[80%] overflow-auto ${
+                    className={`rounded-lg px-3 py-2 max-w-[80%] overflow-hidden text-wrap break-words ${
                       message.role === 'user'
                         ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md'
-                        : 'bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 shadow-md'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100 shadow-md'
                     }`}
                   >
                     {message.content}
@@ -303,7 +303,7 @@ export function AiAssistant() {
               </div>
             ))}
             <div ref={messagesEndRef} />
-          </div>
+          </ScrollArea>
           
           <Separator />
           
