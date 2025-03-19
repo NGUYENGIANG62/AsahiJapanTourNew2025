@@ -194,6 +194,12 @@ async function addAccountToSheet(account: {
  */
 async function updateAccountPassword(username: string, newPassword: string): Promise<boolean> {
   try {
+    // Không cho phép thay đổi mật khẩu của tài khoản admin từ Google Sheet
+    if (username === 'AsahiVietLifeJapanTour') {
+      console.log('Cannot update admin password from Google Sheet. Admin account is protected.');
+      return false;
+    }
+
     // Lấy danh sách tài khoản
     const accounts = await fetchAccountsFromSheet();
     const accountIndex = accounts.findIndex(a => a.username === username);
@@ -204,16 +210,17 @@ async function updateAccountPassword(username: string, newPassword: string): Pro
     // Lấy thông tin API và ID
     const { sheetsApi, spreadsheetId } = await getAccountSheet();
 
-    // Hash mật khẩu mới
-    const hashedPassword = await hashPassword(newPassword);
-
+    // Lưu mật khẩu gốc trong Google Sheet (không hash)
+    // Quan trọng: Mật khẩu được lưu ở định dạng gốc trong Google Sheet
+    // nhưng hệ thống storage sẽ lưu dưới dạng hashed
+    
     // Cập nhật mật khẩu (sheet index bắt đầu từ 1 và có header, nên +2)
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId,
       range: `Admin_account!B${accountIndex + 2}`,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
-        values: [[hashedPassword]]
+        values: [[newPassword]] // Lưu mật khẩu gốc trong sheet để dễ đọc
       }
     });
 
@@ -365,6 +372,15 @@ export async function createAccount(userData: {
   dataSource?: string | null;
 }): Promise<User | null> {
   try {
+    // Không cho phép tạo tài khoản admin từ Google Sheet
+    if (userData.username === 'AsahiVietLifeJapanTour' || userData.role === 'admin') {
+      if (userData.username === 'AsahiVietLifeJapanTour') {
+        throw new Error('Cannot create admin account. Admin account is protected.');
+      }
+      // Tài khoản admin khác, cần xác nhận thêm
+      console.warn('Warning: Attempting to create admin account', userData.username);
+    }
+    
     // Kiểm tra tài khoản đã tồn tại chưa
     const accounts = await fetchAccountsFromSheet();
     const existingAccount = accounts.find(a => a.username === userData.username);
