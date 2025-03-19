@@ -173,7 +173,7 @@ const Step4Accommodation = () => {
             <CardHeader>
               <CardTitle>{t('calculator.hotelSelection')}</CardTitle>
               <CardDescription>
-                Select your accommodation type and options
+                {t('calculator.accommodationDescription', 'Select your accommodation type and options')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -387,7 +387,7 @@ const Step4Accommodation = () => {
             <CardHeader>
               <CardTitle>{t('calculator.mealSelection')}</CardTitle>
               <CardDescription>
-                Select which meals to include in your tour package
+                {t('calculator.selectMealsDescription', 'Select which meals to include in your tour package')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -403,7 +403,7 @@ const Step4Accommodation = () => {
                     {t('calculator.includeLunch')}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Lunch will be arranged at selected restaurants during the tour.
+                    {t('calculator.lunchDescription', 'Lunch will be arranged at selected restaurants during the tour.')}
                   </p>
                 </div>
               </div>
@@ -420,7 +420,7 @@ const Step4Accommodation = () => {
                     {t('calculator.includeDinner')}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Dinner will be arranged at selected restaurants during the tour.
+                    {t('calculator.dinnerDescription', 'Dinner will be arranged at selected restaurants during the tour.')}
                   </p>
                 </div>
               </div>
@@ -434,7 +434,7 @@ const Step4Accommodation = () => {
             <CardHeader>
               <CardTitle>{t('calculator.guideSelection')}</CardTitle>
               <CardDescription>
-                Choose if you want a tour guide to accompany your group
+                {t('calculator.guideDescription', 'Choose if you want a tour guide to accompany your group')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -463,7 +463,7 @@ const Step4Accommodation = () => {
                       onValueChange={handleGuideChange}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a guide" />
+                        <SelectValue placeholder={t('calculator.selectGuidePlaceholder', 'Select a guide')} />
                       </SelectTrigger>
                       <SelectContent>
                         {guides.map((guide) => (

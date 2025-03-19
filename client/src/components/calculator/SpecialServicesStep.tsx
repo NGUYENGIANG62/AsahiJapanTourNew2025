@@ -147,10 +147,10 @@ const SpecialServicesStep = () => {
             </div>
             
             <div className="space-y-2 mt-4">
-              <Label htmlFor="notes">{t('calculator.specialServices.notes', 'Ghi chú thêm')}</Label>
+              <Label htmlFor="notes">{t('calculator.specialServices.notes', 'Additional Notes')}</Label>
               <Textarea 
                 id="notes"
-                placeholder={t('calculator.specialServices.notesPlaceholder', 'Thêm yêu cầu đặc biệt hoặc câu hỏi về các dịch vụ bổ sung...')}
+                placeholder={t('calculator.specialServices.notesPlaceholder', 'Add special requests or questions about additional services...')}
                 value={specialServices.notes || ''}
                 onChange={(e) => handleSpecialServiceChange('notes', e.target.value)}
                 className="min-h-[100px]"
