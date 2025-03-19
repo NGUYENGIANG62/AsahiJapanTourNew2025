@@ -23,6 +23,8 @@ import { getSheetData, syncDataFromSheets, syncDataToSheets } from "./googleShee
 import { SYNC_SETTINGS } from "../shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+// Account management service
+import * as accountService from "./accountManagementService";
 //import { getAiResponse } from "./aiAssistant";
 //import { uploadSampleDataToLeoKnowledgeBase, isKnowledgeBaseAvailable } from "./leoKnowledgeBase";
 
@@ -196,7 +198,28 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
         return res.status(400).json({ message: "Username already exists" });
       }
       
-      // Tạo người dùng mới
+      // Thử tạo tài khoản mới trong Google Sheet trước
+      try {
+        console.log("Attempting to create account in Google Sheet...");
+        const sheetUser = await accountService.createAccount({
+          username,
+          password,
+          role: role || 'user',
+          agencyId: agencyId || null,
+          dataSource: dataSource || null
+        });
+        
+        if (sheetUser) {
+          console.log(`Account '${username}' created successfully in Google Sheet`);
+          return res.status(201).json(sheetUser);
+        }
+      } catch (sheetError) {
+        console.error("Failed to create account in Google Sheet:", sheetError);
+        // Tiếp tục với phương thức cũ nếu thất bại
+      }
+      
+      // Fallback: Tạo người dùng mới trong storage cũ
+      console.log("Falling back to legacy storage for user creation");
       const newUser = await storage.createUser({
         username,
         password,
@@ -321,6 +344,23 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 8) {
         return res.status(400).json({ message: "Invalid password format. Password must be at least 8 characters long." });
       }
+      
+      // Thử cập nhật mật khẩu trong Google Sheet
+      try {
+        console.log(`Attempting to update password for '${username}' in Google Sheet...`);
+        const success = await accountService.changePassword(username, newPassword);
+        
+        if (success) {
+          console.log(`Password for '${username}' updated successfully in Google Sheet`);
+          return res.json({ message: "User password updated successfully" });
+        }
+      } catch (sheetError) {
+        console.error("Failed to update password in Google Sheet:", sheetError);
+        // Tiếp tục với phương thức cũ nếu thất bại
+      }
+      
+      // Fallback: Cập nhật trong hệ thống cũ
+      console.log("Falling back to legacy storage for password update");
       
       // Find user by username
       const userToUpdate = await storage.getUserByUsername(username);
