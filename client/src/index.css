@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    html {
+      font-size: 14px;
+    }
+    
+    /* Increase touch targets for mobile */
+    button, 
+    .btn,
+    [role="button"],
+    input,
+    select,
+    textarea {
+      @apply min-h-10 min-w-10;
+    }
+    
+    /* Better padding for mobile containers */
+    .container,
+    .card,
+    .card-content,
+    .section {
+      @apply px-3 py-4;
+    }
+    
+    /* Fix tables on mobile */
+    table {
+      @apply block w-full overflow-x-auto;
+    }
+    
+    /* Stack buttons on mobile */
+    .card-footer {
+      @apply flex-wrap gap-2;
+    }
+  }
+}
