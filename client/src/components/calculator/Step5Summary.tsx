@@ -197,6 +197,15 @@ const Step5Summary = () => {
     }
   }, [taxRateSetting, profitMarginSetting]);
   
+  // Convert cost from JPY to current currency
+  const convertCost = (amountInJPY: number): number => {
+    if (!calculation || currency === 'JPY') return amountInJPY;
+    
+    // Sử dụng tỷ lệ quy đổi từ tổng tiền
+    const conversionRate = calculation.totalInRequestedCurrency / calculation.costs.totalAmount;
+    return Math.round(amountInJPY * conversionRate);
+  };
+  
   // Format currency
   const formatCurrency = (amount: number) => {
     // Làm tròn số trước khi hiển thị
@@ -863,55 +872,55 @@ const Step5Summary = () => {
                   <TableBody>
                     <TableRow>
                       <TableCell>{t('calculator.summary.tourCost')}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(calculation.costs.baseCost)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(convertCost(calculation.costs.baseCost))}</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>
                         {vehicle ? `${t('calculator.summary.vehicleCost')} (${formData.vehicleCount || 1}x ${vehicle.name})` : t('calculator.summary.vehicleCost')}
                       </TableCell>
-                      <TableCell className="text-right">{formatCurrency(calculation.costs.vehicleCost)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(convertCost(calculation.costs.vehicleCost))}</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>
                         {t('calculator.summary.driverCost')} {formData.vehicleCount && formData.vehicleCount > 1 ? `(${formData.vehicleCount} drivers)` : ''}
                       </TableCell>
-                      <TableCell className="text-right">{formatCurrency(calculation.costs.driverCost)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(convertCost(calculation.costs.driverCost))}</TableCell>
                     </TableRow>
                     {calculation.costs.hotelCost > 0 && (
                       <TableRow>
                         <TableCell>{t('calculator.summary.accommodationCost')}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(calculation.costs.hotelCost)}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(convertCost(calculation.costs.hotelCost))}</TableCell>
                       </TableRow>
                     )}
                     {calculation.costs.mealsCost > 0 && (
                       <TableRow>
                         <TableCell>{t('calculator.summary.mealsCost')}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(calculation.costs.mealsCost)}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(convertCost(calculation.costs.mealsCost))}</TableCell>
                       </TableRow>
                     )}
                     {calculation.costs.guideCost > 0 && (
                       <TableRow>
                         <TableCell>{t('calculator.summary.guideCost')}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(calculation.costs.guideCost)}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(convertCost(calculation.costs.guideCost))}</TableCell>
                       </TableRow>
                     )}
                   </TableBody>
                   <TableFooter>
                     <TableRow>
                       <TableCell>{t('calculator.summary.subtotal')}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(calculation.costs.subtotal)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(convertCost(calculation.costs.subtotal))}</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>
                         {t('calculator.summary.serviceFee', { rate: profitMargin })}
                       </TableCell>
-                      <TableCell className="text-right">{formatCurrency(calculation.costs.profitAmount)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(convertCost(calculation.costs.profitAmount))}</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>
                         {t('calculator.summary.tax', { rate: taxRate })}
                       </TableCell>
-                      <TableCell className="text-right">{formatCurrency(calculation.costs.taxAmount)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(convertCost(calculation.costs.taxAmount))}</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-bold">{t('calculator.summary.totalPrice')}</TableCell>
