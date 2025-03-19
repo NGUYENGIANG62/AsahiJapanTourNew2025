@@ -36,17 +36,41 @@ async function syncFromSheets() {
   try {
     console.log('Scheduled sync: Starting automatic sync from Google Sheets...');
     
+    // 1. Đồng bộ từ sheet chính (main/admin sheet)
     try {
+      console.log('Scheduled sync: Đồng bộ từ sheet chính (Main/Admin)...');
       await syncDataFromSheets(storage);
-      await storage.updateLastSyncTimestamp();
-      console.log('Scheduled sync: Automatic sync completed successfully');
-    } catch (syncError) {
-      console.error('Scheduled sync: Error during Google Sheets sync:', syncError);
-      console.log('Scheduled sync: Sẽ tiếp tục sử dụng dữ liệu cục bộ');
-      
-      // Vẫn cập nhật timestamp để không sync liên tục khi gặp lỗi
-      await storage.updateLastSyncTimestamp();
+      console.log('Scheduled sync: Đồng bộ từ sheet chính thành công');
+    } catch (mainSyncError) {
+      console.error('Scheduled sync: Lỗi khi đồng bộ từ sheet chính:', mainSyncError);
     }
+    
+    // 2. Đồng bộ từ sheet đại lý (agency sheet)
+    try {
+      console.log('Scheduled sync: Đồng bộ từ sheet đại lý (Agency - AsahiLKNamA)...');
+      // Sử dụng URL của đại lý NAMN (AsahiLKNamA)
+      const agencySource = process.env.AGENCY_NAMN_SPREADSHEET_URL;
+      if (agencySource) {
+        // Giả lập người dùng đại lý để lấy dữ liệu từ sheet của họ
+        const agencyUser = { 
+          id: 9999, 
+          username: 'AsahiLKNamA', 
+          role: 'agent',
+          dataSource: agencySource,
+          dataSourceName: 'AsahiLKNamA Agency'
+        } as any;
+        
+        await syncDataFromSheets(storage, agencyUser, agencySource);
+        console.log('Scheduled sync: Đồng bộ từ sheet đại lý thành công');
+      } else {
+        console.log('Scheduled sync: Không tìm thấy URL sheet đại lý, bỏ qua đồng bộ');
+      }
+    } catch (agencySyncError) {
+      console.error('Scheduled sync: Lỗi khi đồng bộ từ sheet đại lý:', agencySyncError);
+    }
+    
+    await storage.updateLastSyncTimestamp();
+    console.log('Scheduled sync: Automatic sync completed successfully');
     
     // Tạo mã AVF cho tour nếu chưa có
     try {
