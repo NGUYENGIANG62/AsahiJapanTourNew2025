@@ -32,7 +32,7 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
   const { t } = useTranslation();
   
   // Định dạng tiền tệ nếu không được cung cấp từ bên ngoài
-  const formatCurrencyFallback = (amount = 0) => {
+  const formatCurrencyFallback = (amount: number = 0): string => {
     if (formatCurrency) return formatCurrency(amount);
     
     const formatter = new Intl.NumberFormat(undefined, {
@@ -50,28 +50,32 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
       <CardHeader className="pb-3 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10">
         <CardTitle className="flex items-center font-heading">
           <Calculator className="mr-2 h-5 w-5 text-primary" />
-          {t('calculator.summary.totalCost', 'Tổng chi phí')}
+          {t('calculator.summary.paymentInfo', 'Thông tin thanh toán')}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-5">
         <div className="space-y-5">
-          {/* Currency Selector */}
-          <div className="pb-4 border-b">
-            <CurrencySelector />
-          </div>
-          
-          {/* Total Cost */}
-          <div className="text-center">
-            <div className="text-4xl font-bold text-primary">
-              {formatCurrency(totalAmount)}
+          {/* Currency Selector - hiển thị khi ở trong bảng tính giá */}
+          {totalAmount !== undefined && (
+            <div className="pb-4 border-b">
+              <CurrencySelector />
             </div>
-            
-            {participants > 1 && (
-              <div className="text-sm text-muted-foreground mt-2">
-                {t('calculator.summary.perPerson', 'Cho mỗi khách')}: {formatCurrency(totalAmount / participants)}
+          )}
+          
+          {/* Total Cost - chỉ hiển thị khi có dữ liệu */}
+          {totalAmount !== undefined && (
+            <div className="text-center">
+              <div className="text-4xl font-bold text-primary">
+                {formatCurrencyFallback(totalAmount)}
               </div>
-            )}
-          </div>
+              
+              {participants !== undefined && participants > 1 && (
+                <div className="text-sm text-muted-foreground mt-2">
+                  {t('calculator.summary.perPerson', 'Cho mỗi khách')}: {formatCurrencyFallback(totalAmount / participants)}
+                </div>
+              )}
+            </div>
+          )}
           
           {/* Payment Instructions */}
           <div className="mt-6 text-left rounded-md overflow-hidden border">
@@ -131,20 +135,22 @@ const PaymentInformation: React.FC<PaymentInformationProps> = ({
                   </ul>
                 </div>
                 
-                {/* QR Code for payment */}
-                <div className="flex flex-col items-center justify-center">
-                  <div className="border rounded-lg p-2 bg-white">
-                    <img 
-                      src="attached_assets/871dfb8adbcd32936bdc.jpeg" 
-                      alt="Payment QR Code" 
-                      className="h-32 w-32 object-contain"
-                    />
+                {/* QR Code for payment - chỉ hiển thị khi được yêu cầu */}
+                {showQR && (
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="border rounded-lg p-2 bg-white">
+                      <img 
+                        src="attached_assets/871dfb8adbcd32936bdc.jpeg" 
+                        alt="Payment QR Code" 
+                        className="h-32 w-32 object-contain"
+                      />
+                    </div>
+                    <p className="text-xs text-center mt-2 text-muted-foreground flex items-center justify-center">
+                      <QrCode className="h-3 w-3 mr-1" />
+                      {t('calculator.summary.scanQR', 'Quét mã QR để thanh toán')}
+                    </p>
                   </div>
-                  <p className="text-xs text-center mt-2 text-muted-foreground flex items-center">
-                    <QrCode className="h-3 w-3 mr-1" />
-                    {t('calculator.summary.scanQR', 'Quét mã QR để thanh toán')}
-                  </p>
-                </div>
+                )}
               </div>
               
               <Separator />

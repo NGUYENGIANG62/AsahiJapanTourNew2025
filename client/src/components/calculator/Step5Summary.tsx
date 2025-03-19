@@ -1036,7 +1036,13 @@ const Step5Summary = () => {
                   {/* Thông tin thanh toán với mã QR */}
                   <div className="mt-4">
                     <h4 className="font-medium mb-3">Thông tin chuyển khoản</h4>
-                    <PaymentInformation currency={currency} showQR={true} />
+                    <PaymentInformation 
+                      formatCurrency={(amount) => formatCurrency(amount, currency)}
+                      totalAmount={calculation.totalInRequestedCurrency} 
+                      participants={formData.participants} 
+                      currency={currency} 
+                      showQR={true} 
+                    />
                   </div>
                 </div>
               )}
