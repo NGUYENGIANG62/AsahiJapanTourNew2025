@@ -151,6 +151,34 @@ const UserManagement = () => {
   const [isSheetReady, setIsSheetReady] = useState<boolean | null>(null);
   const [isSyncingFromSheet, setIsSyncingFromSheet] = useState(false);
   
+  // Kiểm tra trạng thái Google Sheet khi component được tải
+  useEffect(() => {
+    const checkSheetStatus = async () => {
+      try {
+        // Lấy URL Google Sheet
+        const urlResponse = await fetch('/api/admin/account-sheet-url');
+        if (urlResponse.ok) {
+          const urlData = await urlResponse.json();
+          setGoogleSheetUrl(urlData.url);
+        }
+        
+        // Kiểm tra trạng thái kết nối
+        const statusResponse = await fetch('/api/admin/account-sheet-status');
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          setIsSheetReady(statusData.ready);
+        }
+      } catch (error) {
+        console.error("Error checking Google Sheet status:", error);
+      }
+    };
+    
+    // Chỉ kiểm tra khi tab Google Sheet được chọn
+    if (activeTab === 'google-sheets') {
+      checkSheetStatus();
+    }
+  }, [activeTab]);
+  
   // Form for admin's own password
   const form = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -580,7 +608,7 @@ const UserManagement = () => {
                           <span>Đang kiểm tra...</span>
                         </Badge>
                       ) : isSheetReady ? (
-                        <Badge variant="success" className="bg-green-100 text-green-800 flex items-center gap-1">
+                        <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
                           <Check className="h-3.5 w-3.5" />
                           <span>Kết nối thành công</span>
                         </Badge>
