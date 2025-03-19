@@ -15,8 +15,8 @@ console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'set' : 
 console.log('GOOGLE_REFRESH_TOKEN:', process.env.GOOGLE_REFRESH_TOKEN ? 'set' : 'not set');
 
 // Đảm bảo các biến môi trường email được tải đúng
-process.env.EMAIL_USER = 'asahivietlifejapantours@gmail.com';
-process.env.EMAIL_PASSWORD = 'xdppaohryuhknygk';
+process.env.EMAIL_USER = 'AsahiJapanTours'; // Tên người gửi
+process.env.EMAIL_PASSWORD = 'xdppaohryuhknygk'; // App password
 
 // Kiểm tra cấu hình email
 console.log('Email ENV check:', {
