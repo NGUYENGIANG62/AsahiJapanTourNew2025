@@ -413,7 +413,9 @@ async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId:
         }
         
         // Thêm headers - để API tự xử lý encoding
-        const headerRange = `${sheetName}!A1:Z1`;
+        // Sử dụng getSafeSheetName để tránh lỗi "Unable to parse range"
+        const safeSheetName = getSafeSheetName(sheetName);
+        const headerRange = `${safeSheetName}!A1:Z1`;
         console.log(`Adding headers to range: ${headerRange}`);
         await sheetsApi.spreadsheets.values.update({
           spreadsheetId,
@@ -559,7 +561,8 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     
     if (rowIndex > 0) {
       // Update existing row - đảm bảo format đúng
-      const updateRange = `${sheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`;
+      const safeSheetName = getSafeSheetName(sheetName);
+      const updateRange = `${safeSheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`;
       console.log(`Updating row at range: ${updateRange}`);
       await sheetsApi.spreadsheets.values.update({
         spreadsheetId,
@@ -571,7 +574,8 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
       });
     } else {
       // Append new row - đảm bảo format đúng
-      const appendRange = `${sheetName}!A1`;
+      const safeSheetName = getSafeSheetName(sheetName);
+      const appendRange = `${safeSheetName}!A1`;
       console.log(`Appending new row at range: ${appendRange}`);
       await sheetsApi.spreadsheets.values.append({
         spreadsheetId,
