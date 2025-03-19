@@ -274,7 +274,7 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
       const userId = parseInt(req.params.id);
       
       // Không cho phép xóa chính mình
-      if (req.user && req.user.id === userId) {
+      if (req.user && (req.user as any).id === userId) {
         return res.status(400).json({ message: "Cannot delete your own account" });
       }
       
