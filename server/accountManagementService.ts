@@ -6,16 +6,7 @@
 
 import { JWT } from 'google-auth-library';
 import { sheets_v4, google } from 'googleapis';
-import { User as SchemaUser } from '@shared/schema';
-
-// Định nghĩa lại User interface cho phù hợp
-type User = {
-  id: number;
-  username: string;
-  role: 'admin' | 'user' | 'agent';
-  agencyId: string | null;
-  dataSource: string | null;
-};
+import { User } from '@shared/schema';
 import { scrypt, randomBytes, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 
