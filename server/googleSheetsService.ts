@@ -216,11 +216,11 @@ async function createSpreadsheet(sheetsApi: sheets_v4.Sheets): Promise<string> {
  */
 async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
   try {
-    // Sử dụng URL encoding cho tên sheet trong range để tránh lỗi
+    // Để Google API tự xử lý encoding
     // Initialize Tours sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `${encodeURIComponent('Tours')}!A1:Z1`,
+      range: `Tours!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'name', 'code', 'avfCode', 'location', 'description', 'durationDays', 'basePrice', 'imageUrl', 'nameJa', 'nameZh', 'nameKo', 'nameVi', 'descriptionJa', 'descriptionZh', 'descriptionKo', 'descriptionVi']]
@@ -230,7 +230,7 @@ async function initializeSheets(sheetsApi: sheets_v4.Sheets, sheetId: string) {
     // Initialize Vehicles sheet
     await sheetsApi.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `${encodeURIComponent('Vehicles')}!A1:Z1`,
+      range: `Vehicles!A1:Z1`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [['id', 'name', 'seats', 'luggageCapacity', 'pricePerDay', 'driverCostPerDay']]
@@ -408,10 +408,9 @@ async function createSheetIfNotExist(sheetsApi: sheets_v4.Sheets, spreadsheetId:
             headers = ['id', 'name', 'value'];
         }
         
-        // Thêm headers - sử dụng URL encoding cho range để tương thích
-        const encodedSheet = encodeURIComponent(sheetName);
-        const headerRange = `${encodedSheet}!A1:Z1`;
-        console.log(`Adding headers to range (encoded): ${headerRange}`);
+        // Thêm headers - để API tự xử lý encoding
+        const headerRange = `${sheetName}!A1:Z1`;
+        console.log(`Adding headers to range: ${headerRange}`);
         await sheetsApi.spreadsheets.values.update({
           spreadsheetId,
           range: headerRange,
@@ -522,10 +521,10 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     // First, get all the data to find the row index
     console.log(`Updating data in sheet: ${sheetName}`);
     
-    // Sử dụng URL encoding cho tên sheet để đảm bảo ký tự đặc biệt được xử lý đúng
-    const encodedSheet = encodeURIComponent(sheetName);
-    const safeSheetName = `${encodedSheet}!A:Z`;
-    console.log(`Requesting sheet with range (encoded): ${safeSheetName}`);
+    // Format tên sheet theo đúng định dạng API: Tên sheet + dấu "!" + range
+    // Không sử dụng URL encoding ở đây vì API của Google sẽ tự encode
+    const safeSheetName = `${sheetName}!A:Z`;
+    console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
       range: safeSheetName,
@@ -556,10 +555,9 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
     const rowIndex = rows.findIndex((row, index) => index > 0 && row[0] === item.id.toString());
     
     if (rowIndex > 0) {
-      // Update existing row - đảm bảo format đúng với URL encoding
-      const encodedSheet = encodeURIComponent(sheetName);
-      const updateRange = `${encodedSheet}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`;
-      console.log(`Updating row at range (encoded): ${updateRange}`);
+      // Update existing row - đảm bảo format đúng
+      const updateRange = `${sheetName}!A${rowIndex + 1}:${String.fromCharCode(65 + headers.length - 1)}${rowIndex + 1}`;
+      console.log(`Updating row at range: ${updateRange}`);
       await sheetsApi.spreadsheets.values.update({
         spreadsheetId,
         range: updateRange, 
@@ -569,10 +567,9 @@ export async function updateSheetItem(sheetName: string, item: any, user?: User 
         },
       });
     } else {
-      // Append new row - đảm bảo format đúng với URL encoding
-      const encodedSheet = encodeURIComponent(sheetName);
-      const appendRange = `${encodedSheet}!A1`;
-      console.log(`Appending new row at range (encoded): ${appendRange}`);
+      // Append new row - đảm bảo format đúng
+      const appendRange = `${sheetName}!A1`;
+      console.log(`Appending new row at range: ${appendRange}`);
       await sheetsApi.spreadsheets.values.append({
         spreadsheetId,
         range: appendRange,
@@ -602,10 +599,10 @@ export async function deleteSheetItem(sheetName: string, id: number, user?: User
     // First, get all the data to find the row index
     console.log(`Deleting data from sheet: ${sheetName}`);
     
-    // Sử dụng URL encoding cho tên sheet để đảm bảo ký tự đặc biệt được xử lý đúng
-    const encodedSheet = encodeURIComponent(sheetName);
-    const safeSheetName = `${encodedSheet}!A:Z`;
-    console.log(`Requesting sheet with range (encoded): ${safeSheetName}`);
+    // Format tên sheet theo đúng định dạng API: Tên sheet + dấu "!" + range
+    // Không sử dụng URL encoding ở đây vì API của Google sẽ tự encode
+    const safeSheetName = `${sheetName}!A:Z`;
+    console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
       range: safeSheetName,
