@@ -14,15 +14,15 @@ console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'set' : 'not set
 console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'set' : 'not set');
 console.log('GOOGLE_REFRESH_TOKEN:', process.env.GOOGLE_REFRESH_TOKEN ? 'set' : 'not set');
 
+// Đảm bảo các biến môi trường email được tải đúng
+process.env.EMAIL_USER = 'asahivietlifejapantours@gmail.com';
+process.env.EMAIL_PASSWORD = 'xdppaohryuhknygk';
+
 // Kiểm tra cấu hình email
 console.log('Email ENV check:', {
-  EMAIL_USER: process.env.EMAIL_USER ? process.env.EMAIL_USER : 'not set',
+  EMAIL_USER: process.env.EMAIL_USER,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD ? `Set (${process.env.EMAIL_PASSWORD.length} chars)` : 'not set'
 });
-
-// Đảm bảo các biến môi trường email được tải đúng
-process.env.EMAIL_USER = process.env.EMAIL_USER || 'asahivietlifejapantours@gmail.com';
-process.env.EMAIL_PASSWORD = process.env.EMAIL_PASSWORD || 'xdppaohryuhknygk';
 
 const app = express();
 app.use(express.json());
