@@ -111,14 +111,20 @@ async function authorize(customSpreadsheetUrl?: string, username?: string) {
   try {
     let spreadsheetUrl = customSpreadsheetUrl;
     
-    // Nếu không có URL tùy chỉnh, kiểm tra xem có phải là đại lý AsahiLKNamA không
-    if (!spreadsheetUrl && username === 'AsahiLKNamA' && process.env.AGENCY_NAMN_SPREADSHEET_URL) {
+    // STEP 1: Nếu có URL tùy chỉnh, sử dụng nó
+    if (spreadsheetUrl) {
+      console.log(`Using explicitly provided spreadsheet URL`);
+    }
+    // STEP 2: Nếu không có URL tùy chỉnh và username là đại lý đặc biệt
+    else if (username === 'AsahiLKNamA' && process.env.AGENCY_NAMN_SPREADSHEET_URL) {
       spreadsheetUrl = process.env.AGENCY_NAMN_SPREADSHEET_URL;
       console.log(`Using agency-specific spreadsheet for ${username}`);
+    } 
+    // STEP 3: Mặc định sử dụng URL customer cho admin và người dùng khác
+    else {
+      spreadsheetUrl = process.env.GOOGLE_SPREADSHEET_URL;
+      console.log(`Using customer/default spreadsheet`);
     }
-    
-    // Nếu vẫn không có URL, sử dụng URL mặc định
-    spreadsheetUrl = spreadsheetUrl || process.env.GOOGLE_SPREADSHEET_URL;
     
     console.log(`ENV variables check:
 GOOGLE_SPREADSHEET_URL: ${process.env.GOOGLE_SPREADSHEET_URL}
@@ -587,8 +593,16 @@ export async function getSpreadsheetForUser(user?: User | null, specificSource?:
  */
 export async function getSpreadsheet(username?: string): Promise<{ sheetsApi: sheets_v4.Sheets, spreadsheetId: string, sourceName: string }> {
   try {
-    // Authorize with Google
-    const { sheetsApi, id } = await authorize(undefined, username);
+    // Đảm bảo sử dụng URL mặc định cho customer/admin
+    // Đây là sửa lỗi quan trọng: đảm bảo admin dùng sheet chính, không dùng sheet đại lý
+    const url = process.env.GOOGLE_SPREADSHEET_URL;
+    
+    if (!url) {
+      throw new Error('GOOGLE_SPREADSHEET_URL environment variable not found');
+    }
+    
+    // Truyền URL trực tiếp vào authorize để đảm bảo dùng đúng nguồn
+    const { sheetsApi, id } = await authorize(url, username);
     if (!sheetsApi) throw new Error('Could not authorize with Google');
     
     console.log(`Using default spreadsheet ID: ${id}`);
