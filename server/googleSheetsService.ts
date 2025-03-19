@@ -448,10 +448,9 @@ export async function getSheetData(sheetName: string, user?: User | null, specif
     // Get data from sheet - Sử dụng tên sheet thô không thêm range
     console.log(`Getting data from sheet: ${sheetName}`);
     
-    // Thử với cách định dạng range khác nhau
-    // Format tên sheet theo đúng định dạng API: Tên sheet + dấu "!" + range
-    // Không sử dụng URL encoding ở đây vì API của Google sẽ tự encode
-    const safeSheetName = `${sheetName}!A:Z`;
+    // Format tên sheet theo đúng định dạng API
+    // Sử dụng định dạng A1 thay vì A:Z để tránh lỗi parse
+    const safeSheetName = `${sheetName}!A1:Z1000`;
     console.log(`Requesting sheet with range: ${safeSheetName}`);
     const response = await sheetsApi.spreadsheets.values.get({
       spreadsheetId,
