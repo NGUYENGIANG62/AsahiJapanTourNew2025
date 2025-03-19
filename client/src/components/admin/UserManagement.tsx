@@ -750,6 +750,61 @@ const UserManagement = () => {
                       )}
                     </Button>
                   </div>
+                  
+                  <div className="p-4 border rounded-md flex flex-col">
+                    <h4 className="font-medium mb-2">Export vào Google Sheet</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Đồng bộ tài khoản từ hệ thống nội bộ lên Google Sheet
+                    </p>
+                    <Button 
+                      className="mt-auto"
+                      onClick={async () => {
+                        const exportingState = isSyncingFromSheet;
+                        setIsSyncingFromSheet(true);
+                        try {
+                          const response = await fetch('/api/admin/export-users-to-sheet', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                          });
+                          
+                          if (response.ok) {
+                            const result = await response.json();
+                            toast({
+                              title: "Export thành công",
+                              description: result.message,
+                            });
+                          } else {
+                            const error = await response.json();
+                            throw new Error(error.message);
+                          }
+                        } catch (error) {
+                          console.error("Error exporting to Google Sheet:", error);
+                          toast({
+                            title: "Lỗi export",
+                            description: error instanceof Error ? error.message : "Không thể export lên Google Sheet",
+                            variant: "destructive",
+                          });
+                        } finally {
+                          setIsSyncingFromSheet(exportingState);
+                        }
+                      }}
+                      disabled={isSyncingFromSheet || !isSheetReady}
+                    >
+                      {isSyncingFromSheet ? (
+                        <>
+                          <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                          Đang xử lý...
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloud className="mr-2 h-4 w-4" />
+                          Export tài khoản
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -251,6 +251,49 @@ export async function registerRoutes(app: express.Express): Promise<Server> {
     }
   });
   
+  // API để export tài khoản từ hệ thống nội bộ sang Google Account Sheet
+  apiRouter.post("/admin/export-users-to-sheet", isAdminMiddleware, async (req, res) => {
+    try {
+      // Lấy tất cả người dùng từ cơ sở dữ liệu nội bộ
+      const users = await storage.getAllUsers();
+      let exportedCount = 0;
+      let errorCount = 0;
+      
+      // Lấy các tài khoản hiện có trong Google Sheet
+      const existingAccounts = await accountService.getAllAccounts();
+      const existingUsernames = new Set(existingAccounts.map(acc => acc.username));
+      
+      // Xử lý từng người dùng nội bộ, thêm vào Google Sheet nếu chưa tồn tại
+      for(const user of users) {
+        try {
+          // Bỏ qua các tài khoản đã tồn tại trong Google Sheet
+          if (!existingUsernames.has(user.username)) {
+            // Thêm người dùng vào Google Sheet
+            await accountService.createAccount({
+              username: user.username,
+              password: user.password,
+              role: user.role as 'admin' | 'user' | 'agent',
+              agencyId: user.agencyId || null,
+              dataSource: user.dataSource || null
+            });
+            exportedCount++;
+          }
+        } catch (exportError) {
+          console.error(`Error exporting account ${user.username}:`, exportError);
+          errorCount++;
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Exported ${exportedCount} accounts to Google Sheet. ${errorCount > 0 ? `Failed to export ${errorCount} accounts.` : ''}` 
+      });
+    } catch (error) {
+      console.error("Error exporting users to sheet:", error);
+      return res.status(500).json({ message: "Failed to export users to sheet" });
+    }
+  });
+  
   // Tạo người dùng mới (chỉ admin)
   apiRouter.post("/admin/users", isAdminMiddleware, async (req, res) => {
     try {
