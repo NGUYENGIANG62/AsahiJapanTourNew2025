@@ -9,11 +9,11 @@ interface EmailRequest {
   phone?: string;
 }
 
-// Email config - khai báo cố định
+// Email config - lấy từ biến môi trường
 const EMAIL_CONFIG = {
-  user: 'asahivietlifejapantours@gmail.com',
+  user: process.env.EMAIL_USER || 'AsahiJapanTours',
   senderName: 'AsahiJapanTours', // Tên hiển thị
-  password: 'xdppaohryuhknygk', // App password
+  password: process.env.EMAIL_PASSWORD || 'xdppaohryuhknygk', // App password
   host: 'smtp.gmail.com',
   port: 465,
   secure: true
