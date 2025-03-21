@@ -107,7 +107,7 @@ function getSpreadsheetIdFromUrl(url: string): string | null {
  * @param customSpreadsheetUrl URL tùy chỉnh cho các đại lý
  * @param username Username để kiểm tra và sử dụng URL tùy chỉnh cho các đại lý cụ thể
  */
-async function authorize(customSpreadsheetUrl?: string, username?: string): Promise<{ sheetsApi: sheets_v4.Sheets, id: string }> {
+async function authorize(customSpreadsheetUrl?: string, username?: string) {
   try {
     let spreadsheetUrl = customSpreadsheetUrl;
     
@@ -144,11 +144,50 @@ AGENCY_NAMN_SPREADSHEET_URL: ${process.env.AGENCY_NAMN_SPREADSHEET_URL || 'Not s
     
     console.log(`Using spreadsheet ID: ${spreadsheetId}`);
     
-    // Kiểm tra loại xác thực - Ưu tiên API Key trước để đảm bảo ít nhất là đọc được dữ liệu
-    if (process.env.GOOGLE_API_KEY) {
+    // Kiểm tra loại xác thực
+    if (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) {
+      console.log('Using Service Account for full access (read & write)');
+      
+      // Sử dụng Service Account (hỗ trợ đọc và ghi)
+      const auth = new google.auth.JWT({
+        email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        key: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        scopes: SCOPES
+      });
+      
+      await auth.authorize();
+      const sheetsApi = google.sheets({ version: 'v4', auth });
+      
+      spreadsheetInfo = {
+        id: spreadsheetId,
+        auth,
+        sheetsApi
+      };
+    } else if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REFRESH_TOKEN) {
+      console.log('Using OAuth2 for full access (read & write)');
+      
+      // Sử dụng OAuth2 (hỗ trợ đọc và ghi)
+      const auth = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET
+      );
+      
+      auth.setCredentials({
+        refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+      });
+      
+      const sheetsApi = google.sheets({ version: 'v4', auth });
+      
+      spreadsheetInfo = {
+        id: spreadsheetId,
+        auth: null, // Không sử dụng JWT trong trường hợp này
+        sheetsApi
+      };
+    } else if (process.env.GOOGLE_API_KEY) {
       console.log('Using API Key for read-only access');
       
       // Sử dụng API Key (chỉ hỗ trợ đọc)
+      const auth = null; // Không có JWT
       const sheetsApi = google.sheets({
         version: 'v4',
         auth: process.env.GOOGLE_API_KEY
@@ -156,101 +195,14 @@ AGENCY_NAMN_SPREADSHEET_URL: ${process.env.AGENCY_NAMN_SPREADSHEET_URL || 'Not s
       
       spreadsheetInfo = {
         id: spreadsheetId,
-        auth: null,
+        auth,
         sheetsApi
       };
-      
-      return { sheetsApi, id: spreadsheetId };
-      
-    } else if (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) {
-      console.log('Using Service Account for full access (read & write)');
-      
-      try {
-        // Sử dụng Service Account (hỗ trợ đọc và ghi)
-        const auth = new google.auth.JWT({
-          email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-          key: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/g, '\n'),
-          scopes: SCOPES
-        });
-        
-        await auth.authorize();
-        const sheetsApi = google.sheets({ version: 'v4', auth });
-        
-        spreadsheetInfo = {
-          id: spreadsheetId,
-          auth,
-          sheetsApi
-        };
-        
-        return { sheetsApi, id: spreadsheetId };
-        
-      } catch (error) {
-        console.error('Error with Service Account auth, falling back to API Key if available:', error);
-        if (process.env.GOOGLE_API_KEY) {
-          console.log('Falling back to API Key for read-only access');
-          const sheetsApi = google.sheets({
-            version: 'v4',
-            auth: process.env.GOOGLE_API_KEY
-          });
-          
-          spreadsheetInfo = {
-            id: spreadsheetId,
-            auth: null,
-            sheetsApi
-          };
-          
-          return { sheetsApi, id: spreadsheetId };
-        } else {
-          throw error; // Re-throw if no fallback available
-        }
-      }
-    } else if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REFRESH_TOKEN) {
-      console.log('Using OAuth2 for full access (read & write)');
-      
-      try {
-        // Sử dụng OAuth2 (hỗ trợ đọc và ghi)
-        const auth = new google.auth.OAuth2(
-          process.env.GOOGLE_CLIENT_ID,
-          process.env.GOOGLE_CLIENT_SECRET
-        );
-        
-        auth.setCredentials({
-          refresh_token: process.env.GOOGLE_REFRESH_TOKEN
-        });
-        
-        const sheetsApi = google.sheets({ version: 'v4', auth });
-        
-        spreadsheetInfo = {
-          id: spreadsheetId,
-          auth: null, // Không sử dụng JWT trong trường hợp này
-          sheetsApi
-        };
-        
-        return { sheetsApi, id: spreadsheetId };
-        
-      } catch (error) {
-        console.error('Error with OAuth auth, falling back to API Key if available:', error);
-        if (process.env.GOOGLE_API_KEY) {
-          console.log('Falling back to API Key for read-only access');
-          const sheetsApi = google.sheets({
-            version: 'v4',
-            auth: process.env.GOOGLE_API_KEY
-          });
-          
-          spreadsheetInfo = {
-            id: spreadsheetId,
-            auth: null,
-            sheetsApi
-          };
-          
-          return { sheetsApi, id: spreadsheetId };
-        } else {
-          throw error; // Re-throw if no fallback available
-        }
-      }
     } else {
       throw new Error('No Google authentication method found. Please set either GOOGLE_CLIENT_EMAIL and GOOGLE_PRIVATE_KEY, or GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_REFRESH_TOKEN, or GOOGLE_API_KEY');
     }
+    
+    return spreadsheetInfo;
   } catch (error) {
     console.error('Error authorizing with Google:', error);
     throw error;
