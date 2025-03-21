@@ -38,16 +38,15 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 phút
  */
 async function getAccountSheet(): Promise<SheetInfo> {
   // Lấy thông tin xác thực từ biến môi trường
-  const spreadsheetUrl = process.env.ACCOUNT_MANAGEMENT_SHEET_URL || process.env.GOOGLE_SPREADSHEET_URL;
-  const apiKey = process.env.GOOGLE_API_KEY;
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const key = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+  const spreadsheetUrl = process.env.ACCOUNT_MANAGEMENT_SHEET_URL;
 
-  // Trường hợp không tìm thấy thông tin xác thực hoặc URL
+  // Trường hợp không tìm thấy thông tin xác thực Service Account
   // vẫn cho phép sử dụng storage nội bộ mà không gây lỗi
   // Admin user sẽ luôn được xác thực qua internal storage
-  if (!spreadsheetUrl) {
-    console.warn('GoogleSheet không khả dụng: Thiếu URL Sheet');
+  if (!email || !key || !spreadsheetUrl) {
+    console.warn('GoogleSheet không khả dụng: Thiếu thông tin xác thực hoặc URL Sheet');
     // Thay vì ném lỗi, tạo một đối tượng fake để tránh lỗi khi gọi API
     // Khi này, các API khác sẽ fallback về storage nội bộ
     return {
@@ -57,64 +56,26 @@ async function getAccountSheet(): Promise<SheetInfo> {
   }
 
   try {
+    // Xác thực với Google API
+    const auth = new JWT({
+      email,
+      key,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+
+    // Khởi tạo Sheets API
+    const sheetsApi = google.sheets({ version: 'v4', auth });
+
     // Trích xuất ID từ URL
     const spreadsheetId = getSpreadsheetIdFromUrl(spreadsheetUrl);
     if (!spreadsheetId) {
       throw new Error('Invalid spreadsheet URL');
     }
 
-    // Ưu tiên sử dụng API Key trước (chỉ đọc)
-    if (apiKey) {
-      console.log('Account Management: Sử dụng API Key cho truy cập chỉ đọc');
-      const sheetsApi = google.sheets({
-        version: 'v4',
-        auth: apiKey
-      });
-      return { sheetsApi, spreadsheetId };
-    } 
-    // Thử sử dụng Service Account nếu có (đọc/ghi)
-    else if (email && key) {
-      try {
-        console.log('Account Management: Thử sử dụng Service Account cho truy cập đầy đủ');
-        // Xác thực với Google API
-        const auth = new JWT({
-          email,
-          key: key.replace(/\\n/g, '\n'),
-          scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-        });
-
-        // Khởi tạo Sheets API
-        const sheetsApi = google.sheets({ version: 'v4', auth });
-        return { sheetsApi, spreadsheetId };
-      } catch (error) {
-        console.error('Service Account authentication failed:', error);
-        // Nếu Service Account thất bại nhưng có API Key, quay lại sử dụng API Key
-        if (apiKey) {
-          console.log('Account Management: Chuyển sang sử dụng API Key sau khi Service Account thất bại');
-          const sheetsApi = google.sheets({
-            version: 'v4',
-            auth: apiKey
-          });
-          return { sheetsApi, spreadsheetId };
-        }
-        throw error; // Nếu không có API Key, ném lỗi
-      }
-    } else {
-      console.warn('Không tìm thấy Google API Key hoặc Service Account credentials');
-      // Tạo đối tượng giả để các phương thức khác có thể tiếp tục và fallback về storage nội bộ
-      return {
-        sheetsApi: {} as any,
-        spreadsheetId
-      };
-    }
+    return { sheetsApi, spreadsheetId };
   } catch (error) {
     console.error('Error initializing Google Sheets API:', error);
-    // Thay vì ném lỗi, tạo một đối tượng fake để tránh lỗi khi gọi API
-    // Khi này, các API khác sẽ fallback về storage nội bộ
-    return {
-      sheetsApi: {} as any,
-      spreadsheetId: 'fake-spreadsheet-id'
-    };
+    throw new Error('Failed to connect to Google Sheets');
   }
 }
 
