@@ -6,7 +6,6 @@ vite.config.ts.*
 *.tar.gz
 
 # Không đưa các file nhạy cảm lên GitHub
-.env
 .env.local
 .env.development.local
 .env.test.local
